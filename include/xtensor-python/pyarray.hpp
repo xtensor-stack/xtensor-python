@@ -114,8 +114,8 @@ namespace xt
                          handle base = handle());
 
         size_type dimension() const;
-        shape_type shape() const;
-        strides_type strides() const;
+        const shape_type& shape() const;
+        const strides_type& strides() const;
         backstrides_type backstrides() const;
 
         void reshape(const shape_type& shape);
@@ -182,6 +182,9 @@ namespace xt
 
         static PyObject *ensure_(PyObject* ptr);
 
+        mutable shape_type m_shape;
+        mutable strides_type m_strides;
+
     };
     
     /**************************************
@@ -198,7 +201,7 @@ namespace xt
     inline auto pyarray_backstrides<A>::operator[](size_type i) const -> value_type
     {
         value_type sh = p_a->shape()[i];
-        value_type res = sh == 1 ? 0 : sh * p_a->strides()[i] / sizeof(typename A::value_type);
+        value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[i] / sizeof(typename A::value_type);
         return  res;
     }
 
@@ -250,21 +253,21 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::shape() const -> shape_type
+    inline auto pyarray<T, ExtraFlags>::shape() const -> const shape_type&
     {
         // Until we have the CRTP on shape types, we copy the shape.
-        shape_type shape(dimension());
-        std::copy(pybind_array::shape(), pybind_array::shape() + dimension(), shape.begin());
-        return shape;
+        m_shape.resize(dimension());
+        std::copy(pybind_array::shape(), pybind_array::shape() + dimension(), m_shape.begin());
+        return m_shape;
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::strides() const -> strides_type
+    inline auto pyarray<T, ExtraFlags>::strides() const -> const strides_type&
     {
-        strides_type strides(dimension());
-        std::transform(pybind_array::strides(), pybind_array::strides() + dimension(), strides.begin(),
+        m_strides.resize(dimension());
+        std::transform(pybind_array::strides(), pybind_array::strides() + dimension(), m_strides.begin(),
             [](size_type str) { return str / sizeof(value_type); });
-        return strides;
+        return m_strides;
     }
 
     template <class T, int ExtraFlags>
