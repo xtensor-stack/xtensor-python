@@ -13,4 +13,10 @@
 
 # Testing
 
- - Checkout and pip install the `xtensor-python-test` project.
+  Testing `xtensor-python` requires `nosetests`
+
+  ``` bash
+  nosetests .
+  ```
+
+  To pick up changes in `xtensor-python` while rebuilding, delete the `build/` directory. 
