@@ -37,6 +37,25 @@ namespace xt
         using temporary_type = pyarray<T, ExtraFlags>;
     };
 
+    template <class A>
+    class pyarray_backstrides
+    {
+
+    public:
+
+        using array_type = A;
+        using value_type = typename array_type::size_type;
+        using size_type = typename array_type::size_type;
+
+        pyarray_backstrides(const A& a);
+
+        value_type operator[](size_type i) const;
+
+    private:
+
+        const pybind_array* p_a;
+    };
+
     /**
      * @class pyarray
      * @brief Wrapper on the Python buffer protocol.
@@ -60,8 +79,8 @@ namespace xt
         using size_type = std::size_t;
         using difference_type = std::ptrdiff_t;
 
-        using stepper = xstepper<T>;
-        using const_stepper = xstepper<const T>;
+        using stepper = xstepper<self_type>;
+        using const_stepper = xstepper<const self_type>;
 
         using iterator = xiterator<stepper>;
         using const_iterator = xiterator<const_stepper>;
@@ -71,6 +90,7 @@ namespace xt
 
         using shape_type = xshape<size_type>;
         using strides_type = xstrides<size_type>;
+        using backstrides_type = pyarray_backstrides<self_type>;
 
         using closure_type = const self_type&;
 
@@ -93,19 +113,26 @@ namespace xt
                          const T* ptr = nullptr,
                          handle base = handle());
 
-        auto dimension() const -> size_type;
+        size_type dimension() const;
+        shape_type shape() const;
+        strides_type strides() const;
+        backstrides_type backstrides() const;
+
+        void reshape(const shape_type& shape);
+        void reshape(const shape_type& shape, layout l);
+        void reshape(const shape_type& shape, const strides_type& strides);
 
         template<typename... Args>
-        auto operator()(Args... args) -> reference;
+        reference operator()(Args... args);
 
         template<typename... Args>
-        auto operator()(Args... args) const -> const_reference;
+        const_reference operator()(Args... args) const;
 
         template<typename... Args>
-        auto data(Args... args) -> pointer;
+        pointer data(Args... args);
 
         template<typename... Args>
-        auto data(Args... args) const -> const_pointer;
+        const_pointer data(Args... args) const;
 
         bool broadcast_shape(shape_type& shape) const;
         bool is_trivial_broadcast(const strides_type& strides) const;
@@ -138,8 +165,6 @@ namespace xt
         const_storage_iterator storage_begin() const;
         const_storage_iterator storage_end() const;
 
-        shape_type shape() const;
-
         template <class E>
         pyarray(const xexpression<E>& e);
 
@@ -158,6 +183,24 @@ namespace xt
         static PyObject *ensure_(PyObject* ptr);
 
     };
+    
+    /**************************************
+     * pyarray_backstrides implementation *
+     **************************************/
+
+    template <class A>
+    inline pyarray_backstrides<A>::pyarray_backstrides(const A& a)
+        : p_a(&a)
+    {
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::operator[](size_type i) const -> value_type
+    {
+        value_type sh = p_a->shape()[i];
+        value_type res = sh == 1 ? 0 : sh * p_a->strides()[i] / sizeof(typename A::value_type);
+        return  res;
+    }
 
     /**************************
      * pyarray implementation *
@@ -207,6 +250,79 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::shape() const -> shape_type
+    {
+        // Until we have the CRTP on shape types, we copy the shape.
+        shape_type shape(dimension());
+        std::copy(pybind_array::shape(), pybind_array::shape() + dimension(), shape.begin());
+        return shape;
+    }
+
+    template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::strides() const -> strides_type
+    {
+        strides_type strides(dimension());
+        std::transform(pybind_array::strides(), pybind_array::strides() + dimension(), strides.begin(),
+            [](size_type str) { return str / sizeof(value_type); });
+        return strides;
+    }
+
+    template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::backstrides() const -> backstrides_type
+    {
+        backstrides_type tmp(*this);
+        return tmp;
+    }
+
+    template <class T, int ExtraFlags>
+    void pyarray<T, ExtraFlags>::reshape(const shape_type& shape)
+    {
+        if (!m_ptr || shape.size() != dimension() || !std::equal(shape.begin(), shape.end(), pybind_array::shape()))
+        {
+            reshape(shape, layout::row_major);
+        }
+    }
+
+    template <class T, int ExtraFlags>
+    void pyarray<T, ExtraFlags>::reshape(const shape_type& shape, layout l)
+    {
+        strides_type strides(shape.size());
+        size_type data_size = sizeof(value_type);
+        if (l == layout::row_major)
+        {
+            for (size_type i = strides.size(); i != 0; --i)
+            {
+                strides[i - 1] = data_size;
+                data_size = strides[i - 1] * shape[i - 1];
+                if (shape[i - 1] == 1)
+                {
+                    strides[i - 1] = 0;
+                }
+            }
+        }
+        else
+        {
+            for (size_type i = 0; i < strides.size(); ++i)
+            {
+                strides[i] = data_size;
+                data_size = strides[i] * shape[i];
+                if (shape[i] == 1)
+                {
+                    strides[i] = 0;
+                }
+            }
+        }
+        reshape(shape, strides);
+    }
+
+    template <class T, int ExtraFlags>
+    void pyarray<T, ExtraFlags>::reshape(const shape_type& shape, const strides_type& strides)
+    {
+        self_type tmp(shape, strides);
+        *this = std::move(tmp);
+    }
+
+    template <class T, int ExtraFlags>
     template<typename... Args> 
     inline auto pyarray<T, ExtraFlags>::operator()(Args... args) -> reference
     {
@@ -243,7 +359,20 @@ namespace xt
     {
         return static_cast<const T*>(pybind_array::data(args...));
     }
-    
+
+    template <class T, int ExtraFlags>
+    bool pyarray<T, ExtraFlags>::broadcast_shape(shape_type& shape) const
+    {
+        return xt::broadcast_shape(this->shape(), shape);
+    }
+
+    template <class T, int ExtraFlags>
+    bool pyarray<T, ExtraFlags>::is_trivial_broadcast(const strides_type& strides) const
+    {
+        return strides.size() == dimension() &&
+            std::equal(strides.begin(), strides.end(), this->strides().begin());
+    }
+
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::begin() -> iterator
     {
@@ -347,7 +476,7 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_begin() -> storage_iterator
     {
-        return static_cast<storage_iterator>(PyArray_GET_(m_ptr, data));
+        return reinterpret_cast<storage_iterator>(PyArray_GET_(m_ptr, data));
     }
 
     template <class T, int ExtraFlags>
@@ -359,7 +488,7 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_begin() const -> const_storage_iterator
     {
-        return static_cast<const_storage_iterator>(PyArray_GET_(m_ptr, data));
+        return reinterpret_cast<const_storage_iterator>(PyArray_GET_(m_ptr, data));
     }
 
     template <class T, int ExtraFlags>
@@ -369,20 +498,11 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::shape() const -> shape_type
-    {
-        // Until we have the CRTP on shape types, we copy the shape.
-        shape_type shape(dimension());
-        std::copy(pybind_array::shape(), pybind_array::shape() + dimension(), shape.begin());
-        return shape;
-    }
-
-    template <class T, int ExtraFlags>
     template <class E>
     inline pyarray<T, ExtraFlags>::pyarray(const xexpression<E>& e)
          : pybind_array()
     {
-        semantic_base::operator=(e);
+        semantic_base::assign(e);
     }
 
     template <class T, int ExtraFlags>
