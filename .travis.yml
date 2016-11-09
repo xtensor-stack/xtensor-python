@@ -59,7 +59,7 @@ install:
     # Useful for debugging any issues with conda
     - conda info -a
     - cd test
-    - conda install xtensor nose numpy -c conda-forge
+    - conda install xtensor pytest numpy -c conda-forge
     - pip install git+https://github.com/pybind/pybind11.git
     - cp -r $TRAVIS_BUILD_DIR/include/* $HOME/miniconda/include/
 
@@ -76,4 +76,4 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         export CXX=clang++ CC=clang;
       fi
-    - nosetests .
+    - py.test .
