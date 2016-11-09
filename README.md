@@ -122,10 +122,10 @@ It produces a project following the best practices for the packaging and distrib
 
 ## Building and Running the Tests
 
-Testing `xtensor-python` requires `nosetests`
+Testing `xtensor-python` requires `pytest`
 
   ``` bash
-  nosetests .
+  py.test .
   ```
 
 To pick up changes in `xtensor-python` while rebuilding, delete the `build/` directory. 
