@@ -1,2 +1,2 @@
 REM Copy headers
-xcopy /S %SRC_DIR%\include %LIBRARY_INC%
+xcopy /S /I %SRC_DIR%\include %PREFIX%\include
