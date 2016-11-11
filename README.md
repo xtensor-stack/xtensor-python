@@ -1,7 +1,7 @@
 # xtensor-python
 
 [![Travis](https://travis-ci.org/QuantStack/xtensor.svg?branch=master)](https://travis-ci.org/QuantStack/xtensor-python)
-[![Appveyor](https://ci.appveyor.com/api/projects/status/8dpc5tx1m9lftt59?svg=true)](https://ci.appveyor.com/project/QuantStack/xtensor-python)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/qx61nsg4ebxnj8s9?svg=true)](https://ci.appveyor.com/project/QuantStack/xtensor-python)
 
 Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ multi-dimensional array library.
 
