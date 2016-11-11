@@ -1,5 +1,7 @@
 # xtensor-python
 
+[![Travis](https://travis-ci.org/QuantStack/xtensor.svg?branch=master)](https://travis-ci.org/QuantStack/xtensor-python)
+
 Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ multi-dimensional array library.
 
  - `xtensor` is a C++ library for multi-dimensional arrays enabling numpy-style broadcasting and lazy computing.
