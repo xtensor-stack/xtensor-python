@@ -13,6 +13,7 @@
 #include <algorithm>
 
 #include "pybind11/numpy.h"
+#include "pybind11_backport.hpp"
 
 #include "xtensor/xexpression.hpp"
 #include "xtensor/xsemantic.hpp"
@@ -21,7 +22,7 @@
 namespace xt
 {
 
-    using pybind_array = pybind11::array;
+    using pybind_array = pybind11::backport::array;
     using buffer_info = pybind11::buffer_info;
 
     /***********************
@@ -543,9 +544,9 @@ namespace xt
         {
             return nullptr;
         }
-        auto& api = pybind11::detail::npy_api::get();
-        PyObject *result = api.PyArray_FromAny_(ptr, pybind11::dtype::of<T>().release().ptr(), 0, 0,
-                                                pybind11::detail::npy_api::NPY_ENSURE_ARRAY_ | ExtraFlags, nullptr);
+        API &api = lookup_api();
+        PyObject *descr = api.PyArray_DescrFromType_(pybind11::detail::npy_format_descriptor<T>::value);
+        PyObject *result = api.PyArray_FromAny_(ptr, descr, 0, 0, API::NPY_ENSURE_ARRAY_ | ExtraFlags, nullptr);
         if (!result)
         {
             PyErr_Clear();

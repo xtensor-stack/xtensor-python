@@ -60,7 +60,7 @@ install:
     - conda info -a
     - cd test
     - conda install xtensor pytest numpy -c conda-forge
-    - pip install git+https://github.com/pybind/pybind11.git
+    - pip install pybind11==1.8.1
     - cp -r $TRAVIS_BUILD_DIR/include/* $HOME/miniconda/include/
 
 script:
