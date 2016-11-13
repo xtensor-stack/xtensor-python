@@ -24,8 +24,7 @@ install:
   - conda info -a
   - conda install pytest -c conda-forge
   - cd test
-  - conda install xtensor pytest numpy -c conda-forge
-  - pip install pybind11==1.8.1
+  - conda install xtensor==0.1.1 pytest numpy pybind11==1.8.1 -c conda-forge
   - xcopy /S %APPVEYOR_BUILD_FOLDER%\include %MINICONDA%\include
 
 build_script:
