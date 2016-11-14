@@ -23,19 +23,19 @@ requirements:
 test:
   commands:
     - test -d ${PREFIX}/include/xtensor-python  # [unix]
-    - test -f ${PREFIX}/include/xtensor-python/pytensor.hpp  # [unix]
-    - if exist %LIBRARY_INC%\xtensor-python\pytensor.hpp (exit 0) else (exit 1)  # [win]
+    - test -f ${PREFIX}/include/xtensor-python/pyarray.hpp  # [unix]
+    - if exist %PREFIX%\include\xtensor-python\pyarray.hpp (exit 0) else (exit 1)  # [win]
 
 about:
-  home: http://quantstack.net/xtensor-python
+  home: http://quantstack.net/xtensor
   license: BSD
   license_file: LICENSE
   summary: 'Python bindings for xtensor, the C++ tensor algebra library'
   description: 'Multi dimensional arrays with broadcasting and lazy computing'
   doc_url: http://xtensor.readthedocs.io
-  dev_url: https://github.com/QuantStack/xtensor
+  dev_url: https://github.com/QuantStack/xtensor-python
 
 extra:
   recipe-maintainers:
     - SylvainCorlay
-    - jmabille
+    - JohanMabille
