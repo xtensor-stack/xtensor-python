@@ -330,24 +330,14 @@ namespace xt
     template<typename... Args> 
     inline auto pyarray<T, ExtraFlags>::operator()(Args... args) -> reference
     {
-        if (sizeof...(args) != dimension())
-        {
-            pybind_array::fail_dim_check(sizeof...(args), "index dimension mismatch");
-        }
-        // not using pybind_array::offset_at() / index_at() here so as to avoid another dimension check.
-        return *(static_cast<pointer>(pybind_array::mutable_data()) + pybind_array::get_byte_offset(args...) / itemsize());
+        return *(static_cast<pointer>(pybind_array::mutable_data()) + pybind_array::byte_offset(args...) / itemsize());
     }
 
     template <class T, int ExtraFlags>
     template<typename... Args> 
     inline auto pyarray<T, ExtraFlags>::operator()(Args... args) const -> const_reference
     {
-        if (sizeof...(args) != dimension())
-        {
-            pybind_array::fail_dim_check(sizeof...(args), "index dimension mismatch");
-        }
-        // not using pybind_array::offset_at() / index_at() here so as to avoid another dimension check.
-        return *(static_cast<const_pointer>(pybind_array::data()) + pybind_array::get_byte_offset(args...) / itemsize());
+        return *(static_cast<const_pointer>(pybind_array::data()) + pybind_array::byte_offset(args...) / itemsize());
     }
 
     template <class T, int ExtraFlags>
@@ -522,7 +512,7 @@ namespace xt
     template<typename... Args> 
     inline auto pyarray<T, ExtraFlags>::index_at(Args... args) const -> size_type
     {
-        return pybind_array::offset_at(args...) / itemsize();
+        return pybind_array::byte_offset(args...) / itemsize();
     }
 
     template <class T, int ExtraFlags>
