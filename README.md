@@ -13,6 +13,14 @@ Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ mul
 
 The Python bindings for `xtensor` are based on the [pybind11](https://github.com/pybind/pybind11/) C++ library, which enables seemless interoperability between C++ and Python.
 
+## Installation
+
+`xtensor-python` is a header-only library. We provide a package for the conda package manager.
+
+```bash
+conda install -c conda-forge xtensor-python
+```
+
 ## Usage
 
 ### Example 1: Use an algorithm of the C++ library on a numpy array inplace.
