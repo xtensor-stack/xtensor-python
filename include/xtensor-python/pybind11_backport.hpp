@@ -91,7 +91,7 @@ namespace pybind11
 
             size_type size() const
             {
-                return std::accumulate(shape(), shape() + ndim(), size_type{1}, std::multiplies<size_type>());
+                return std::accumulate(shape(), shape() + ndim(), size_type(1), std::multiplies<size_type>());
             }
 
             size_type itemsize() const
@@ -114,61 +114,30 @@ namespace pybind11
                 return reinterpret_cast<const size_type*>(PyArray_GET_(m_ptr, strides));
             }
 
-            template<typename... Ix>
             void* data()
             {
                 return static_cast<void*>(PyArray_GET_(m_ptr, data));
             }
 
-            template<typename... Ix>
             void* mutable_data()
             {
-                // check_writeable();
                 return static_cast<void *>(PyArray_GET_(m_ptr, data));
-            }
-
-            template<typename... Ix>
-            size_type offset_at(Ix... index) const
-            {
-                if (sizeof...(index) > ndim())
-                {
-                    fail_dim_check(sizeof...(index), "too many indices for an array");
-                }
-                return get_byte_offset(index...);
-            }
-
-            size_type offset_at() const
-            {
-                return 0;
             }
 
         protected:
 
-            void fail_dim_check(size_type dim, const std::string& msg) const
-            {
-                throw index_error(msg + ": " + std::to_string(dim) +
-                                  " (ndim = " + std::to_string(ndim()) + ")");
-            }
-
-            template<typename... Ix>
-            size_type get_byte_offset(Ix... index) const
-            {
-                const size_type idx[] = { static_cast<size_type>(index)... };
-                if (!std::equal(idx + 0, idx + sizeof...(index), shape(), std::less<size_type>{}))
-                {
-                    auto mismatch = std::mismatch(idx + 0, idx + sizeof...(index), shape(), std::less<size_type>{});
-                    throw index_error(std::string("index ") + std::to_string(*mismatch.first) +
-                                      " is out of bounds for axis " + std::to_string(mismatch.first - idx) +
-                                      " with size " + std::to_string(*mismatch.second));
-                }
-                return std::inner_product(idx + 0, idx + sizeof...(index), strides(), size_type{0});
-            }
-            
-            size_type get_byte_offset() const
+            template<size_t dim = 0>
+            inline size_type byte_offset() const
             {
                 return 0;
             }
-            
+
+            template <size_t dim = 0, class... Args>
+            inline size_type byte_offset(size_type i, Args... args) const
+            {
+                return i * strides()[dim] + byte_offset<dim + 1>(args...);
+            }
+
             static std::vector<size_type>
             default_strides(const std::vector<size_type>& shape, size_type itemsize)
             {
