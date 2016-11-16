@@ -129,14 +129,20 @@ namespace xt
         template<typename... Args>
         const_reference operator()(Args... args) const;
 
+        reference operator[](const xindex& index);
+        const_reference operator[](const xindex& index) const;
+
         template<typename... Args>
         pointer data(Args... args);
 
         template<typename... Args>
         const_pointer data(Args... args) const;
 
-        bool broadcast_shape(shape_type& shape) const;
-        bool is_trivial_broadcast(const strides_type& strides) const;
+        template <class S>
+        bool broadcast_shape(S& shape) const;
+
+        template <class S>
+        bool is_trivial_broadcast(const S& strides) const;
 
         iterator begin();
         iterator end();
@@ -175,9 +181,11 @@ namespace xt
     private:
 
         template<typename... Args>
-        auto index_at(Args... args) const -> size_type;
+        size_type index_at(Args... args) const;
 
-        static constexpr auto itemsize() -> size_type;
+        size_type data_offset(const xindex& index) const;
+
+        static constexpr size_type itemsize();
 
         static bool is_non_null(PyObject* ptr);
 
@@ -341,6 +349,18 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::operator[](const xindex& index) -> reference
+    {
+        return *(static_cast<pointer>(pybind_array::mutable_data()) + data_offset(index));
+    }
+
+    template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::operator[](const xindex& index) const -> const_reference
+    {
+        return *(static_cast<const_pointer>(pybind_array::data()) + data_offset(index));
+    }
+
+    template <class T, int ExtraFlags>
     template<typename... Args> 
     inline auto pyarray<T, ExtraFlags>::data(Args... args) -> pointer
     {
@@ -355,13 +375,15 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    bool pyarray<T, ExtraFlags>::broadcast_shape(shape_type& shape) const
+    template <class S>
+    bool pyarray<T, ExtraFlags>::broadcast_shape(S& shape) const
     {
         return xt::broadcast_shape(this->shape(), shape);
     }
 
     template <class T, int ExtraFlags>
-    bool pyarray<T, ExtraFlags>::is_trivial_broadcast(const strides_type& strides) const
+    template <class S>
+    bool pyarray<T, ExtraFlags>::is_trivial_broadcast(const S& strides) const
     {
         return strides.size() == dimension() &&
             std::equal(strides.begin(), strides.end(), this->strides().begin());
@@ -514,6 +536,18 @@ namespace xt
     {
         return pybind_array::byte_offset(args...) / itemsize();
     }
+
+    template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::data_offset(const xindex& index) const -> size_type
+    {
+        const strides_type& str = strides();
+        auto iter = index.begin();
+        iter += index.size() - str.size();
+        return std::inner_product(str.begin(), str.end(), iter, size_type(0)) / itemsize();
+    }
+
+    template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::data
 
     template <class T, int ExtraFlags>
     constexpr auto pyarray<T, ExtraFlags>::itemsize() -> size_type
