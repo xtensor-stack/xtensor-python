@@ -11,6 +11,7 @@
 
 #include <cstddef>
 #include <algorithm>
+#include <vector>
 
 #include "pybind11/numpy.h"
 #include "pybind11_backport.hpp"
@@ -33,7 +34,7 @@ namespace xt
     class pyarray;
 
     template <class T, int ExtraFlags>
-    struct array_inner_types<pyarray<T, ExtraFlags>>
+    struct xcontainer_inner_types<pyarray<T, ExtraFlags>>
     {
         using temporary_type = pyarray<T, ExtraFlags>;
     };
@@ -63,14 +64,14 @@ namespace xt
      */
     template <class T, int ExtraFlags = pybind_array::forcecast>
     class pyarray : public pybind_array,
-                     public xarray_semantic<pyarray<T, ExtraFlags>>
+                    public xcontainer_semantic<pyarray<T, ExtraFlags>>
     {
 
     public:
 
         using self_type = pyarray<T, ExtraFlags>;
         using base_type = pybind_array;
-        using semantic_base = xarray_semantic<self_type>;
+        using semantic_base = xcontainer_semantic<self_type>;
         using value_type = T;
         using reference = T&;
         using const_reference = const T&;
@@ -89,8 +90,8 @@ namespace xt
         using storage_iterator = T*;
         using const_storage_iterator = const T*;
 
-        using shape_type = xshape<size_type>;
-        using strides_type = xstrides<size_type>;
+        using shape_type = std::vector<size_type>;
+        using strides_type = std::vector<size_type>;
         using backstrides_type = pyarray_backstrides<self_type>;
 
         using closure_type = const self_type&;
@@ -101,12 +102,12 @@ namespace xt
 
         explicit pyarray(const buffer_info& info);
 
-        pyarray(const xshape<size_type>& shape,
-                const xstrides<size_type>& strides, 
+        pyarray(const shape_type& shape,
+                const strides_type& strides, 
                 const T* ptr = nullptr,
                 handle base = handle());
 
-        explicit pyarray(const xshape<size_type>& shape, 
+        explicit pyarray(const shape_type& shape, 
                          const T* ptr = nullptr,
                          handle base = handle());
 
@@ -231,8 +232,8 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(const xshape<size_type>& shape,
-                                           const xstrides<size_type>& strides, 
+    inline pyarray<T, ExtraFlags>::pyarray(const shape_type& shape,
+                                           const strides_type& strides, 
                                            const T *ptr,
                                            handle base)
         : pybind_array(shape, strides, ptr, base)
@@ -240,7 +241,7 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(const xshape<size_type>& shape, 
+    inline pyarray<T, ExtraFlags>::pyarray(const shape_type& shape, 
                                            const T* ptr,
                                            handle base)
         : pybind_array(shape, ptr, base)
@@ -545,9 +546,6 @@ namespace xt
         iter += index.size() - str.size();
         return std::inner_product(str.begin(), str.end(), iter, size_type(0)) / itemsize();
     }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::data
 
     template <class T, int ExtraFlags>
     constexpr auto pyarray<T, ExtraFlags>::itemsize() -> size_type
