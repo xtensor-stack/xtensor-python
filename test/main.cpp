@@ -28,6 +28,11 @@ double readme_example1(xt::pyarray<double> &m)
     return std::accumulate(sines.begin(), sines.end(), 0.0);
 }
 
+double readme_example2(double i, double j)
+{
+    return std::sin(i) -  std::cos(j);
+}
+
 // Vectorize Examples
 
 int add(int i, int j)
@@ -43,6 +48,7 @@ PYBIND11_PLUGIN(xtensor_python_test)
     m.def("example2", example2, "");
 
     m.def("readme_example1", readme_example1, "");
+    m.def("readme_example2", xt::pyvectorize(readme_example2), "");
 
     m.def("vectorize_example1", xt::pyvectorize(add), "");
 

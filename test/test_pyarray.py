@@ -35,3 +35,13 @@ class ExampleTest(TestCase):
         v = np.arange(15).reshape(3, 5)
         y = xt.readme_example1(v)
         np.testing.assert_allclose(y, 1.2853996391883833, 1e-12)
+
+    def test_readme_example2(self):
+        x = np.arange(15).reshape(3, 5)
+        y = [1, 2, 3, 4, 5]
+        z = xt.readme_example2(x, y)
+        np.testing.assert_allclose(z, 
+            [[-0.540302,  1.257618,  1.89929 ,  0.794764, -1.040465],
+             [-1.499227,  0.136731,  1.646979,  1.643002,  0.128456],
+             [-1.084323, -0.583843,  0.45342 ,  1.073811,  0.706945]], 1e-5)
+
