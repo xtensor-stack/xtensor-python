@@ -1,28 +1,50 @@
-# Python Artefacts
+# Prerequisites
+*.d
 
-*.py[cod]
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
 
-# C extensions
+# Precompiled Headers
+*.gch
+*.pch
 
+# Compiled Dynamic libraries
 *.so
+*.dylib
+*.dll
 
-# Packages
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
 
-*.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
-.installed.cfg
-lib
-lib64
-__pycache__
-tmp/
+# Executables
+*.exe
+*.out
+*.app
 
-# Jupyter Artefacts
+# Vim tmp files
+*.swp
+
+# Test build artefacts
+test/test_xtensor
+test/CMakeCache.txt
+test/Makefile
+test/CMakeFiles/
+test/cmake_install.cmake
+
+# Documentation build artefacts
+docs/CMakeCache.txt
+docs/xml/
+docs/build/
+
+# Jupyter artefacts
 .ipynb_checkpoints/
+
+# Python
+*.py[cod]
+__pycache__

@@ -2,6 +2,7 @@
 
 [![Travis](https://travis-ci.org/QuantStack/xtensor.svg?branch=master)](https://travis-ci.org/QuantStack/xtensor-python)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/qx61nsg4ebxnj8s9?svg=true)](https://ci.appveyor.com/project/QuantStack/xtensor-python)
+[![Documentation](http://readthedocs.org/projects/xtensor-python/badge/?version=latest)](https://xtensor-python.readthedocs.io/en/latest/?badge=latest)
 
 Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ multi-dimensional array library.
 
@@ -140,6 +141,34 @@ Testing `xtensor-python` requires `pytest`
   ```
 
 To pick up changes in `xtensor-python` while rebuilding, delete the `build/` directory. 
+
+## Building the HTML Documentation
+
+`xtensor-python`'s documentation is built with three tools
+
+ - [doxygen](http://www.doxygen.org)
+ - [sphinx](http://www.sphinx-doc.org)
+ - [breathe](https://breathe.readthedocs.io)
+
+While doxygen must be installed separately, you can install breathe by typing
+
+```bash
+pip install breathe
+``` 
+
+Breathe can also be installed with `conda`
+
+```bash
+conda install -c conda-forge breathe
+```
+
+Finally, build the documentation with
+
+```bash
+make html
+```
+
+from the `docs` subdirectory.
 
 ## License
 
