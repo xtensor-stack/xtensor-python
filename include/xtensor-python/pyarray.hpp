@@ -493,7 +493,7 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_begin() -> storage_iterator
     {
-        return reinterpret_cast<storage_iterator>(PyArray_GET_(m_ptr, data));
+        return reinterpret_cast<storage_iterator>(pybind11::backport::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>
@@ -505,7 +505,7 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_begin() const -> const_storage_iterator
     {
-        return reinterpret_cast<const_storage_iterator>(PyArray_GET_(m_ptr, data));
+        return reinterpret_cast<const_storage_iterator>(pybind11::backport::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>

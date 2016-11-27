@@ -46,14 +46,25 @@ namespace pybind11
             PyObject* names;
         };
 
-#ifndef PyArray_GET_
-#define PyArray_GET_(ptr, attr) \
-        (reinterpret_cast<::pybind11::backport::PyArray_Proxy*>(ptr)->attr)
-#endif
-#ifndef PyArrayDescr_GET_
-#define PyArrayDescr_GET_(ptr, attr) \
-        (reinterpret_cast<::pybind11::backport::PyArrayDescr_Proxy*>(ptr)->attr)
-#endif
+        inline PyArray_Proxy* array_proxy(void* ptr) {
+            return reinterpret_cast<PyArray_Proxy*>(ptr);
+        }
+
+        inline const PyArray_Proxy* array_proxy(const void* ptr) {
+            return reinterpret_cast<const PyArray_Proxy*>(ptr);
+        }
+
+        inline PyArrayDescr_Proxy* array_descriptor_proxy(PyObject* ptr) {
+            return reinterpret_cast<PyArrayDescr_Proxy*>(ptr);
+        }
+
+        inline const PyArrayDescr_Proxy* array_descriptor_proxy(const PyObject* ptr) {
+            return reinterpret_cast<const PyArrayDescr_Proxy*>(ptr);
+        }
+
+        inline bool check_flags(const void* ptr, int flag) {
+            return (flag == (array_proxy(ptr)->flags & flag));
+        }
 
         class array : public pybind11::array
         {
@@ -73,7 +84,10 @@ namespace pybind11
                                     format_descriptor<T>::value,
                                     shape.size(), shape, strides))
             {
-                if (base) throw std::runtime_error("array base is not supported yet");
+                if (base)
+                {
+                    throw std::runtime_error("array base is not supported yet");
+                }
             }
 
             template<typename T>
@@ -96,32 +110,32 @@ namespace pybind11
 
             size_type itemsize() const
             {
-                return static_cast<size_type>(PyArrayDescr_GET_(PyArray_GET_(m_ptr, descr), elsize));
+                return static_cast<size_type>(array_descriptor_proxy(array_proxy(m_ptr)->descr)->elsize);
             }
 
             size_type ndim() const
             {
-                return static_cast<size_type>(PyArray_GET_(m_ptr, nd));
+                return static_cast<size_type>(array_proxy(m_ptr)->nd);
             }
 
             const size_type* shape() const
             {
-                return reinterpret_cast<const size_type*>(PyArray_GET_(m_ptr, dimensions));
+                return reinterpret_cast<const size_type*>(array_proxy(m_ptr)->dimensions);
             }
 
             const size_type* strides() const
             {
-                return reinterpret_cast<const size_type*>(PyArray_GET_(m_ptr, strides));
+                return reinterpret_cast<const size_type*>(array_proxy(m_ptr)->strides);
             }
 
             void* data()
             {
-                return static_cast<void*>(PyArray_GET_(m_ptr, data));
+                return static_cast<void*>(array_proxy(m_ptr)->data);
             }
 
             void* mutable_data()
             {
-                return static_cast<void *>(PyArray_GET_(m_ptr, data));
+                return static_cast<void *>(array_proxy(m_ptr)->data);
             }
 
         protected:
@@ -146,9 +160,13 @@ namespace pybind11
                 if (ndim)
                 {
                     std::fill(strides.begin(), strides.end(), itemsize);
-                    for (size_type i = 0; i < ndim - 1; i++)
-                        for (size_type j = 0; j < ndim - 1 - i; j++)
+                    for (size_type i = 0; i < ndim - 1; ++i)
+                    {
+                        for (size_type j = 0; j < ndim - 1 - i; ++j)
+                        {
                             strides[j] *= shape[ndim - 1 - i];
+                        }
+                    }
                 }
                 return strides;
             }
