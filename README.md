@@ -22,6 +22,18 @@ The Python bindings for `xtensor` are based on the [pybind11](https://github.com
 conda install -c conda-forge xtensor-python
 ```
 
+### Dependences on `xtensor` and `pybind11`
+
+`xtensor-python` depends on the `xtensor` and `pybind11` libraries
+
+| `xtensor-python`  | `xtensor`  |  `pybind11` |
+|-------------------|------------|-------------|
+| master            |  master    | ^1.8.1      |
+| 0.2.0             |  ^0.2.1    | ^1.8.1      |
+| 0.1.0             |  ^0.1.1    | ^1.8.1      |
+
+These dependencies are automatically resolved when using the conda package manager.
+
 ## Usage
 
 ### Example 1: Use an algorithm of the C++ library on a numpy array inplace.
