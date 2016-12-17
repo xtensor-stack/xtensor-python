@@ -81,18 +81,17 @@ namespace xt
         using size_type = std::size_t;
         using difference_type = std::ptrdiff_t;
 
-        using stepper = xstepper<self_type>;
-        using const_stepper = xstepper<const self_type>;
-
-        using iterator = xiterator<stepper>;
-        using const_iterator = xiterator<const_stepper>;
-        
         using storage_iterator = T*;
         using const_storage_iterator = const T*;
 
         using shape_type = std::vector<size_type>;
         using strides_type = std::vector<size_type>;
         using backstrides_type = pyarray_backstrides<self_type>;
+        
+        using stepper = xstepper<self_type>;
+        using const_stepper = xstepper<const self_type>;
+        using iterator = xiterator<stepper, shape_type>;
+        using const_iterator = xiterator<const_stepper, shape_type>;
 
         using closure_type = const self_type&;
 
@@ -153,13 +152,18 @@ namespace xt
         const_iterator cbegin() const;
         const_iterator cend() const;
 
-        iterator xbegin(const shape_type& shape);
-        iterator xend(const shape_type& shape);
-
-        const_iterator xbegin(const shape_type& shape) const;
-        const_iterator xend(const shape_type& shape) const;
-        const_iterator cxbegin(const shape_type& shape) const;
-        const_iterator cxend(const shape_type& shape) const;
+        template <class S>
+        xiterator<stepper, S> xbegin(const S& shape);
+        template <class S>
+        xiterator<stepper, S> xend(const S& shape);
+        template <class S>
+        xiterator<const_stepper, S> xbegin(const S& shape) const;
+        template <class S>
+        xiterator<const_stepper, S> xend(const S& shape) const;
+        template <class S>
+        xiterator<const_stepper, S> cxbegin(const S& shape) const;
+        template <class S>
+        xiterator<const_stepper, S> cxend(const S& shape) const;
 
         stepper stepper_begin(const shape_type& shape);
         stepper stepper_end(const shape_type& shape);
@@ -169,9 +173,10 @@ namespace xt
 
         storage_iterator storage_begin();
         storage_iterator storage_end();
-
         const_storage_iterator storage_begin() const;
         const_storage_iterator storage_end() const;
+        const_storage_iterator storage_cbegin() const;
+        const_storage_iterator storage_cend() const;
 
         template <class E>
         pyarray(const xexpression<E>& e);
@@ -427,37 +432,43 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xbegin(const shape_type& shape) -> iterator
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::xbegin(const S& shape) -> xiterator<stepper, S>
     {
-        return iterator(stepper_begin(shape), shape);
+        return xiterator<stepper, S>(stepper_begin(shape), shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xend(const shape_type& shape) -> iterator
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::xend(const S& shape) -> xiterator<stepper, S>
     {
-        return iterator(stepper_end(shape), shape);
+        return xiterator<stepper, S>(stepper_end(shape), shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xbegin(const shape_type& shape) const -> const_iterator
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::xbegin(const S& shape) const -> xiterator<const_stepper, S>
     {
-        return const_iterator(stepper_begin(shape), shape);
+        return xiterator<const_stepper, S>(stepper_begin(shape), shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xend(const shape_type& shape) const -> const_iterator
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::xend(const S& shape) const -> xiterator<const_stepper, S>
     {
-        return const_iterator(stepper_end(shape), shape);
+        return xiterator<const_stepper, S>(stepper_end(shape), shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cxbegin(const shape_type& shape) const -> const_iterator
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::cxbegin(const S& shape) const -> xiterator<const_stepper, S>
     {
         return xbegin(shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cxend(const shape_type& shape) const -> const_iterator
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::cxend(const S& shape) const -> xiterator<const_stepper, S>
     {
         return xend(shape);
     }
@@ -510,6 +521,18 @@ namespace xt
 
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_end() const -> const_storage_iterator
+    {
+        return storage_begin() + pybind_array::size();
+    }
+
+    template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::storage_cbegin() const -> const_storage_iterator
+    {
+        return reinterpret_cast<const_storage_iterator>(pybind11::backport::array_proxy(m_ptr)->data);
+    }
+
+    template <class T, int ExtraFlags>
+    inline auto pyarray<T, ExtraFlags>::storage_cend() const -> const_storage_iterator
     {
         return storage_begin() + pybind_array::size();
     }
