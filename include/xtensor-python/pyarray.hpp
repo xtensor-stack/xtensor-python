@@ -402,37 +402,55 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::begin() -> iterator
     {
-        return xbegin(shape());
+        return iterator(
+              stepper(this, storage_begin(), 0), 
+              pybind_array::shape(),
+              dimension());
     }
 
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::end() -> iterator
     {
-        return xend(shape());
+        return iterator(
+              stepper(this, storage_end(), 0), 
+              pybind_array::shape(),
+              dimension());
     }
 
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::begin() const -> const_iterator
     {
-        return xbegin(shape());
+        return iterator(
+              const_stepper(this, storage_begin(), 0), 
+              pybind_array::shape(),
+              dimension());
     }
 
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::end() const -> const_iterator
     {
-        return xend(shape());
+        return iterator(
+              const_stepper(this, storage_cend(), 0), 
+              pybind_array::shape(),
+              dimension());
     }
 
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::cbegin() const -> const_iterator
     {
-        return begin();
+        return iterator(
+              const_stepper(this, storage_begin(), 0), 
+              pybind_array::shape(),
+              dimension());
     }
 
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::cend() const -> const_iterator
     {
-        return end();
+        return iterator(
+              const_stepper(this, storage_cend(), 0), 
+              pybind_array::shape(),
+              dimension());
     }
 
     template <class T, int ExtraFlags>

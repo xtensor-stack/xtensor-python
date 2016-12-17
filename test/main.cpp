@@ -40,6 +40,13 @@ int add(int i, int j)
     return i + j;
 }
 
+// Iterating over pyarrays
+
+double sum(xt::pyarray<double> &m)
+{
+    return std::accumulate(m.begin(), m.end(), 0.0);
+}
+
 PYBIND11_PLUGIN(xtensor_python_test)
 {
     py::module m("xtensor_python_test", "Test module for xtensor python bindings");
@@ -51,6 +58,8 @@ PYBIND11_PLUGIN(xtensor_python_test)
     m.def("readme_example2", xt::pyvectorize(readme_example2), "");
 
     m.def("vectorize_example1", xt::pyvectorize(add), "");
+
+    m.def("sum", sum, "");
 
     return m.ptr();
 }
