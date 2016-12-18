@@ -165,11 +165,15 @@ namespace xt
         template <class S>
         xiterator<const_stepper, S> cxend(const S& shape) const;
 
-        stepper stepper_begin(const shape_type& shape);
-        stepper stepper_end(const shape_type& shape);
+        template <class S>
+        stepper stepper_begin(const S& shape);
+        template <class S>
+        stepper stepper_end(const S& shape);
 
-        const_stepper stepper_begin(const shape_type& shape) const;
-        const_stepper stepper_end(const shape_type& shape) const;
+        template <class S>
+        const_stepper stepper_begin(const S& shape) const;
+        template <class S>
+        const_stepper stepper_end(const S& shape) const;
 
         storage_iterator storage_begin();
         storage_iterator storage_end();
@@ -474,28 +478,32 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::stepper_begin(const shape_type& shape) -> stepper
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::stepper_begin(const S& shape) -> stepper
     {
         size_type offset = shape.size() - dimension();
         return stepper(this, storage_begin(), offset);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::stepper_end(const shape_type& shape) -> stepper
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::stepper_end(const S& shape) -> stepper
     {
         size_type offset = shape.size() - dimension();
         return stepper(this, storage_end(), offset);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::stepper_begin(const shape_type& shape) const -> const_stepper
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::stepper_begin(const S& shape) const -> const_stepper
     {
         size_type offset = shape.size() - dimension();
         return const_stepper(this, storage_begin(), offset);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::stepper_end(const shape_type& shape) const -> const_stepper
+    template <class S>
+    inline auto pyarray<T, ExtraFlags>::stepper_end(const S& shape) const -> const_stepper
     {
         size_type offset = shape.size() - dimension();
         return const_stepper(this, storage_end(), offset);
