@@ -260,7 +260,7 @@ namespace xt
     template <class T, class A>
     inline auto xpointer_adaptor<T, A>::crbegin() const noexcept -> const_reverse_iterator
     {
-        return rbegin()
+        return rbegin();
     }
 
     template <class T, class A>
