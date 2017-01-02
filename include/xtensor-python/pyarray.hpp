@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "pybind11/numpy.h"
-#include "pybind11_backport.hpp"
 
 #include "xtensor/xexpression.hpp"
 #include "xtensor/xsemantic.hpp"
@@ -22,9 +21,39 @@
 
 namespace xt
 {
+    template <class T, int ExtraFlags>
+    class pyarray;
+}
 
-    using pybind_array = pybind11::backport::array;
-    using buffer_info = pybind11::buffer_info;
+namespace pybind11
+{
+    namespace detail
+    {
+        template <typename T, int ExtraFlags>
+        struct pyobject_caster<xt::pyarray<T, ExtraFlags>>
+        {
+            using type = xt::pyarray<T, ExtraFlags>;
+
+            bool load(handle src, bool)
+            {
+                value = type::ensure(src);
+                return static_cast<bool>(value);
+            }
+
+            static handle cast(const handle &src, return_value_policy, handle)
+            {
+                return src.inc_ref();
+            }
+
+            PYBIND11_TYPE_CASTER(type, handle_type_name<type>::name());
+        };
+    }
+}
+
+namespace xt
+{
+
+    using pybind_array = pybind11::array;
 
     /***********************
      * pyarray declaration *
@@ -95,11 +124,11 @@ namespace xt
 
         using closure_type = const self_type&;
 
-        PYBIND11_OBJECT_CVT(pyarray, pybind_array, is_non_null, m_ptr = ensure_(m_ptr));
-
         pyarray();
 
-        explicit pyarray(const buffer_info& info);
+        pyarray(pybind11::handle h, borrowed_t);
+        pyarray(pybind11::handle h, stolen_t);
+        pyarray(const pybind11::object &o);
 
         pyarray(const shape_type& shape,
                 const strides_type& strides, 
@@ -188,6 +217,9 @@ namespace xt
         template <class E>
         pyarray& operator=(const xexpression<E>& e);
 
+        static pyarray ensure(pybind11::handle h);
+        static bool _check(pybind11::handle h);
+
     private:
 
         template<typename... Args>
@@ -199,11 +231,10 @@ namespace xt
 
         static bool is_non_null(PyObject* ptr);
 
-        static PyObject *ensure_(PyObject* ptr);
-
         mutable shape_type m_shape;
         mutable strides_type m_strides;
 
+        static PyObject* raw_array_t(PyObject* ptr);
     };
     
     /**************************************
@@ -230,14 +261,27 @@ namespace xt
 
     template <class T, int ExtraFlags>
     inline pyarray<T, ExtraFlags>::pyarray()
-         : pybind_array()
+         : pybind_array(0, static_cast<const_pointer>(nullptr))
     {
     }
 
     template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(const buffer_info& info)
-        : pybind_array(info)
+    inline pyarray<T, ExtraFlags>::pyarray(pybind11::handle h, borrowed_t) : pybind_array(h, borrowed)
     {
+    }
+
+    template <class T, int ExtraFlags>
+    inline pyarray<T, ExtraFlags>::pyarray(pybind11::handle h, stolen_t) : pybind_array(h, stolen)
+    {
+    }
+
+    template <class T, int ExtraFlags>
+    inline pyarray<T, ExtraFlags>::pyarray(const pybind11::object &o) : pybind_array(raw_array_t(o.ptr()), stolen)
+    {
+        if (!m_ptr)
+        {
+            throw pybind11::error_already_set();
+        }
     }
 
     template <class T, int ExtraFlags>
@@ -512,7 +556,7 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_begin() -> storage_iterator
     {
-        return reinterpret_cast<storage_iterator>(pybind11::backport::array_proxy(m_ptr)->data);
+        return reinterpret_cast<storage_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>
@@ -524,7 +568,7 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_begin() const -> const_storage_iterator
     {
-        return reinterpret_cast<const_storage_iterator>(pybind11::backport::array_proxy(m_ptr)->data);
+        return reinterpret_cast<const_storage_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>
@@ -536,7 +580,7 @@ namespace xt
     template <class T, int ExtraFlags>
     inline auto pyarray<T, ExtraFlags>::storage_cbegin() const -> const_storage_iterator
     {
-        return reinterpret_cast<const_storage_iterator>(pybind11::backport::array_proxy(m_ptr)->data);
+        return reinterpret_cast<const_storage_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>
@@ -558,6 +602,25 @@ namespace xt
     inline auto pyarray<T, ExtraFlags>::operator=(const xexpression<E>& e) -> self_type&
     {
         return semantic_base::operator=(e);
+    }
+
+    template <class T, int ExtraFlags>
+    inline pyarray<T, ExtraFlags> pyarray<T, ExtraFlags>::ensure(pybind11::handle h)
+    {
+        auto result = pybind11::reinterpret_steal<pyarray>(raw_array_t(h.ptr()));
+        if (!pybind11::handle(result))
+        {
+            PyErr_Clear();
+        }
+        return result;
+    }
+
+    template <class T, int ExtraFlags>
+    inline bool pyarray<T, ExtraFlags>::_check(pybind11::handle h)
+    {
+        const auto &api = pybind11::detail::npy_api::get();
+        return api.PyArray_Check_(h.ptr())
+               && api.PyArray_EquivTypes_(pybind11::detail::array_proxy(h.ptr())->descr, pybind11::dtype::of<T>().ptr());
     }
 
     // Private methods
@@ -591,23 +654,17 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline PyObject* pyarray<T, ExtraFlags>::ensure_(PyObject* ptr)
+    inline PyObject* pyarray<T, ExtraFlags>::raw_array_t(PyObject* ptr)
     {
         if (ptr == nullptr)
         {
             return nullptr;
         }
-        API& api = lookup_api();
-        PyObject* descr = api.PyArray_DescrFromType_(pybind11::detail::npy_format_descriptor<T>::value);
-        PyObject* result = api.PyArray_FromAny_(ptr, descr, 0, 0, API::NPY_ENSURE_ARRAY_ | ExtraFlags, nullptr);
-        if (!result)
-        {
-            PyErr_Clear();
-        }
-        Py_DECREF(ptr);
-        return result;
+        return pybind11::detail::npy_api::get().PyArray_FromAny_(
+            ptr, pybind11::dtype::of<T>().release().ptr(), 0, 0,
+            pybind11::detail::npy_api::NPY_ENSURE_ARRAY_ | ExtraFlags, nullptr
+        );
     }
-
 }
 
 #endif
