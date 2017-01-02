@@ -28,7 +28,7 @@ conda install -c conda-forge xtensor-python
 
 | `xtensor-python`  | `xtensor`  |  `pybind11` |
 |-------------------|------------|-------------|
-| master            |  master    | ^1.8.1      |
+| master            |  master    | ^2.0.0      |
 | 0.2.0             |  ^0.2.1    | ^1.8.1      |
 | 0.1.0             |  ^0.1.1    | ^1.8.1      |
 
