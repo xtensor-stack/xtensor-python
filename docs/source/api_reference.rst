@@ -10,4 +10,3 @@ API reference
 .. toctree::
 
    pyarray
-   pyvectorize
