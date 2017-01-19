@@ -53,5 +53,5 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 .. _NumPy: http://www.numpy.org
 .. _`Buffer Protocol`: https://docs.python.org/3/c-api/buffer.html
 .. _xtensor: https://github.com/QuantStack/xtensor
-.. _pybind11: https://github.com/pybind/pybind11/ 
-.. _xtensor-cookiecutter: https://github.com/pybind/pybind11/ 
+.. _pybind11: https://github.com/pybind/pybind11 
+.. _xtensor-cookiecutter: https://github.com/QuantStack/xtensor-cookiecutter 
