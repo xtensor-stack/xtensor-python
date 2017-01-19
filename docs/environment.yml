@@ -4,4 +4,6 @@ channels:
   - conda-forge
 
 dependencies:
-  - breathe
+  - sphinx
+  - pip:
+    - breathe

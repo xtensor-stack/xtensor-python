@@ -3,6 +3,7 @@
 [![Travis](https://travis-ci.org/QuantStack/xtensor.svg?branch=master)](https://travis-ci.org/QuantStack/xtensor-python)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/qx61nsg4ebxnj8s9?svg=true)](https://ci.appveyor.com/project/QuantStack/xtensor-python)
 [![Documentation](http://readthedocs.org/projects/xtensor-python/badge/?version=latest)](https://xtensor-python.readthedocs.io/en/latest/?badge=latest)
+[![Join the Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QuantStack/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ multi-dimensional array library.
 
