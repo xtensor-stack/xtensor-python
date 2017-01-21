@@ -32,6 +32,7 @@ ext_modules = [
             get_pybind_include(user=True),
             os.path.join(sys.prefix, 'include')
         ],
+        depends=os.listdir(os.path.join(sys.prefix, 'include')),
         language='c++'
     ),
 ]
