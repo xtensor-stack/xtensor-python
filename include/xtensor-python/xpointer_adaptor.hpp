@@ -13,23 +13,26 @@
 #include <algorithm>
 #include <memory>
 
+#include "xtensor-python/pyallocator.hpp"
+
 namespace xt
 {
 
-    template <class T, class A = std::allocator<T>>
+    template <class T, class A = pyallocator<T>>
     class xpointer_adaptor
     {
 
     public:
 
         using allocator_type = A;
-        using value_type = typename allocator_type::value_type;
-        using reference = typename allocator_type::reference;
-        using const_reference = typename allocator_type::const_reference;
-        using pointer = typename allocator_type::pointer;
-        using const_pointer = typename allocator_type::const_pointer;
-        using size_type = typename allocator_type::size_type;
-        using difference_type = typename allocator_type::difference_type;
+        using allocator_traits = std::allocator_traits<A>;
+        using value_type = typename allocator_traits::value_type;
+        using reference = typename allocator_traits::reference;
+        using const_reference = typename allocator_traits::const_reference;
+        using pointer = typename allocator_traits::pointer;
+        using const_pointer = typename allocator_traits::const_pointer;
+        using size_type = typename allocator_traits::size_type;
+        using difference_type = typename allocator_traits::difference_type;
 
         using iterator = pointer;
         using const_iterator = const_pointer;
@@ -105,7 +108,7 @@ namespace xt
     xpointer_adaptor<T, A>::operator=(const xpointer_adaptor& rhs)
     {
         size_type new_size = rhs.size();
-        pointer new_data = m_allocator.allocate(new_size);
+        pointer new_data = allocator_traits::allocate(m_allocator, new_size);
         std::copy(rhs.begin(), rhs.end(), new_data);
         swap_and_destroy(p_data, m_size, new_data, new_size);
         return *this;
@@ -272,7 +275,7 @@ namespace xt
     template <class T, class A>
     inline void xpointer_adaptor<T, A>::resize_impl(size_type count)
     {
-        pointer new_data = m_allocator.allocate(count);
+        pointer new_data = allocator_traits::allocate(m_allocator, count);
         size_type end = std::min(size(), count);
         std::move(begin(), begin() + end, new_data);
         swap_and_destroy(p_data, m_size, new_data, count);
@@ -285,8 +288,8 @@ namespace xt
         std::swap(old_data, new_data);
         std::swap(old_size, new_size);
         std::for_each(new_data, new_data + new_size,
-            [this](T& value) { m_allocator.destroy(&value); });
-        m_allocator.deallocate(new_data, new_size);
+            [this](T& value) { allocator_traits::destroy(m_allocator, &value); });
+        allocator_traits::deallocate(m_allocator, new_data, new_size);
     }
 }
 
