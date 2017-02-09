@@ -45,3 +45,8 @@ class ExampleTest(TestCase):
              [-1.499227,  0.136731,  1.646979,  1.643002,  0.128456],
              [-1.084323, -0.583843,  0.45342 ,  1.073811,  0.706945]], 1e-5)
 
+    def test_iterating(self):
+        x = np.arange(15).reshape(3, 5)
+        y = xt.sum(x)
+        z = np.sum(x)
+        np.testing.assert_allclose(y, z);
