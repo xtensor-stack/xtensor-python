@@ -4,8 +4,7 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-xtensor-python
-==============
+.. image:: http://quantstack.net/assets/images/xtensor-python.svg
 
 Python bindings for the xtensor_ C++ multi-dimensional array library.
 
@@ -30,7 +29,7 @@ Besides ``xtensor-python`` provides an API to create *Universal functions* from 
 
 Finally, a cookiecutter template project is provided. It takes care of the initial work of generating a project skeleton for a C++ extension based on ``xtensor-python`` containing a few examples, unit tests and HTML documentation. Find out more about the xtensor-cookiecutter_.
 
-``xtensor`` and ``xtensor-python`` require a modern C++ compiler supporting C++14. The following C+ compilers are supported:
+``xtensor`` and ``xtensor-python`` require a modern C++ compiler supporting C++14. The following C++ compilers are supported:
 
 - On Windows platforms, Visual C++ 2015 Update 2, or more recent
 - On Unix platforms, gcc 4.9 or a recent version of Clang
@@ -44,10 +43,22 @@ copyright on their contributions.
 This software is licensed under the BSD-3-Clause license. See the LICENSE file for details.
 
 .. toctree::
-   :maxdepth: 1
+   :caption: INSTALLATION
+   :maxdepth: 2
 
    installation
+
+
+.. toctree::
+   :caption: USAGE
+   :maxdepth: 2
+
    usage
+
+.. toctree::
+   :caption: API REFERENCE
+   :maxdepth: 2
+
    api_reference
 
 .. _NumPy: http://www.numpy.org
