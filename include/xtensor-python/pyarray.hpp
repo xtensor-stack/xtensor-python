@@ -18,6 +18,7 @@
 #include "xtensor/xexpression.hpp"
 #include "xtensor/xsemantic.hpp"
 #include "xtensor/xiterator.hpp"
+#include "xtensor/xcontainer.hpp"
 
 namespace xt
 {
@@ -110,8 +111,8 @@ namespace xt
         using size_type = std::size_t;
         using difference_type = std::ptrdiff_t;
 
-        using storage_iterator = T*;
-        using const_storage_iterator = const T*;
+        using iterator = T*;
+        using const_iterator = const T*;
 
         using shape_type = std::vector<size_type>;
         using strides_type = std::vector<size_type>;
@@ -119,8 +120,8 @@ namespace xt
         
         using stepper = xstepper<self_type>;
         using const_stepper = xstepper<const self_type>;
-        using iterator = xiterator<stepper, shape_type>;
-        using const_iterator = xiterator<const_stepper, shape_type>;
+        using broadcast_iterator = xiterator<stepper, shape_type*>;
+        using const_broadcast_iterator = xiterator<const_stepper, shape_type*>;
 
         using closure_type = const self_type&;
 
@@ -173,13 +174,13 @@ namespace xt
         template <class S>
         bool is_trivial_broadcast(const S& strides) const;
 
-        iterator begin();
-        iterator end();
+        broadcast_iterator xbegin();
+        broadcast_iterator xend();
 
-        const_iterator begin() const;
-        const_iterator end() const;
-        const_iterator cbegin() const;
-        const_iterator cend() const;
+        const_broadcast_iterator xbegin() const;
+        const_broadcast_iterator xend() const;
+        const_broadcast_iterator cxbegin() const;
+        const_broadcast_iterator cxend() const;
 
         template <class S>
         xiterator<stepper, S> xbegin(const S& shape);
@@ -204,12 +205,12 @@ namespace xt
         template <class S>
         const_stepper stepper_end(const S& shape) const;
 
-        storage_iterator storage_begin();
-        storage_iterator storage_end();
-        const_storage_iterator storage_begin() const;
-        const_storage_iterator storage_end() const;
-        const_storage_iterator storage_cbegin() const;
-        const_storage_iterator storage_cend() const;
+        iterator begin();
+        iterator end();
+        const_iterator begin() const;
+        const_iterator end() const;
+        const_iterator cbegin() const;
+        const_iterator cend() const;
 
         template <class E>
         pyarray(const xexpression<E>& e);
@@ -444,67 +445,67 @@ namespace xt
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::begin() -> iterator
+    inline auto pyarray<T, ExtraFlags>::xbegin() -> broadcast_iterator
     {
-        return xbegin(shape());
+        return broadcast_iterator(stepper_begin(m_shape), &m_shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::end() -> iterator
+    inline auto pyarray<T, ExtraFlags>::xend() -> broadcast_iterator
     {
-        return xend(shape());
+        return broadcast_iterator(stepper_end(m_shape), &m_shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::begin() const -> const_iterator
+    inline auto pyarray<T, ExtraFlags>::xbegin() const -> const_broadcast_iterator
     {
-        return xbegin(shape());
+        return const_broadcast_iterator(stepper_begin(m_shape), &m_shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::end() const -> const_iterator
+    inline auto pyarray<T, ExtraFlags>::xend() const -> const_broadcast_iterator
     {
-        return xend(shape());
+        return const_broadcast_iterator(stepper_end(m_shape), &m_shape);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cbegin() const -> const_iterator
+    inline auto pyarray<T, ExtraFlags>::cxbegin() const -> const_broadcast_iterator
     {
-        return begin();
+        return xbegin();
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cend() const -> const_iterator
+    inline auto pyarray<T, ExtraFlags>::cxend() const -> const_broadcast_iterator
     {
-        return end();
+        return xend();
     }
 
     template <class T, int ExtraFlags>
     template <class S>
     inline auto pyarray<T, ExtraFlags>::xbegin(const S& shape) -> xiterator<stepper, S>
     {
-        return xiterator<stepper, S>(stepper_begin(shape), shape);
+        return xiterator<stepper, S>(stepper_begin(shape), &shape);
     }
 
     template <class T, int ExtraFlags>
     template <class S>
     inline auto pyarray<T, ExtraFlags>::xend(const S& shape) -> xiterator<stepper, S>
     {
-        return xiterator<stepper, S>(stepper_end(shape), shape);
+        return xiterator<stepper, S>(stepper_end(shape), &shape);
     }
 
     template <class T, int ExtraFlags>
     template <class S>
     inline auto pyarray<T, ExtraFlags>::xbegin(const S& shape) const -> xiterator<const_stepper, S>
     {
-        return xiterator<const_stepper, S>(stepper_begin(shape), shape);
+        return xiterator<const_stepper, S>(stepper_begin(shape), &shape);
     }
 
     template <class T, int ExtraFlags>
     template <class S>
     inline auto pyarray<T, ExtraFlags>::xend(const S& shape) const -> xiterator<const_stepper, S>
     {
-        return xiterator<const_stepper, S>(stepper_end(shape), shape);
+        return xiterator<const_stepper, S>(stepper_end(shape), &shape);
     }
 
     template <class T, int ExtraFlags>
@@ -526,7 +527,7 @@ namespace xt
     inline auto pyarray<T, ExtraFlags>::stepper_begin(const S& shape) -> stepper
     {
         size_type offset = shape.size() - dimension();
-        return stepper(this, storage_begin(), offset);
+        return stepper(this, begin(), offset);
     }
 
     template <class T, int ExtraFlags>
@@ -534,7 +535,7 @@ namespace xt
     inline auto pyarray<T, ExtraFlags>::stepper_end(const S& shape) -> stepper
     {
         size_type offset = shape.size() - dimension();
-        return stepper(this, storage_end(), offset);
+        return stepper(this, end(), offset);
     }
 
     template <class T, int ExtraFlags>
@@ -542,7 +543,7 @@ namespace xt
     inline auto pyarray<T, ExtraFlags>::stepper_begin(const S& shape) const -> const_stepper
     {
         size_type offset = shape.size() - dimension();
-        return const_stepper(this, storage_begin(), offset);
+        return const_stepper(this, begin(), offset);
     }
 
     template <class T, int ExtraFlags>
@@ -550,43 +551,43 @@ namespace xt
     inline auto pyarray<T, ExtraFlags>::stepper_end(const S& shape) const -> const_stepper
     {
         size_type offset = shape.size() - dimension();
-        return const_stepper(this, storage_end(), offset);
+        return const_stepper(this, end(), offset);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::storage_begin() -> storage_iterator
+    inline auto pyarray<T, ExtraFlags>::begin() -> iterator
     {
-        return reinterpret_cast<storage_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
+        return reinterpret_cast<iterator>(pybind11::detail::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::storage_end() -> storage_iterator
+    inline auto pyarray<T, ExtraFlags>::end() -> iterator
     {
-        return storage_begin() + pybind_array::size();
+        return begin() + pybind_array::size();
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::storage_begin() const -> const_storage_iterator
+    inline auto pyarray<T, ExtraFlags>::begin() const -> const_iterator
     {
-        return reinterpret_cast<const_storage_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
+        return reinterpret_cast<const_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::storage_end() const -> const_storage_iterator
+    inline auto pyarray<T, ExtraFlags>::end() const -> const_iterator
     {
-        return storage_begin() + pybind_array::size();
+        return begin() + pybind_array::size();
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::storage_cbegin() const -> const_storage_iterator
+    inline auto pyarray<T, ExtraFlags>::cbegin() const -> const_iterator
     {
-        return reinterpret_cast<const_storage_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
+        return reinterpret_cast<const_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
     }
 
     template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::storage_cend() const -> const_storage_iterator
+    inline auto pyarray<T, ExtraFlags>::cend() const -> const_iterator
     {
-        return storage_begin() + pybind_array::size();
+        return begin() + pybind_array::size();
     }
 
     template <class T, int ExtraFlags>
