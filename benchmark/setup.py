@@ -24,7 +24,7 @@ class get_pybind_include(object):
 
 ext_modules = [
     Extension(
-        'xtensor_python_test',
+        'xtensor_python_benchmark',
         ['main.cpp'],
         include_dirs=[
             # Path to pybind11 headers
@@ -87,7 +87,7 @@ class BuildExt(build_ext):
         build_ext.build_extensions(self)
 
 setup(
-    name='xtensor_python_test',
+    name='xtensor_python_benchmark',
     version=__version__,
     author='Sylvain Corlay',
     author_email='sylvain.corlay@gmail.com',
