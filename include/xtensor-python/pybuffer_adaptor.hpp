@@ -31,6 +31,7 @@ namespace xt
         using iterator = pointer;
         using const_iterator = const_pointer;
 
+        pybuffer_adaptor() = default;
         pybuffer_adaptor(pointer data, size_type size);
         
         bool empty() const noexcept;
@@ -70,13 +71,13 @@ namespace xt
     }
 
     template <class T>
-    inline bool pybuffer_adapgtor<T>::empty() const noexcept
+    inline bool pybuffer_adaptor<T>::empty() const noexcept
     {
         return m_size == 0;
     }
 
     template <class T>
-    inline auto pybuffer_adaptor<T>::size() const noexcept
+    inline auto pybuffer_adaptor<T>::size() const noexcept -> size_type
     {
         return m_size;
     }
@@ -88,7 +89,7 @@ namespace xt
     }
 
     template <class T>
-    inline auto pybuffer_adaptor<T>::operator[](size_type i) -> const_reference
+    inline auto pybuffer_adaptor<T>::operator[](size_type i) const -> const_reference
     {
         return p_data[i];
     }

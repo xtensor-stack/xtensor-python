@@ -29,7 +29,7 @@ namespace pybind11
     namespace detail
     {
         template <class T, std::size_t N>
-        struct handle_type_name<pytensor<T, std::size_t N>>
+        struct handle_type_name<xt::pytensor<T, N>>
         {
             static PYBIND11_DESCR name()
             {
@@ -38,9 +38,9 @@ namespace pybind11
         };
 
         template <class T, std::size_t N>
-        struct pyobject_caster<pytensor<T, N>>
+        struct pyobject_caster<xt::pytensor<T, N>>
         {
-            using type = pytensor<T, N>;
+            using type = xt::pytensor<T, N>;
 
             bool load(handle src, bool)
             {
@@ -50,7 +50,7 @@ namespace pybind11
 
             static handle cast(const handle& src, return_value_policy, handle)
             {
-                src.inc_ref();
+                return src.inc_ref();
             }
 
             PYBIND11_TYPE_CASTER(type, handle_type_name<type>::name());
@@ -82,12 +82,17 @@ namespace xt
         using semantic_base = xcontainer_semantic<self_type>;
         using base_type = pycontainer<pytensor<T, N>>;
         using container_type = typename base_type::container_type;
+        using pointer = typename base_type::pointer;
+        using size_type = typename base_type::size_type;
+        using shape_type = typename base_type::shape_type;
+        using strides_type = typename base_type::strides_type;
+        using backstrides_type = typename base_type::backstrides_type;
 
         pytensor();
 
         pytensor(pybind11::handle h, borrowed_t);
         pytensor(pybind11::handle h, stolen_t);
-        pyarray(const pybind11::object &o);
+        pytensor(const pybind11::object &o);
         
         pytensor(const shape_type& shape, const strides_type& strides);
         explicit pytensor(const shape_type& shape);
@@ -100,6 +105,9 @@ namespace xt
 
         void reshape(const shape_type& shape);
         void reshape(const shape_type& shape, const strides_type& strides);
+
+        using base_type::begin;
+        using base_type::end;
 
         static self_type ensure(pybind11::handle h);
         static bool check_(pybind11::handle h);
@@ -132,10 +140,6 @@ namespace xt
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor()
     {
-        std::fill(m_shape.begin(), m_shape.end(), T(0));
-        std::fill(m_strides.begin(), m_strides.end(), T(0));
-        std::fill(m_backstrides.begin(), m_backstrides.end(), T(0));
-        m_data = container_type(nullptr, 0);
     }
 
     template <class T, std::size_t N>
@@ -156,20 +160,24 @@ namespace xt
     inline pytensor<T, N>::pytensor(const pybind11::object& o)
         : pybind11::object(base_type::raw_array_t(o.ptr()), stolen)
     {
+        //std::cout << "Object constructor" << std::endl;
         if(!this->m_ptr)
             throw pybind11::error_already_set();
+        init_from_python();
     }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape,
                                     const strides_type& strides)
     {
+        //std::cout << "Shape + strides constructor" << std::endl;
         init_tensor(shape, strides);
     }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape)
     {
+        //std::cout << "Shape constructor" << std::endl;
         base_type::fill_default_strides(shape, m_strides);
         init_tensor(shape, m_strides);
     }
@@ -178,6 +186,7 @@ namespace xt
     template <class E>
     inline pytensor<T, N>::pytensor(const xexpression<E>& e)
     {
+        //std::cout << "Extended constructor" << std::endl;
         semantic_base::assign(e);
     }
 
@@ -189,8 +198,9 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline void reshape(const shape_type& shape)
+    inline void pytensor<T, N>::reshape(const shape_type& shape)
     {
+        //std::cout << "Reshape(shape)" << std::endl;
         if(shape != m_shape)
         {
             strides_type strides;
@@ -200,8 +210,9 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline void reshape(const shape_type& shape, const strides_type& strides)
+    inline void pytensor<T, N>::reshape(const shape_type& shape, const strides_type& strides)
     {
+        //std::cout << "Reshape(shape, strides)" << std::endl;
         self_type tmp(shape, strides);
         *this = std::move(tmp);
     }
@@ -209,8 +220,10 @@ namespace xt
     template <class T, std::size_t N>
     inline auto pytensor<T, N>::ensure(pybind11::handle h) -> self_type
     {
+        //std::cout << "Ensure" << std::endl;
         auto result = pybind11::reinterpret_steal<self_type>(base_type::raw_array_t(h.ptr()));
-        if(!result)
+        //auto result = pybind11::reinterpret_steal<self_type>(h.ptr());
+        if(result.ptr() == nullptr)
             PyErr_Clear();
         return result;
     }
@@ -219,12 +232,13 @@ namespace xt
     inline bool pytensor<T, N>::check_(pybind11::handle h)
     {
         int type_num = detail::numpy_traits<T>::type_num;
-        return PyArray_Check(h.ptr()) && PyArray_EquivTypenums(PyArray_Type(h.ptr()), type_num);
+        return PyArray_Check(h.ptr()) && PyArray_EquivTypenums(PyArray_TYPE(h.ptr()), type_num);
     }
     
     template <class T, std::size_t N>
     inline void pytensor<T, N>::init_tensor(const shape_type& shape, const strides_type& strides)
     {
+        //std::cout << "init tensor" << std::endl;
         npy_intp python_strides[N];
         std::transform(strides.beign(), strides.end(), python_strides,
                 [](auto v) { return sizeof(T) * v; });
@@ -252,6 +266,7 @@ namespace xt
     template <class T, std::size_t N>
     inline void pytensor<T, N>::init_from_python()
     {
+        //std::cout << "init from python" << std::endl;
         if(PyArray_NDIM(this->m_ptr) != N)
             throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");
 
@@ -259,7 +274,8 @@ namespace xt
         std::transform(PyArray_STRIDES(this->m_ptr), PyArray_STRIDES(this->m_ptr) + N, m_strides.begin(),
                 [](auto v) { return v / sizeof(T); });
         adapt_strides();
-        m_data = container_type(PyArray_DATA(this->m_ptr), PyArray_SIZE(this->m_ptr));
+        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->m_ptr)),
+                                static_cast<size_type>(PyArray_SIZE(this->m_ptr)));
     }
 
     template <class T, std::size_t N>
@@ -267,7 +283,7 @@ namespace xt
     {
         for(size_type i = 0; i < m_shape.size(); ++i)
         {
-            if(m_shape_[i] == 1)
+            if(m_shape[i] == 1)
             {
                 m_strides[i] = 0;
                 m_backstrides[i] = 0;
@@ -298,13 +314,13 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::data() -> container_type&
+    inline auto pytensor<T, N>::data_impl() -> container_type&
     {
         return m_data;
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::data() const -> const container_type&
+    inline auto pytensor<T, N>::data_impl() const -> const container_type&
     {
         return m_data;
     }

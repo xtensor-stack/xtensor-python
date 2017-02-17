@@ -11,7 +11,9 @@
 
 #include <functional>
 #include <numeric>
+#include <cmath>
 #include "pybind11/pybind11.h"
+#include "pybind11/common.h"
 #include "xtensor/xtensor_forward.hpp"
 #include "xtensor/xiterator.hpp"
 
@@ -54,7 +56,7 @@ namespace xt
 
         const shape_type& shape() const;
         const strides_type& strides() const;
-        const backtrides_type& backstrides() const;
+        const backstrides_type& backstrides() const;
 
         template <class... Args>
         reference operator()(Args... args);
@@ -141,7 +143,7 @@ namespace xt
         template <size_t dim = 0>
         size_type data_offset(const strides_type&) const;
 
-        template <size_type dim, class... Args>
+        template <size_t dim, class... Args>
         size_type data_offset(const strides_type& strides, size_type i, Args... args) const;
 
         template <class It>
@@ -150,6 +152,22 @@ namespace xt
 
     namespace detail
     {
+        // TODO : switch on pybind11::is_fmt_numeric when it is available
+        template <typename T, typename SFINAE = void>
+        struct is_fmt_numeric
+        {
+            static constexpr bool value = false;
+        };
+        
+        template <typename T>
+        struct is_fmt_numeric<T, std::enable_if_t<std::is_arithmetic<T>::value>>
+        {
+            static constexpr bool value = true;
+            static constexpr int index = std::is_same<T, bool>::value ? 0 : 1 + (
+                std::is_integral<T>::value ? std::log2(sizeof(T)) * 2 + std::is_unsigned<T>::value : 8 + (
+                    std::is_same<T, double>::value ? 1 : std::is_same<T, long double>::value ? 2 : 0));
+        };
+
         template <class T>
         struct numpy_traits
         {
@@ -167,7 +185,7 @@ namespace xt
 
             using value_type = std::remove_const_t<T>;
 
-            static constexpr int type_num = value_list[pybind11::detail::is_fmt_numeric<value_type>::index];
+            static constexpr int type_num = value_list[is_fmt_numeric<value_type>::index];
         };
     }
 
@@ -244,7 +262,7 @@ namespace xt
     }
 
     template <class D>
-    inline auto pycontianer<D>::backstrides() const -> const backstrides_type&
+    inline auto pycontainer<D>::backstrides() const -> const backstrides_type&
     {
         return static_cast<const derived_type*>(this)->backstrides_impl();
     }
@@ -298,7 +316,7 @@ namespace xt
     }
 
     template <class D>
-    inline auto pycontainer<D>:data() const -> const container_type&
+    inline auto pycontainer<D>::data() const -> const container_type&
     {
         return static_cast<const derived_type*>(this)->data_impl();
     }
