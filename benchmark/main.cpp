@@ -1,4 +1,5 @@
 #include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
 #include "xtensor/xtensor.hpp"
 #include "xtensor/xarray.hpp"
 #include "xtensor-python/pyarray.hpp"
@@ -15,6 +16,16 @@ PYBIND11_PLUGIN(xtensor_python_benchmark)
             double sum = 0;
             for(auto e : x)
                 sum += e;
+            return sum;
+        }
+    );
+
+    m.def("pybind_sum_array", [](py::array_t<double> const& x) {
+            double sum = 0;
+            size_t size = x.size();
+            const double* data = x.data(0);
+            for(size_t i = 0; i < size; ++i)
+                sum += data[i];
             return sum;
         }
     );
