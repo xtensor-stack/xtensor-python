@@ -21,6 +21,16 @@ class get_pybind_include(object):
         import pybind11
         return pybind11.get_include(self.user)
 
+class get_numpy_include(object):
+    """Helper class to determine the numpy include path
+
+    The purpose of this class is to postpone importing numpy
+    until it is actually installed, so that the ``get_include()``
+    method can be invoked. """
+
+    def __str__(self):
+        import numpy
+        return numpy.get_include()
 
 ext_modules = [
     Extension(
@@ -30,6 +40,8 @@ ext_modules = [
             # Path to pybind11 headers
             get_pybind_include(),
             get_pybind_include(user=True),
+            # Path to numpy headers
+            get_numpy_include(),
             os.path.join(sys.prefix, 'include'),
             os.path.join(sys.prefix, 'Library', 'include')
         ],
