@@ -30,13 +30,6 @@
 # Vim tmp files
 *.swp
 
-# Test build artefacts
-test/test_xtensor
-test/CMakeCache.txt
-test/Makefile
-test/CMakeFiles/
-test/cmake_install.cmake
-
 # Documentation build artefacts
 docs/CMakeCache.txt
 docs/xml/
@@ -48,3 +41,5 @@ docs/build/
 # Python
 *.py[cod]
 __pycache__
+build
+*.egg-info
