@@ -1,4 +1,4 @@
-from xtensor_python_benchmark import sum_tensor
+from benchmark_xtensor_python import sum_tensor
 import numpy as np
 
 u = np.ones(1000000, dtype=float)

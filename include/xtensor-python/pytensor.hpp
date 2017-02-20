@@ -89,8 +89,8 @@ namespace xt
 
         pytensor() = default;
 
-        pytensor(pybind11::handle h, borrowed_t);
-        pytensor(pybind11::handle h, stolen_t);
+        pytensor(pybind11::handle h, pybind11::object::borrowed_t);
+        pytensor(pybind11::handle h, pybind11::object::stolen_t);
         pytensor(const pybind11::object &o);
         
         pytensor(const shape_type& shape, const strides_type& strides);
@@ -137,22 +137,22 @@ namespace xt
      ***************************/
 
     template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(pybind11::handle h, borrowed_t)
-        : base_type(h, borrowed)
+    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::borrowed_t)
+        : base_type(h, pybind11::object::borrowed)
     {
         init_from_python();
     }
 
     template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(pybind11::handle h, stolen_t)
-        : base_type(h, stolen)
+    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::stolen_t)
+        : base_type(h, pybind11::object::stolen)
     {
         init_from_python();
     }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const pybind11::object& o)
-        : base_type(base_type::raw_array_t(o.ptr()), stolen)
+        : base_type(base_type::raw_array_t(o.ptr()), pybind11::object::stolen)
     {
         if(!this->m_ptr)
             throw pybind11::error_already_set();

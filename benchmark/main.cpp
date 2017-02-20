@@ -11,7 +11,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_PLUGIN(xtensor_python_benchmark)
+PYBIND11_PLUGIN(benchmark_xtensor_python)
 {
     if(_import_array() < 0)
     {
@@ -19,7 +19,7 @@ PYBIND11_PLUGIN(xtensor_python_benchmark)
         return nullptr;
     }
 
-    py::module m("xtensor_python_benchmark", "Benchmark module for xtensor python bindings");
+    py::module m("benchmark_xtensor_python", "Benchmark module for xtensor python bindings");
 
     m.def("sum_array", [](xt::pyarray<double> const& x) {
             double sum = 0;

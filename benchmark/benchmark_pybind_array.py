@@ -1,4 +1,4 @@
-from xtensor_python_benchmark import pybind_sum_array
+from benchmark_xtensor_python import pybind_sum_array
 import numpy as np
 
 u = np.ones(1000000, dtype=float)
