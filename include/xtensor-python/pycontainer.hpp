@@ -21,7 +21,7 @@ namespace xt
 {
 
     template <class D>
-    class pycontainer
+    class pycontainer : public pybind11::object
     {
 
     public:
@@ -48,8 +48,8 @@ namespace xt
         using stepper = xstepper<D>;
         using const_stepper = xstepper<const D>;
 
-        using broadcast_iterator = xiterator<stepper, shape_type>;
-        using const_broadcast_iterator = xiterator<const_stepper, shape_type>;
+        using broadcast_iterator = xiterator<stepper, shape_type*>;
+        using const_broadcast_iterator = xiterator<const_stepper, shape_type*>;
 
         size_type size() const;
         size_type dimension() const;
@@ -127,6 +127,9 @@ namespace xt
         pycontainer() = default;
         ~pycontainer() = default;
 
+        pycontainer(pybind11::handle h, borrowed_t);
+        pycontainer(pybind11::handle h, stolen_t);
+
         pycontainer(const pycontainer&) = default;
         pycontainer& operator=(const pycontainer&) = default;
 
@@ -159,12 +162,17 @@ namespace xt
             static constexpr bool value = false;
         };
         
+        constexpr int log2(size_t n, int k = 0)
+        {
+            return (n <= 1) ? k : log2(n >> 1, k + 1);
+        } 
+        
         template <typename T>
         struct is_fmt_numeric<T, std::enable_if_t<std::is_arithmetic<T>::value>>
         {
             static constexpr bool value = true;
             static constexpr int index = std::is_same<T, bool>::value ? 0 : 1 + (
-                std::is_integral<T>::value ? std::log2(sizeof(T)) * 2 + std::is_unsigned<T>::value : 8 + (
+                std::is_integral<T>::value ? log2(sizeof(T)) * 2 + std::is_unsigned<T>::value : 8 + (
                     std::is_same<T, double>::value ? 1 : std::is_same<T, long double>::value ? 2 : 0));
         };
 
@@ -193,6 +201,18 @@ namespace xt
      * pycontainer implementation *
      ******************************/
 
+    template <class D>
+    inline pycontainer<D>::pycontainer(pybind11::handle h, borrowed_t)
+        : pybind11::object(h, borrowed)
+    {
+    }
+
+    template <class D>
+    inline pycontainer<D>::pycontainer(pybind11::handle h, stolen_t)
+        : pybind11::object(h, stolen)
+    {
+    }
+    
     template <class D>
     inline void pycontainer<D>::fill_default_strides(const shape_type& shape, strides_type& strides)
     {

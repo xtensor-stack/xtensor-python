@@ -71,8 +71,7 @@ namespace xt
     };
 
     template <class T, std::size_t N>
-    class pytensor : public pybind11::object,
-                     public pycontainer<pytensor<T, N>>,
+    class pytensor : public pycontainer<pytensor<T, N>>,
                      public xcontainer_semantic<pytensor<T, N>>
     {
 
@@ -88,7 +87,7 @@ namespace xt
         using strides_type = typename base_type::strides_type;
         using backstrides_type = typename base_type::backstrides_type;
 
-        pytensor();
+        pytensor() = default;
 
         pytensor(pybind11::handle h, borrowed_t);
         pytensor(pybind11::handle h, stolen_t);
@@ -138,29 +137,23 @@ namespace xt
      ***************************/
 
     template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor()
-    {
-    }
-
-    template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(pybind11::handle h, borrowed_t)
-        : pybind11::object(h, borrowed)
+        : base_type(h, borrowed)
     {
         init_from_python();
     }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(pybind11::handle h, stolen_t)
-        : pybind11::object(h, stolen)
+        : base_type(h, stolen)
     {
         init_from_python();
     }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const pybind11::object& o)
-        : pybind11::object(base_type::raw_array_t(o.ptr()), stolen)
+        : base_type(base_type::raw_array_t(o.ptr()), stolen)
     {
-        //std::cout << "Object constructor" << std::endl;
         if(!this->m_ptr)
             throw pybind11::error_already_set();
         init_from_python();
@@ -170,14 +163,12 @@ namespace xt
     inline pytensor<T, N>::pytensor(const shape_type& shape,
                                     const strides_type& strides)
     {
-        //std::cout << "Shape + strides constructor" << std::endl;
         init_tensor(shape, strides);
     }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape)
     {
-        //std::cout << "Shape constructor" << std::endl;
         base_type::fill_default_strides(shape, m_strides);
         init_tensor(shape, m_strides);
     }
@@ -186,7 +177,6 @@ namespace xt
     template <class E>
     inline pytensor<T, N>::pytensor(const xexpression<E>& e)
     {
-        //std::cout << "Extended constructor" << std::endl;
         semantic_base::assign(e);
     }
 
@@ -200,7 +190,6 @@ namespace xt
     template <class T, std::size_t N>
     inline void pytensor<T, N>::reshape(const shape_type& shape)
     {
-        //std::cout << "Reshape(shape)" << std::endl;
         if(shape != m_shape)
         {
             strides_type strides;
@@ -212,7 +201,6 @@ namespace xt
     template <class T, std::size_t N>
     inline void pytensor<T, N>::reshape(const shape_type& shape, const strides_type& strides)
     {
-        //std::cout << "Reshape(shape, strides)" << std::endl;
         self_type tmp(shape, strides);
         *this = std::move(tmp);
     }
@@ -220,9 +208,7 @@ namespace xt
     template <class T, std::size_t N>
     inline auto pytensor<T, N>::ensure(pybind11::handle h) -> self_type
     {
-        //std::cout << "Ensure" << std::endl;
         auto result = pybind11::reinterpret_steal<self_type>(base_type::raw_array_t(h.ptr()));
-        //auto result = pybind11::reinterpret_steal<self_type>(h.ptr());
         if(result.ptr() == nullptr)
             PyErr_Clear();
         return result;
@@ -238,7 +224,6 @@ namespace xt
     template <class T, std::size_t N>
     inline void pytensor<T, N>::init_tensor(const shape_type& shape, const strides_type& strides)
     {
-        //std::cout << "init tensor" << std::endl;
         npy_intp python_strides[N];
         std::transform(strides.beign(), strides.end(), python_strides,
                 [](auto v) { return sizeof(T) * v; });
@@ -266,7 +251,6 @@ namespace xt
     template <class T, std::size_t N>
     inline void pytensor<T, N>::init_from_python()
     {
-        //std::cout << "init from python" << std::endl;
         if(PyArray_NDIM(this->m_ptr) != N)
             throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");
 
