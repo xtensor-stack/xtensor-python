@@ -10,6 +10,7 @@
 #define PYBUFFER_ADAPTOR_HPP
 
 #include <cstddef>
+#include <iterator>
 
 namespace xt
 {
@@ -30,6 +31,9 @@ namespace xt
 
         using iterator = pointer;
         using const_iterator = const_pointer;
+
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
         pybuffer_adaptor() = default;
         pybuffer_adaptor(pointer data, size_type size);
@@ -53,6 +57,14 @@ namespace xt
         const_iterator end() const;
         const_iterator cbegin() const;
         const_iterator cend() const;
+
+        reverse_iterator rbegin();
+        reverse_iterator rend();
+
+        const_reverse_iterator rbegin() const;
+        const_reverse_iterator rend() const;
+        const_reverse_iterator crbegin() const;
+        const_reverse_iterator crend() const;
 
     private:
 
@@ -193,6 +205,42 @@ namespace xt
         return end();
     }
 
+    template <class T>
+    inline auto pybuffer_adaptor<T>::rbegin() -> reverse_iterator
+    {
+        return reverse_iterator(end());
+    }
+
+    template <class T>
+    inline auto pybuffer_adaptor<T>::rend() -> reverse_iterator
+    {
+        return reverse_iterator(begin());
+    }
+
+    template <class T>
+    inline auto pybuffer_adaptor<T>::rbegin() const -> const_reverse_iterator
+    {
+        return const_reverse_iterator(end());
+    }
+
+    template <class T>
+    inline auto pybuffer_adaptor<T>::rend() const -> const_reverse_iterator
+    {
+        return const_reverse_iterator(begin());
+    }
+
+    template <class T>
+    inline auto pybuffer_adaptor<T>::crbegin() const -> const_reverse_iterator
+    {
+        return rbegin();
+    }
+
+    template <class T>
+    inline auto pybuffer_adaptor<T>::crend() const -> const_reverse_iterator
+    {
+        return rend();
+    }
+    
     /*************************************
      * pystrides_iterator implementation *
      *************************************/
@@ -203,13 +251,13 @@ namespace xt
 
     public:
 
-        using self_type = pystrides_adaptor<N>;
+        using self_type = pystrides_iterator<N>;
 
         using value_type = typename pystrides_adaptor<N>::value_type;
         using pointer = typename pystrides_adaptor<N>::const_pointer;
         using reference = typename pystrides_adaptor<N>::const_reference;
         using difference_type = typename pystrides_adaptor<N>::difference_type;
-        using iterator_category = std::random_access_iterator;
+        using iterator_category = std::random_access_iterator_tag;
 
         inline pystrides_iterator(pointer current)
             : p_current(current)

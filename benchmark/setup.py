@@ -34,7 +34,7 @@ class get_numpy_include(object):
 
 ext_modules = [
     Extension(
-        'xtensor_python_benchmark',
+        'benchmark_xtensor_python',
         ['main.cpp'],
         include_dirs=[
             # Path to pybind11 headers
@@ -99,7 +99,7 @@ class BuildExt(build_ext):
         build_ext.build_extensions(self)
 
 setup(
-    name='xtensor_python_benchmark',
+    name='benchmark_xtensor_python',
     version=__version__,
     author='Sylvain Corlay',
     author_email='sylvain.corlay@gmail.com',

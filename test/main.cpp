@@ -1,9 +1,9 @@
-#include "pybind11/pybind11.h"
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include "numpy/arrayobject.h"
 #include "xtensor/xmath.hpp"
 #include "xtensor/xarray.hpp"
 #include "xtensor-python/pyarray.hpp"
 #include "xtensor-python/pyvectorize.hpp"
-#include <iostream>
 #include <numeric>
 
 namespace py = pybind11;
@@ -42,6 +42,12 @@ int add(int i, int j)
 
 PYBIND11_PLUGIN(xtensor_python_test)
 {
+    if(_import_array() < 0)
+    {
+        PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
+        return nullptr;
+    }
+
     py::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
     m.def("example1", example1, "");
