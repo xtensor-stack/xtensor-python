@@ -14,8 +14,8 @@
 #include <cmath>
 #include "pybind11/pybind11.h"
 #include "pybind11/common.h"
-#include "xtensor/xtensor_forward.hpp"
-#include "xtensor/xiterator.hpp"
+// Because of layout, else xiterator and xtensor_forward are sufficient
+#include "xtensor/xcontainer.hpp"
 
 namespace xt
 {
@@ -61,6 +61,7 @@ namespace xt
         const backstrides_type& backstrides() const;
 
         void reshape(const shape_type& shape);
+        void reshape(const shape_type& shape, layout l);
         void reshape(const shape_type& shape, const strides_type& strides);
 
         template <class... Args>
@@ -143,6 +144,7 @@ namespace xt
         pycontainer& operator=(pycontainer&&) = default;
 
         void fill_default_strides(const shape_type& shape,
+                                  layout l,
                                   strides_type& strides);
 
         static derived_type ensure(pybind11::handle h);
@@ -232,16 +234,31 @@ namespace xt
     }
 
     template <class D>
-    inline void pycontainer<D>::fill_default_strides(const shape_type& shape, strides_type& strides)
+    inline void pycontainer<D>::fill_default_strides(const shape_type& shape, layout l, strides_type& strides)
     {
         typename strides_type::value_type data_size = 1;
-        for(size_type i = strides.size(); i != 0; --i)
+        if(l == layout::row_major)
         {
-            strides[i - 1] = data_size;
-            data_size = strides[i - 1] * shape[i - 1];
-            if(shape[i - 1] == 1)
+            for(size_type i = strides.size(); i != 0; --i)
             {
-                strides[i - 1] = 0;
+                strides[i - 1] = data_size;
+                data_size = strides[i - 1] * shape[i - 1];
+                if(shape[i - 1] == 1)
+                {
+                    strides[i - 1] = 0;
+                }
+            }
+        }
+        else
+        {
+            for(size_type i = 0; i < strides.size(); ++i)
+            {
+                strides[i] = data_size;
+                data_size = strides[i] * shape[i];
+                if(shape[i] == 1)
+                {
+                    strides[i] = 0;
+                }
             }
         }
     }
@@ -259,7 +276,8 @@ namespace xt
     inline bool pycontainer<D>::check_(pybind11::handle h)
     {
         int type_num = detail::numpy_traits<value_type>::type_num;
-        return PyArray_Check(h.ptr()) && PyArray_EquivTypenums(PyArray_TYPE(python_array()), type_num);
+        return PyArray_Check(h.ptr()) &&
+            PyArray_EquivTypenums(PyArray_TYPE(reinterpret_cast<PyArrayObject*>(h.ptr())), type_num);
     }
 
     template <class D>
@@ -338,10 +356,16 @@ namespace xt
     {
         if(shape.size() != dimension() || !std::equal(shape.begin(), shape.end(), this->shape().begin()))
         {
-            strides_type strides(shape.size());
-            fill_default_strides(shape, strides);
-            reshape(shape, strides);
+            reshape(shape, layout::row_major);
         }
+    }
+
+    template <class D>
+    inline void pycontainer<D>::reshape(const shape_type& shape, layout l)
+    {
+        strides_type strides(shape.size());
+        fill_default_strides(shape, l, strides);
+        reshape(shape, strides);
     }
 
     template <class D>
@@ -460,29 +484,29 @@ namespace xt
     template <class D>
     inline auto pycontainer<D>::xbegin() -> broadcast_iterator
     {
-        const inner_shape_type& shape = shape();
-        return broadcast_iterator(stepper_begin(shape), shape);
+        const inner_shape_type& sh = shape();
+        return broadcast_iterator(stepper_begin(sh), sh);
     }
 
     template <class D>
     inline auto pycontainer<D>::xend() -> broadcast_iterator
     {
-        const inner_shape_type& shape = shape();
-        return broadcast_iterator(stepper_end(shape), shape);
+        const inner_shape_type& sh = shape();
+        return broadcast_iterator(stepper_end(sh), sh);
     }
 
     template <class D>
     inline auto pycontainer<D>::xbegin() const -> const_broadcast_iterator
     {
-        const inner_shape_type& shape = shape();
-        return const_broadcast_iterator(stepper_begin(shape), shape);
+        const inner_shape_type& sh = shape();
+        return const_broadcast_iterator(stepper_begin(sh), sh);
     }
 
     template <class D>
     inline auto pycontainer<D>::xend() const -> const_broadcast_iterator
     {
-        const inner_shape_type& shape = shape();
-        return const_broadcast_iterator(stepper_end(shape), shape);
+        const inner_shape_type& sh = shape();
+        return const_broadcast_iterator(stepper_end(sh), sh);
     }
 
     template <class D>

@@ -122,7 +122,7 @@ namespace xt
         pyarray(pybind11::handle h, pybind11::object::stolen_t);
         pyarray(const pybind11::object &o);
         
-        explicit pyarray(const shape_type& shape);
+        explicit pyarray(const shape_type& shape, layout l = layout::row_major);
         pyarray(const shape_type& shape, const strides_type& strides);
 
         template <class E>
@@ -201,10 +201,10 @@ namespace xt
     }
 
     template <class T>
-    inline pyarray<T>::pyarray(const shape_type& shape)
+    inline pyarray<T>::pyarray(const shape_type& shape, layout l)
     {
         strides_type strides;
-        base_type::fill_default_strides(shape, strides);
+        base_type::fill_default_strides(shape, l, strides);
         init_array(shape, strides);
     }
 

@@ -97,7 +97,7 @@ namespace xt
         pytensor(pybind11::handle h, pybind11::object::stolen_t);
         pytensor(const pybind11::object &o);
         
-        explicit pytensor(const shape_type& shape);
+        explicit pytensor(const shape_type& shape, layout l = layout::row_major);
         pytensor(const shape_type& shape, const strides_type& strides);
 
         template <class E>
@@ -159,9 +159,9 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const shape_type& shape)
+    inline pytensor<T, N>::pytensor(const shape_type& shape, layout l)
     {
-        base_type::fill_default_strides(shape, m_strides);
+        base_type::fill_default_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
     }
 
