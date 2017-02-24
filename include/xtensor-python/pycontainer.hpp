@@ -234,7 +234,7 @@ namespace xt
     template <class D>
     inline void pycontainer<D>::fill_default_strides(const shape_type& shape, strides_type& strides)
     {
-        strides_type::value_type data_size = 1;
+        typename strides_type::value_type data_size = 1;
         for(size_type i = strides.size(); i != 0; --i)
         {
             strides[i - 1] = data_size;
@@ -258,8 +258,8 @@ namespace xt
     template <class D>
     inline bool pycontainer<D>::check_(pybind11::handle h)
     {
-        int type_num = detail::numpy_traits<T>::type_num;
-        return PyArray_Check(h.ptr()) && PyArray_EquivTypenums(PyArray_TYPE(h.ptr()), type_num);
+        int type_num = detail::numpy_traits<value_type>::type_num;
+        return PyArray_Check(h.ptr()) && PyArray_EquivTypenums(PyArray_TYPE(python_array()), type_num);
     }
 
     template <class D>
@@ -269,7 +269,8 @@ namespace xt
             return nullptr;
 
         int type_num = detail::numpy_traits<value_type>::type_num;
-        auto res = PyArray_FromAny(ptr, PyArray_DescrFromType(type_num), 0, 0, NPY_ARRAY_ENSUREARRAY, nullptr);
+        auto res = PyArray_FromAny(ptr, PyArray_DescrFromType(type_num), 0, 0, 
+                                   NPY_ARRAY_ENSUREARRAY | NPY_ARRAY_FORCECAST, nullptr);
         return res;
     }
 

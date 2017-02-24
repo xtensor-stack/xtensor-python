@@ -53,7 +53,9 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
    :caption: USAGE
    :maxdepth: 2
 
-   usage
+   basic_usage
+   array_tensor
+   cookie_cutter
 
 .. toctree::
    :caption: API REFERENCE

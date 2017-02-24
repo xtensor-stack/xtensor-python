@@ -223,22 +223,22 @@ namespace xt
         m_shape = shape;
         m_strides = strides;
         compute_backstrides();
-        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(python_array())),
-                                static_cast<size_type>(PyArray_SIZE(python_array())));
+        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>
     inline void pytensor<T, N>::init_from_python()
     {
-        if(PyArray_NDIM(python_array()) != N)
+        if(PyArray_NDIM(this->python_array()) != N)
             throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");
 
-        std::copy(PyArray_DIMS(python_array()), PyArray_DIMS(python_array()) + N, m_shape.begin());
-        std::transform(PyArray_STRIDES(python_array()), PyArray_STRIDES(python_array()) + N, m_strides.begin(),
+        std::copy(PyArray_DIMS(this->python_array()), PyArray_DIMS(this->python_array()) + N, m_shape.begin());
+        std::transform(PyArray_STRIDES(this->python_array()), PyArray_STRIDES(this->python_array()) + N, m_strides.begin(),
                 [](auto v) { return v / sizeof(T); });
         compute_backstrides();
-        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(python_array())),
-                                static_cast<size_type>(PyArray_SIZE(python_array())));
+        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>

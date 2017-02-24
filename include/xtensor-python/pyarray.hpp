@@ -272,13 +272,13 @@ namespace xt
     template <class T>
     inline void pyarray<T>::init_from_python()
     {
-        m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(python_array())),
-                                   static_cast<size_type>(PyArray_NDIM(python_array())));
-        m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(python_array())),
-                                       static_cast<size_type>(PyArray_NDIM(python_array())));
+        m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
+                                   static_cast<size_type>(PyArray_NDIM(this->python_array())));
+        m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(this->python_array())),
+                                       static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_backstrides = backstrides_type(*this);
-        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(python_array())),
-                                static_cast<size_type>(PyArray_SIZE(python_array())));
+        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T>
