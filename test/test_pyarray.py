@@ -16,15 +16,18 @@ import numpy as np
 class ExampleTest(TestCase):
 
     def test_example1(self):
+        print("test1")
         self.assertEqual(4, xt.example1([4, 5, 6]))
 
     def test_example2(self):
+        print("test2")
         x = np.array([[0., 1.], [2., 3.]])
         res = np.array([[2., 3.], [4., 5.]])
         y = xt.example2(x)
         np.testing.assert_allclose(y, res, 1e-12)
 
     def test_vectorize(self):
+        print("test3")
         x1 = np.array([[0, 1], [2, 3]])
         x2 = np.array([0, 1])
         res = np.array([[0, 2], [2, 4]])
@@ -32,11 +35,13 @@ class ExampleTest(TestCase):
         np.testing.assert_array_equal(y, res)
 
     def test_readme_example1(self):
+        print("test4")
         v = np.arange(15).reshape(3, 5)
         y = xt.readme_example1(v)
         np.testing.assert_allclose(y, 1.2853996391883833, 1e-12)
 
     def test_readme_example2(self):
+        print("test5")
         x = np.arange(15).reshape(3, 5)
         y = [1, 2, 3, 4, 5]
         z = xt.readme_example2(x, y)

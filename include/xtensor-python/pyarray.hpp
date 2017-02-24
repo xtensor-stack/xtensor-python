@@ -10,19 +10,17 @@
 #define PY_ARRAY_HPP
 
 #include <cstddef>
-#include <algorithm>
 #include <vector>
-
-#include "pybind11/numpy.h"
-
-#include "xtensor/xexpression.hpp"
+#include <algorithm>
 #include "xtensor/xsemantic.hpp"
 #include "xtensor/xiterator.hpp"
-#include "xtensor/xcontainer.hpp"
+
+#include "pycontainer.hpp"
+#include "pybuffer_adaptor.hpp"
 
 namespace xt
 {
-    template <class T, int ExtraFlags>
+    template <class T>
     class pyarray;
 }
 
@@ -30,10 +28,19 @@ namespace pybind11
 {
     namespace detail
     {
-        template <typename T, int ExtraFlags>
-        struct pyobject_caster<xt::pyarray<T, ExtraFlags>>
+        template <class T>
+        struct handle_type_name<xt::pyarray<T>>
         {
-            using type = xt::pyarray<T, ExtraFlags>;
+            static PYBIND11_DESCR name()
+            {
+                return _("numpy.ndarray[") + make_caster<T>::name() + _("]");
+            }
+        };
+
+        template <typename T>
+        struct pyobject_caster<xt::pyarray<T>>
+        {
+            using type = xt::pyarray<T>;
 
             bool load(handle src, bool)
             {
@@ -54,21 +61,6 @@ namespace pybind11
 namespace xt
 {
 
-    using pybind_array = pybind11::array;
-
-    /***********************
-     * pyarray declaration *
-     ***********************/
-
-    template <class T, int ExtraFlags>
-    class pyarray;
-
-    template <class T, int ExtraFlags>
-    struct xcontainer_inner_types<pyarray<T, ExtraFlags>>
-    {
-        using temporary_type = pyarray<T, ExtraFlags>;
-    };
-
     template <class A>
     class pyarray_backstrides
     {
@@ -79,163 +71,90 @@ namespace xt
         using value_type = typename array_type::size_type;
         using size_type = typename array_type::size_type;
 
-        pyarray_backstrides(const A& a);
+        pyarray_backstrides() = default;
+        pyarray_backstrides(const array_type& a);
 
         value_type operator[](size_type i) const;
 
     private:
 
-        const pybind_array* p_a;
+        const array_type* p_a;
+    };
+
+    template <class T>
+    struct xcontainer_inner_types<pyarray<T>>
+    {
+        using container_type = pybuffer_adaptor<T>;
+        using shape_type = std::vector<typename container_type::size_type>;
+        using strides_type = shape_type;
+        using backstrides_type = pyarray_backstrides<pyarray<T>>;
+        using inner_shape_type = pybuffer_adaptor<std::size_t>;
+        using inner_strides_type = pystrides_adaptor<sizeof(T)>;
+        using temporary_type = pyarray<T>;
     };
 
     /**
      * @class pyarray
      * @brief Wrapper on the Python buffer protocol.
      */
-    template <class T, int ExtraFlags = pybind_array::forcecast>
-    class pyarray : public pybind_array,
-                    public xcontainer_semantic<pyarray<T, ExtraFlags>>
+    template <class T>
+    class pyarray : public pycontainer<pyarray<T>>,
+                    public xcontainer_semantic<pyarray<T>>
     {
 
     public:
 
-        using self_type = pyarray<T, ExtraFlags>;
-        using base_type = pybind_array;
+        using self_type = pyarray<T>;
         using semantic_base = xcontainer_semantic<self_type>;
-        using value_type = T;
-        using reference = T&;
-        using const_reference = const T&;
-        using pointer = T*;
-        using const_pointer = const T*;
+        using base_type = pycontainer<self_type>;
+        using container_type = typename base_type::container_type;
+        using pointer = typename base_type::pointer;
+        using size_type = typename base_type::size_type;
+        using shape_type = typename base_type::shape_type;
+        using strides_type = typename base_type::strides_type;
+        using backstrides_type = typename base_type::backstrides_type;
+        using inner_shape_type = typename base_type::inner_shape_type;
+        using inner_strides_type = typename base_type::inner_strides_type;
 
-        using size_type = std::size_t;
-        using difference_type = std::ptrdiff_t;
+        pyarray() = default;
 
-        using iterator = T*;
-        using const_iterator = const T*;
-
-        using shape_type = std::vector<size_type>;
-        using strides_type = std::vector<size_type>;
-        using backstrides_type = pyarray_backstrides<self_type>;
-        
-        using stepper = xstepper<self_type>;
-        using const_stepper = xstepper<const self_type>;
-        using broadcast_iterator = xiterator<stepper, shape_type*>;
-        using const_broadcast_iterator = xiterator<const_stepper, shape_type*>;
-
-        using closure_type = const self_type&;
-
-        pyarray();
-
-        pyarray(pybind11::handle h, borrowed_t);
-        pyarray(pybind11::handle h, stolen_t);
+        pyarray(pybind11::handle h, pybind11::object::borrowed_t);
+        pyarray(pybind11::handle h, pybind11::object::stolen_t);
         pyarray(const pybind11::object &o);
-
-        pyarray(const shape_type& shape,
-                const strides_type& strides, 
-                const T* ptr = nullptr,
-                handle base = handle());
-
-        explicit pyarray(const shape_type& shape, 
-                         const T* ptr = nullptr,
-                         handle base = handle());
-
-        explicit pyarray(size_type count,
-                         const T* ptr = nullptr,
-                         handle base = handle());
-
-        size_type dimension() const;
-        const shape_type& shape() const;
-        const strides_type& strides() const;
-        backstrides_type backstrides() const;
-
-        void reshape(const shape_type& shape);
-        void reshape(const shape_type& shape, layout l);
-        void reshape(const shape_type& shape, const strides_type& strides);
-
-        template<typename... Args>
-        reference operator()(Args... args);
-
-        template<typename... Args>
-        const_reference operator()(Args... args) const;
-
-        reference operator[](const xindex& index);
-        const_reference operator[](const xindex& index) const;
-
-        template<typename... Args>
-        pointer data(Args... args);
-
-        template<typename... Args>
-        const_pointer data(Args... args) const;
-
-        template <class S>
-        bool broadcast_shape(S& shape) const;
-
-        template <class S>
-        bool is_trivial_broadcast(const S& strides) const;
-
-        broadcast_iterator xbegin();
-        broadcast_iterator xend();
-
-        const_broadcast_iterator xbegin() const;
-        const_broadcast_iterator xend() const;
-        const_broadcast_iterator cxbegin() const;
-        const_broadcast_iterator cxend() const;
-
-        template <class S>
-        xiterator<stepper, S> xbegin(const S& shape);
-        template <class S>
-        xiterator<stepper, S> xend(const S& shape);
-        template <class S>
-        xiterator<const_stepper, S> xbegin(const S& shape) const;
-        template <class S>
-        xiterator<const_stepper, S> xend(const S& shape) const;
-        template <class S>
-        xiterator<const_stepper, S> cxbegin(const S& shape) const;
-        template <class S>
-        xiterator<const_stepper, S> cxend(const S& shape) const;
-
-        template <class S>
-        stepper stepper_begin(const S& shape);
-        template <class S>
-        stepper stepper_end(const S& shape);
-
-        template <class S>
-        const_stepper stepper_begin(const S& shape) const;
-        template <class S>
-        const_stepper stepper_end(const S& shape) const;
-
-        iterator begin();
-        iterator end();
-        const_iterator begin() const;
-        const_iterator end() const;
-        const_iterator cbegin() const;
-        const_iterator cend() const;
+        
+        explicit pyarray(const shape_type& shape, layout l = layout::row_major);
+        pyarray(const shape_type& shape, const strides_type& strides);
 
         template <class E>
         pyarray(const xexpression<E>& e);
 
         template <class E>
-        pyarray& operator=(const xexpression<E>& e);
+        self_type& operator=(const xexpression<E>& e);
 
-        static pyarray ensure(pybind11::handle h);
-        static bool _check(pybind11::handle h);
+        using base_type::begin;
+        using base_type::end;
+
+        static self_type ensure(pybind11::handle h);
+        static bool check_(pybind11::handle h);
 
     private:
 
-        template<typename... Args>
-        size_type index_at(Args... args) const;
+        inner_shape_type m_shape;
+        inner_strides_type m_strides;
+        mutable backstrides_type m_backstrides;
+        container_type m_data;
 
-        size_type data_offset(const xindex& index) const;
+        void init_array(const shape_type& shape, const strides_type& strides);
+        void init_from_python();
 
-        static constexpr size_type itemsize();
+        const inner_shape_type& shape_impl() const;
+        const inner_strides_type& strides_impl() const;
+        const backstrides_type& backstrides_impl() const;
 
-        static bool is_non_null(PyObject* ptr);
+        container_type& data_impl();
+        const container_type& data_impl() const;
 
-        mutable shape_type m_shape;
-        mutable strides_type m_strides;
-
-        static PyObject* raw_array_t(PyObject* ptr);
+        friend class pycontainer<pyarray<T>>;
     };
     
     /**************************************
@@ -252,7 +171,7 @@ namespace xt
     inline auto pyarray_backstrides<A>::operator[](size_type i) const -> value_type
     {
         value_type sh = p_a->shape()[i];
-        value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[i] / sizeof(typename A::value_type);
+        value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[i];
         return  res;
     }
 
@@ -260,412 +179,141 @@ namespace xt
      * pyarray implementation *
      **************************/
 
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray()
-         : pybind_array(0, static_cast<const_pointer>(nullptr))
+    template <class T>
+    inline pyarray<T>::pyarray(pybind11::handle h, pybind11::object::borrowed_t)
+        : base_type(h, pybind11::object::borrowed)
     {
+        init_from_python();
     }
 
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(pybind11::handle h, borrowed_t) : pybind_array(h, borrowed)
+    template <class T>
+    inline pyarray<T>::pyarray(pybind11::handle h, pybind11::object::stolen_t)
+        : base_type(h, pybind11::object::stolen)
     {
+        init_from_python();
     }
 
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(pybind11::handle h, stolen_t) : pybind_array(h, stolen)
+    template <class T>
+    inline pyarray<T>::pyarray(const pybind11::object &o)
+        : base_type(o)
     {
+        init_from_python();
     }
 
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(const pybind11::object &o) : pybind_array(raw_array_t(o.ptr()), stolen)
+    template <class T>
+    inline pyarray<T>::pyarray(const shape_type& shape, layout l)
     {
-        if (!m_ptr)
-        {
-            throw pybind11::error_already_set();
-        }
+        strides_type strides;
+        base_type::fill_default_strides(shape, l, strides);
+        init_array(shape, strides);
     }
 
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(const shape_type& shape,
-                                           const strides_type& strides, 
-                                           const T *ptr,
-                                           handle base)
-        : pybind_array(shape, strides, ptr, base)
+    template <class T>
+    inline pyarray<T>::pyarray(const shape_type& shape, const strides_type& strides)
     {
+        init_array(shape, strides);
     }
 
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(const shape_type& shape, 
-                                           const T* ptr,
-                                           handle base)
-        : pybind_array(shape, ptr, base)
-    {
-    }
-
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags>::pyarray(size_type count,
-                                           const T* ptr,
-                                           handle base)
-        : pybind_array(count, ptr, base)
-    {
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::dimension() const -> size_type
-    {
-        return pybind_array::ndim();
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::shape() const -> const shape_type&
-    {
-        // Until we have the CRTP on shape types, we copy the shape.
-        m_shape.resize(dimension());
-        std::copy(pybind_array::shape(), pybind_array::shape() + dimension(), m_shape.begin());
-        return m_shape;
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::strides() const -> const strides_type&
-    {
-        m_strides.resize(dimension());
-        std::transform(pybind_array::strides(), pybind_array::strides() + dimension(), m_strides.begin(),
-            [](size_type str) { return str / sizeof(value_type); });
-        return m_strides;
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::backstrides() const -> backstrides_type
-    {
-        backstrides_type tmp(*this);
-        return tmp;
-    }
-
-    template <class T, int ExtraFlags>
-    void pyarray<T, ExtraFlags>::reshape(const shape_type& shape)
-    {
-        if (!m_ptr || shape.size() != dimension() || !std::equal(shape.begin(), shape.end(), pybind_array::shape()))
-        {
-            reshape(shape, layout::row_major);
-        }
-    }
-
-    template <class T, int ExtraFlags>
-    void pyarray<T, ExtraFlags>::reshape(const shape_type& shape, layout l)
-    {
-        strides_type strides(shape.size());
-        size_type data_size = sizeof(value_type);
-        if (l == layout::row_major)
-        {
-            for (size_type i = strides.size(); i != 0; --i)
-            {
-                strides[i - 1] = data_size;
-                data_size = strides[i - 1] * shape[i - 1];
-                if (shape[i - 1] == 1)
-                {
-                    strides[i - 1] = 0;
-                }
-            }
-        }
-        else
-        {
-            for (size_type i = 0; i < strides.size(); ++i)
-            {
-                strides[i] = data_size;
-                data_size = strides[i] * shape[i];
-                if (shape[i] == 1)
-                {
-                    strides[i] = 0;
-                }
-            }
-        }
-        reshape(shape, strides);
-    }
-
-    template <class T, int ExtraFlags>
-    void pyarray<T, ExtraFlags>::reshape(const shape_type& shape, const strides_type& strides)
-    {
-        self_type tmp(shape, strides);
-        *this = std::move(tmp);
-    }
-
-    template <class T, int ExtraFlags>
-    template<typename... Args> 
-    inline auto pyarray<T, ExtraFlags>::operator()(Args... args) -> reference
-    {
-        return *(static_cast<pointer>(pybind_array::mutable_data()) + pybind_array::byte_offset(args...) / itemsize());
-    }
-
-    template <class T, int ExtraFlags>
-    template<typename... Args> 
-    inline auto pyarray<T, ExtraFlags>::operator()(Args... args) const -> const_reference
-    {
-        return *(static_cast<const_pointer>(pybind_array::data()) + pybind_array::byte_offset(args...) / itemsize());
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::operator[](const xindex& index) -> reference
-    {
-        return *(static_cast<pointer>(pybind_array::mutable_data()) + data_offset(index));
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::operator[](const xindex& index) const -> const_reference
-    {
-        return *(static_cast<const_pointer>(pybind_array::data()) + data_offset(index));
-    }
-
-    template <class T, int ExtraFlags>
-    template<typename... Args> 
-    inline auto pyarray<T, ExtraFlags>::data(Args... args) -> pointer
-    {
-        return static_cast<pointer>(pybind_array::mutable_data(args...));
-    }
-
-    template <class T, int ExtraFlags>
-    template<typename... Args>
-    inline auto pyarray<T, ExtraFlags>::data(Args... args) const -> const_pointer
-    {
-        return static_cast<const T*>(pybind_array::data(args...));
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    bool pyarray<T, ExtraFlags>::broadcast_shape(S& shape) const
-    {
-        return xt::broadcast_shape(this->shape(), shape);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    bool pyarray<T, ExtraFlags>::is_trivial_broadcast(const S& strides) const
-    {
-        return strides.size() == dimension() &&
-            std::equal(strides.begin(), strides.end(), this->strides().begin());
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xbegin() -> broadcast_iterator
-    {
-        return broadcast_iterator(stepper_begin(m_shape), &m_shape);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xend() -> broadcast_iterator
-    {
-        return broadcast_iterator(stepper_end(m_shape), &m_shape);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xbegin() const -> const_broadcast_iterator
-    {
-        return const_broadcast_iterator(stepper_begin(m_shape), &m_shape);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::xend() const -> const_broadcast_iterator
-    {
-        return const_broadcast_iterator(stepper_end(m_shape), &m_shape);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cxbegin() const -> const_broadcast_iterator
-    {
-        return xbegin();
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cxend() const -> const_broadcast_iterator
-    {
-        return xend();
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::xbegin(const S& shape) -> xiterator<stepper, S>
-    {
-        return xiterator<stepper, S>(stepper_begin(shape), &shape);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::xend(const S& shape) -> xiterator<stepper, S>
-    {
-        return xiterator<stepper, S>(stepper_end(shape), &shape);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::xbegin(const S& shape) const -> xiterator<const_stepper, S>
-    {
-        return xiterator<const_stepper, S>(stepper_begin(shape), &shape);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::xend(const S& shape) const -> xiterator<const_stepper, S>
-    {
-        return xiterator<const_stepper, S>(stepper_end(shape), &shape);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::cxbegin(const S& shape) const -> xiterator<const_stepper, S>
-    {
-        return xbegin(shape);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::cxend(const S& shape) const -> xiterator<const_stepper, S>
-    {
-        return xend(shape);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::stepper_begin(const S& shape) -> stepper
-    {
-        size_type offset = shape.size() - dimension();
-        return stepper(this, begin(), offset);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::stepper_end(const S& shape) -> stepper
-    {
-        size_type offset = shape.size() - dimension();
-        return stepper(this, end(), offset);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::stepper_begin(const S& shape) const -> const_stepper
-    {
-        size_type offset = shape.size() - dimension();
-        return const_stepper(this, begin(), offset);
-    }
-
-    template <class T, int ExtraFlags>
-    template <class S>
-    inline auto pyarray<T, ExtraFlags>::stepper_end(const S& shape) const -> const_stepper
-    {
-        size_type offset = shape.size() - dimension();
-        return const_stepper(this, end(), offset);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::begin() -> iterator
-    {
-        return reinterpret_cast<iterator>(pybind11::detail::array_proxy(m_ptr)->data);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::end() -> iterator
-    {
-        return begin() + pybind_array::size();
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::begin() const -> const_iterator
-    {
-        return reinterpret_cast<const_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::end() const -> const_iterator
-    {
-        return begin() + pybind_array::size();
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cbegin() const -> const_iterator
-    {
-        return reinterpret_cast<const_iterator>(pybind11::detail::array_proxy(m_ptr)->data);
-    }
-
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::cend() const -> const_iterator
-    {
-        return begin() + pybind_array::size();
-    }
-
-    template <class T, int ExtraFlags>
+    template <class T>
     template <class E>
-    inline pyarray<T, ExtraFlags>::pyarray(const xexpression<E>& e)
-         : pybind_array()
+    inline pyarray<T>::pyarray(const xexpression<E>& e)
     {
         semantic_base::assign(e);
     }
 
-    template <class T, int ExtraFlags>
+    template <class T>
     template <class E>
-    inline auto pyarray<T, ExtraFlags>::operator=(const xexpression<E>& e) -> self_type&
+    inline auto pyarray<T>::operator=(const xexpression<E>& e) -> self_type&
     {
         return semantic_base::operator=(e);
     }
 
-    template <class T, int ExtraFlags>
-    inline pyarray<T, ExtraFlags> pyarray<T, ExtraFlags>::ensure(pybind11::handle h)
+    template <class T>
+    inline auto pyarray<T>::ensure(pybind11::handle h) -> self_type
     {
-        auto result = pybind11::reinterpret_steal<pyarray>(raw_array_t(h.ptr()));
-        if (!pybind11::handle(result))
+        return base_type::ensure(h);
+    }
+
+    template <class T>
+    inline bool pyarray<T>::check_(pybind11::handle h)
+    {
+        return base_type::check_(h);
+    }
+
+    template <class T>
+    inline void pyarray<T>::init_array(const shape_type& shape, const strides_type& strides)
+    {
+        strides_type adapted_strides(strides);
+
+        std::transform(strides.begin(), strides.end(), adapted_strides.begin(),
+                [](auto v) { return sizeof(T) * v; });
+
+        int flags = NPY_ARRAY_ALIGNED;
+        if(!std::is_const<T>::value)
         {
-            PyErr_Clear();
+            flags |= NPY_ARRAY_WRITEABLE;
         }
-        return result;
+        int type_num = detail::numpy_traits<T>::type_num;
+        
+        npy_intp* shape_data = reinterpret_cast<npy_intp*>(const_cast<size_type*>(shape.data()));
+        npy_intp* strides_data = reinterpret_cast<npy_intp*>(adapted_strides.data());
+        auto tmp = pybind11::reinterpret_steal<pybind11::object>(
+                PyArray_New(&PyArray_Type, static_cast<int>(shape.size()), shape_data, type_num, strides_data,
+                            nullptr, static_cast<int>(sizeof(T)), flags, nullptr)
+                );
+        
+        if(!tmp)
+            throw std::runtime_error("NumPy: unable to create ndarray");
+
+        this->m_ptr = tmp.release().ptr();
+        init_from_python();
     }
 
-    template <class T, int ExtraFlags>
-    inline bool pyarray<T, ExtraFlags>::_check(pybind11::handle h)
+    template <class T>
+    inline void pyarray<T>::init_from_python()
     {
-        const auto &api = pybind11::detail::npy_api::get();
-        return api.PyArray_Check_(h.ptr())
-               && api.PyArray_EquivTypes_(pybind11::detail::array_proxy(h.ptr())->descr, pybind11::dtype::of<T>().ptr());
+        m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
+                                   static_cast<size_type>(PyArray_NDIM(this->python_array())));
+        m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(this->python_array())),
+                                       static_cast<size_type>(PyArray_NDIM(this->python_array())));
+        m_backstrides = backstrides_type(*this);
+        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
-    // Private methods
-
-    template <class T, int ExtraFlags>
-    template<typename... Args> 
-    inline auto pyarray<T, ExtraFlags>::index_at(Args... args) const -> size_type
+    template <class T>
+    inline auto pyarray<T>::shape_impl() const -> const inner_shape_type&
     {
-        return pybind_array::byte_offset(args...) / itemsize();
+        return m_shape;
     }
 
-    template <class T, int ExtraFlags>
-    inline auto pyarray<T, ExtraFlags>::data_offset(const xindex& index) const -> size_type
+    template <class T>
+    inline auto pyarray<T>::strides_impl() const -> const inner_strides_type&
     {
-        const strides_type& str = strides();
-        auto iter = index.begin();
-        iter += index.size() - str.size();
-        return std::inner_product(str.begin(), str.end(), iter, size_type(0)) / itemsize();
+        return m_strides;
     }
 
-    template <class T, int ExtraFlags>
-    constexpr auto pyarray<T, ExtraFlags>::itemsize() -> size_type
+    template <class T>
+    inline auto pyarray<T>::backstrides_impl() const -> const backstrides_type&
     {
-        return sizeof(value_type);
+        // The pyarray objet may be copied, invalidating m_backstrides. Building
+        // it each time it isasked avoids tricky bugs.
+        m_backstrides = backstrides_type(*this);
+        return m_backstrides;
     }
 
-    template <class T, int ExtraFlags>
-    inline bool pyarray<T, ExtraFlags>::is_non_null(PyObject* ptr)
+    template <class T>
+    inline auto pyarray<T>::data_impl() -> container_type&
     {
-        return ptr != nullptr;
+        return m_data;
     }
 
-    template <class T, int ExtraFlags>
-    inline PyObject* pyarray<T, ExtraFlags>::raw_array_t(PyObject* ptr)
+    template <class T>
+    inline auto pyarray<T>::data_impl() const -> const container_type&
     {
-        if (ptr == nullptr)
-        {
-            return nullptr;
-        }
-        return pybind11::detail::npy_api::get().PyArray_FromAny_(
-            ptr, pybind11::dtype::of<T>().release().ptr(), 0, 0,
-            pybind11::detail::npy_api::NPY_ENSURE_ARRAY_ | ExtraFlags, nullptr
-        );
+        return m_data;
     }
+
 }
 
 #endif
