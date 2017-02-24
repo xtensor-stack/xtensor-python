@@ -78,6 +78,8 @@ endif()
 configure_file(benchmark_pyarray.py benchmark_pyarray.py COPYONLY)
 configure_file(benchmark_pytensor.py benchmark_pytensor.py COPYONLY)
 configure_file(benchmark_pybind_array.py benchmark_pybind_array.py COPYONLY)
+configure_file(benchmark_pyvectorize.py benchmark_pyvectorize.py COPYONLY)
+configure_file(benchmark_pybind_vectorize.py benchmark_pybind_vectorize.py COPYONLY)
 
 add_custom_target(xbenchmark DEPENDS ${XTENSOR_PYTHON_BENCHMARK_TARGET})
 
