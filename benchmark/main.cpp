@@ -8,7 +8,6 @@
 #include "xtensor-python/pytensor.hpp"
 #include "xtensor-python/pyvectorize.hpp"
 
-#include <complex>
 using complex_t = std::complex<double>;
 
 namespace py = pybind11;

@@ -26,7 +26,7 @@ namespace xt
         {
         }
 
-        pybind11::object operator()(const pyarray<Args>&... args)
+        inline pyarray<R> operator()(const pyarray<Args>&... args)
         {
             pyarray<R> res = m_vectorizer(args...);
             return res;

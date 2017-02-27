@@ -7,6 +7,7 @@
 #include <numeric>
 
 namespace py = pybind11;
+using complex_t = std::complex<double>;
 
 // Examples
 
@@ -57,6 +58,11 @@ PYBIND11_PLUGIN(xtensor_python_test)
     m.def("readme_example2", xt::pyvectorize(readme_example2), "");
 
     m.def("vectorize_example1", xt::pyvectorize(add), "");
+
+    m.def("rect_to_polar", [](xt::pyarray<complex_t> const& a) {
+            return py::make_tuple(xt::pyvectorize([](complex_t x) { return std::abs(x); })(a),
+                                  xt::pyvectorize([](complex_t x) { return std::arg(x); })(a));
+    });
 
     return m.ptr();
 }
