@@ -280,6 +280,12 @@ namespace xt
 
         inline self_type operator+(difference_type n) const { return self_type(p_current + n); }
         inline self_type operator-(difference_type n) const { return self_type(p_current - n); }
+        inline self_type operator-(const self_type& rhs) const
+        {
+            self_type tmp(*this);
+            tmp -= (p_current - rhs.p_current);
+            return tmp;
+        }
 
         pointer get_pointer() const { return p_current; }
 

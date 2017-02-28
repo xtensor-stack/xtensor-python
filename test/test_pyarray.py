@@ -50,3 +50,9 @@ class ExampleTest(TestCase):
              [-1.499227,  0.136731,  1.646979,  1.643002,  0.128456],
              [-1.084323, -0.583843,  0.45342 ,  1.073811,  0.706945]], 1e-5)
 
+    def test_rect_to_polar(self):
+        print("test6")
+        x = np.ones(10, dtype=complex)
+        z = xt.rect_to_polar(x[::2]);
+        np.testing.assert_allclose(z, (np.ones(5, dtype=float), np.zeros(5, dtype=float)), 1e-5)
+

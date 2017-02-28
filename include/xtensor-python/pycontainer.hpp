@@ -14,6 +14,7 @@
 #include <cmath>
 #include "pybind11/pybind11.h"
 #include "pybind11/common.h"
+#include "pybind11/complex.h"
 // Because of layout, else xiterator and xtensor_forward are sufficient
 #include "xtensor/xcontainer.hpp"
 
@@ -186,6 +187,13 @@ namespace xt
             static constexpr int index = std::is_same<T, bool>::value ? 0 : 1 + (
                 std::is_integral<T>::value ? log2(sizeof(T)) * 2 + std::is_unsigned<T>::value : 8 + (
                     std::is_same<T, double>::value ? 1 : std::is_same<T, long double>::value ? 2 : 0));
+        };
+
+        template <class T>
+        struct is_fmt_numeric<std::complex<T>>
+        {
+            static constexpr bool value = true;
+            static constexpr int index = is_fmt_numeric<T>::index + 3;
         };
 
         template <class T>

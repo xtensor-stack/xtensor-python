@@ -6,8 +6,9 @@
 #include "xtensor/xarray.hpp"
 #include "xtensor-python/pyarray.hpp"
 #include "xtensor-python/pytensor.hpp"
+#include "xtensor-python/pyvectorize.hpp"
 
-#include <complex>
+using complex_t = std::complex<double>;
 
 namespace py = pybind11;
 
@@ -46,6 +47,19 @@ PYBIND11_PLUGIN(benchmark_xtensor_python)
             return sum;
         }
     );
+
+    m.def("rect_to_polar", [](xt::pyarray<complex_t> const& a) {
+            return py::make_tuple(xt::pyvectorize([](complex_t x) { return std::abs(x); })(a),
+                                  xt::pyvectorize([](complex_t x) { return std::arg(x); })(a));
+    });
+
+    m.def("pybind_rect_to_polar", [](py::array a) {
+            if (py::isinstance<py::array_t<complex_t>>(a))
+                return py::make_tuple(py::vectorize([](complex_t x) { return std::abs(x); })(a),
+                                      py::vectorize([](complex_t x) { return std::arg(x); })(a));
+            else
+                throw py::type_error("rect_to_polar unhandled type");
+    });
 
     return m.ptr();
 }
