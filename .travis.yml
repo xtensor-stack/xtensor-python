@@ -75,4 +75,4 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         export CXX=clang++ CC=clang;
       fi
-    - py.test . -s
+    - py.test .
