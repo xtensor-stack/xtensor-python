@@ -108,6 +108,7 @@ namespace xt
         using semantic_base = xcontainer_semantic<self_type>;
         using base_type = pycontainer<self_type>;
         using container_type = typename base_type::container_type;
+        using value_type = typename base_type::value_type; 
         using pointer = typename base_type::pointer;
         using size_type = typename base_type::size_type;
         using shape_type = typename base_type::shape_type;
@@ -117,6 +118,12 @@ namespace xt
         using inner_strides_type = typename base_type::inner_strides_type;
 
         pyarray() = default;
+        pyarray(const value_type& t);
+        pyarray(nested_initializer_list_t<T, 1> t);
+        pyarray(nested_initializer_list_t<T, 2> t);
+        pyarray(nested_initializer_list_t<T, 3> t);
+        pyarray(nested_initializer_list_t<T, 4> t);
+        pyarray(nested_initializer_list_t<T, 5> t);
 
         pyarray(pybind11::handle h, pybind11::object::borrowed_t);
         pyarray(pybind11::handle h, pybind11::object::stolen_t);
@@ -178,6 +185,48 @@ namespace xt
     /**************************
      * pyarray implementation *
      **************************/
+
+    template <class T>
+    inline pyarray<T>::pyarray(const value_type& t)
+    {
+        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        nested_copy(m_data.begin(), t);
+    }
+
+    template <class T>
+    inline pyarray<T>::pyarray(nested_initializer_list_t<T, 1> t)
+    {
+        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        nested_copy(m_data.begin(), t);
+    }
+
+    template <class T>
+    inline pyarray<T>::pyarray(nested_initializer_list_t<T, 2> t)
+    {
+        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        nested_copy(m_data.begin(), t);
+    }
+
+    template <class T>
+    inline pyarray<T>::pyarray(nested_initializer_list_t<T, 3> t)
+    {
+        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        nested_copy(m_data.begin(), t);
+    }
+
+    template <class T>
+    inline pyarray<T>::pyarray(nested_initializer_list_t<T, 4> t)
+    {
+        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        nested_copy(m_data.begin(), t);
+    }
+
+    template <class T>
+    inline pyarray<T>::pyarray(nested_initializer_list_t<T, 5> t)
+    {
+        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        nested_copy(m_data.begin(), t);
+    }
 
     template <class T>
     inline pyarray<T>::pyarray(pybind11::handle h, pybind11::object::borrowed_t)

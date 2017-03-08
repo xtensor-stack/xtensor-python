@@ -12,6 +12,7 @@
 #include <cstddef>
 #include <array>
 #include <algorithm>
+#include "xtensor/xutils.hpp"
 #include "xtensor/xsemantic.hpp"
 #include "xtensor/xiterator.hpp"
 
@@ -83,6 +84,7 @@ namespace xt
         using semantic_base = xcontainer_semantic<self_type>;
         using base_type = pycontainer<self_type>;
         using container_type = typename base_type::container_type;
+        using value_type = typename base_type::value_type; 
         using pointer = typename base_type::pointer;
         using size_type = typename base_type::size_type;
         using shape_type = typename base_type::shape_type;
@@ -92,7 +94,7 @@ namespace xt
         using inner_strides_type = typename base_type::inner_strides_type;
 
         pytensor() = default;
-
+        pytensor(nested_initializer_list_t<T, N> t);
         pytensor(pybind11::handle h, pybind11::object::borrowed_t);
         pytensor(pybind11::handle h, pybind11::object::stolen_t);
         pytensor(const pybind11::object &o);
@@ -136,6 +138,13 @@ namespace xt
     /***************************
      * pytensor implementation *
      ***************************/
+
+    template <class T, std::size_t N>
+    inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
+    {
+        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        nested_copy(m_data.begin(), t);
+    }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::borrowed_t)
