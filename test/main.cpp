@@ -11,19 +11,19 @@ using complex_t = std::complex<double>;
 
 // Examples
 
-double example1(xt::pyarray<double> &m)
+double example1(xt::pyarray<double>& m)
 {
     return m(0);
 }
 
-xt::pyarray<double> example2(xt::pyarray<double> &m)
+xt::pyarray<double> example2(xt::pyarray<double>& m)
 {
     return m + 2;
 }
 
 // Readme Examples
 
-double readme_example1(xt::pyarray<double> &m)
+double readme_example1(xt::pyarray<double>& m)
 {
     auto sines = xt::sin(m);
     return std::accumulate(sines.begin(), sines.end(), 0.0);
