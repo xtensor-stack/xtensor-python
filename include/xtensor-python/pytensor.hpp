@@ -61,6 +61,13 @@ namespace pybind11
 
 namespace xt
 {
+
+    template <class T, std::size_t N>
+    struct xiterable_inner_types<pytensor<T, N>>
+        : pycontainer_iterable_types<pytensor<T, N>>
+    {
+    };
+
     template <class T, std::size_t N>
     struct xcontainer_inner_types<pytensor<T, N>>
     {
