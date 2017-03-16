@@ -15,7 +15,8 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/common.h"
 #include "pybind11/complex.h"
-// Because of layout, else xiterator and xtensor_forward are sufficient
+
+// Because of layout, otherwise xiterator and xtensor_forward are sufficient
 #include "xtensor/xcontainer.hpp"
 
 namespace xt
@@ -144,26 +145,11 @@ namespace xt
         pycontainer(pycontainer&&) = default;
         pycontainer& operator=(pycontainer&&) = default;
 
-        void fill_default_strides(const shape_type& shape,
-                                  layout l,
-                                  strides_type& strides);
-
         static derived_type ensure(pybind11::handle h);
         static bool check_(pybind11::handle h);
         static PyObject* raw_array_t(PyObject* ptr);
 
         PyArrayObject* python_array();
-
-    private:
-
-        template <size_t dim = 0>
-        size_type data_offset(const inner_strides_type&) const;
-
-        template <size_t dim = 0, class... Args>
-        size_type data_offset(const inner_strides_type& strides, size_type i, Args... args) const;
-
-        template <class It>
-        size_type element_offset(const inner_strides_type& strides, It first, It last) const;
     };
 
     namespace detail
@@ -242,36 +228,6 @@ namespace xt
     }
 
     template <class D>
-    inline void pycontainer<D>::fill_default_strides(const shape_type& shape, layout l, strides_type& strides)
-    {
-        typename strides_type::value_type data_size = 1;
-        if(l == layout::row_major)
-        {
-            for(size_type i = strides.size(); i != 0; --i)
-            {
-                strides[i - 1] = data_size;
-                data_size = strides[i - 1] * shape[i - 1];
-                if(shape[i - 1] == 1)
-                {
-                    strides[i - 1] = 0;
-                }
-            }
-        }
-        else
-        {
-            for(size_type i = 0; i < strides.size(); ++i)
-            {
-                strides[i] = data_size;
-                data_size = strides[i] * shape[i];
-                if(shape[i] == 1)
-                {
-                    strides[i] = 0;
-                }
-            }
-        }
-    }
-
-    template <class D>
     inline auto pycontainer<D>::ensure(pybind11::handle h) -> derived_type
     {
         auto result = pybind11::reinterpret_steal<derived_type>(raw_array_t(h.ptr()));
@@ -307,29 +263,6 @@ namespace xt
     }
 
     template <class D>
-    template <size_t dim>
-    inline auto pycontainer<D>::data_offset(const inner_strides_type&) const -> size_type
-    {
-        return 0;
-    }
-
-    template <class D>
-    template <size_t dim, class... Args>
-    inline auto pycontainer<D>::data_offset(const inner_strides_type& strides, size_type i, Args... args) const -> size_type
-    {
-        return i * strides[dim] + data_offset<dim + 1>(strides, args...);
-    }
-
-    template <class D>
-    template <class It>
-    inline auto pycontainer<D>::element_offset(const inner_strides_type& strides, It, It last) const -> size_type
-    {
-        It first = last;
-        first -= strides.size();
-        return std::inner_product(strides.begin(), strides.end(), first, size_type(0));
-    }
-
-    template <class D>
     inline auto pycontainer<D>::size() const -> size_type
     {
         return data().size();
@@ -344,7 +277,7 @@ namespace xt
     template <class D>
     inline auto pycontainer<D>::shape() const -> const inner_shape_type&
     {
-        return static_cast<const derived_type*>(this)-> shape_impl();
+        return static_cast<const derived_type*>(this)->shape_impl();
     }
 
     template <class D>
@@ -372,7 +305,7 @@ namespace xt
     inline void pycontainer<D>::reshape(const shape_type& shape, layout l)
     {
         strides_type strides(shape.size());
-        fill_default_strides(shape, l, strides);
+        compute_strides(shape, l, strides);
         reshape(shape, strides);
     }
 
@@ -387,7 +320,7 @@ namespace xt
     template <class... Args>
     inline auto pycontainer<D>::operator()(Args... args) -> reference
     {
-        size_type index = data_offset(strides(), static_cast<size_type>(args)...);
+        size_type index = data_offset<size_type>(strides(), static_cast<size_type>(args)...);
         return data()[index];
     }
 
@@ -395,7 +328,7 @@ namespace xt
     template <class... Args>
     inline auto pycontainer<D>::operator()(Args... args) const -> const_reference
     {
-        size_type index = data_offset(strides(), static_cast<size_type>(args)...);
+        size_type index = data_offset<size_type>(strides(), static_cast<size_type>(args)...);
         return data()[index];
     }
 
@@ -415,14 +348,14 @@ namespace xt
     template <class It>
     inline auto pycontainer<D>::element(It first, It last) -> reference
     {
-        return data()[element_offset(strides(), first, last)];
+        return data()[element_offset<size_type>(strides(), first, last)];
     }
 
     template <class D>
     template <class It>
     inline auto pycontainer<D>::element(It first, It last) const -> const_reference
     {
-        return data()[element_offset(strides(), first, last)];
+        return data()[element_offset<size_type>(strides(), first, last)];
     }
 
     template <class D>
@@ -602,7 +535,6 @@ namespace xt
         size_type offset = shape.size() - dimension();
         return const_stepper(static_cast<const derived_type*>(this), data().end(), offset);
     }
-
 }
 
 #endif

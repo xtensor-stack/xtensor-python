@@ -59,7 +59,7 @@ install:
     # Useful for debugging any issues with conda
     - conda info -a
     - cd test
-    - conda install xtensor==0.6.0 pytest numpy pybind11==2.0.1 -c conda-forge
+    - conda install xtensor==0.7.1 pytest numpy pybind11==2.0.1 -c conda-forge
     - cp -r $TRAVIS_BUILD_DIR/include/* $HOME/miniconda/include/
 
 script:
