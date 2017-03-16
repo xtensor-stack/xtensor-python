@@ -82,6 +82,12 @@ namespace xt
     };
 
     template <class T>
+    struct xiterable_inner_types<pyarray<T>>
+        : pycontainer_iterable_types<pyarray<T>>
+    {
+    };
+
+    template <class T>
     struct xcontainer_inner_types<pyarray<T>>
     {
         using container_type = pybuffer_adaptor<T>;

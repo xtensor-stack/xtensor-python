@@ -43,3 +43,6 @@ docs/build/
 __pycache__
 build
 *.egg-info
+
+# py.test
+.cache/
