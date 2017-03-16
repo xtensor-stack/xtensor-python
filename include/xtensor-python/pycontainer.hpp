@@ -138,7 +138,7 @@ namespace xt
     {
         using stepper = xstepper<D>;
         using const_stepper = xstepper<const D>;
-        using inner_shape_type = typename xcontainer_inner_types<D>::shape_type;
+        using inner_shape_type = typename xcontainer_inner_types<D>::inner_shape_type;
         using broadcast_iterator = xiterator<stepper, inner_shape_type*>;
         using const_broadcast_iterator = xiterator<const_stepper, inner_shape_type*>;
     };
