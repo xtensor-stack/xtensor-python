@@ -21,7 +21,8 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
 
     double sum_of_sines(xt::pyarray<double> &m)
     {
-        auto sines = xt::sin(m);  // sines does not actually hold any value, which are only computed upon access
+        auto sines = xt::sin(m);
+        // sines does not actually hold any value, which are only computed upon access
         return std::accumulate(sines.begin(), sines.end(), 0.0);
     }
 
@@ -29,7 +30,8 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
     {
         pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
-        m.def("sum_of_sines", sum_of_sines, "Computes the sum of the sines of the values of the input array");
+        m.def("sum_of_sines", sum_of_sines,
+            "Computes the sum of the sines of the values of the input array");
 
         return m.ptr();
     }

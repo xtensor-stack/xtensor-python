@@ -63,6 +63,11 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 
    api_reference
 
+.. toctree::
+   :caption: DEVELOPER ZONE
+
+   releasing
+
 .. _NumPy: http://www.numpy.org
 .. _`Buffer Protocol`: https://docs.python.org/3/c-api/buffer.html
 .. _xtensor: https://github.com/QuantStack/xtensor

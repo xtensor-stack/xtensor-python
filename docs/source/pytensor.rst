@@ -4,11 +4,9 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-API reference
-=============
+pytensor
+========
 
-.. toctree::
-   :maxdepth: 2
-
-   pyarray
-   pytensor
+.. doxygenclass:: xt::pytensor
+   :project: xtensor-python
+   :members:

@@ -28,7 +28,7 @@ Install cookiecutter_
 
     pip install cookiecutter
 
-After installing cookiecutter, use the xtensor-cookiecutter_:
+After installing cookiecutter, use the xtensor_cookiecutter_:
 
 .. code::
 
@@ -50,5 +50,5 @@ This will produce a directory containing all the required content for a minimal 
 project making use of xtensor with all the required boilerplate for package management,
 together with a few basic examples.
 
-.. _xtensor-cookicutter: https://github.com/QuantStack/xtensor-cookiecutter
+.. _xtensor_cookicutter: https://github.com/QuantStack/xtensor-cookiecutter
 .. _cookiecutter: https://github.com/audreyr/cookiecutter
