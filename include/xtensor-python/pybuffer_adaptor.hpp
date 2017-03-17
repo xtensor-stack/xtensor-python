@@ -11,6 +11,7 @@
 
 #include <cstddef>
 #include <iterator>
+#include <algorithm>
 
 namespace xt
 {
@@ -18,7 +19,6 @@ namespace xt
     template <class T>
     class pybuffer_adaptor
     {
-
     public:
 
         using value_type = T;
@@ -72,6 +72,24 @@ namespace xt
         size_type m_size;
     };
 
+    template<class T>
+    bool operator==(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y);
+
+    template<class T>
+    bool operator<(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y);
+
+    template<class T>
+    bool operator!=(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y);
+
+    template<class T>
+    bool operator>(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y);
+
+    template<class T>
+    bool operator<=(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y);
+
+    template<class T>
+    bool operator>=(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y);
+
     template <std::size_t N>
     class pystrides_iterator;
 
@@ -110,7 +128,7 @@ namespace xt
         const_pointer p_data;
         size_type m_size;
     };
-    
+
     /***********************************
      * pybuffer_adaptor implementation *
      ***********************************/
@@ -240,7 +258,43 @@ namespace xt
     {
         return rend();
     }
-    
+ 
+    template<class T>
+    inline bool operator==(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y)
+    {
+        return (x.size() == y.size() && std::equal(x.begin(), x.end(), y.begin()));
+    }
+
+    template<class T>
+    inline bool operator<(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y)
+    {
+        return std::lexicographical_compare(x.begin(), x.end(), y.begin(), y.end());
+    }
+
+    template<class T>
+    inline bool operator!=(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y)
+    {
+        return !(x == y);
+    }
+
+    template<class T>
+    inline bool operator>(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y)
+    {
+        return y < x;
+    }
+
+    template<class T>
+    inline bool operator<=(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y)
+    {
+        return !(y < x);
+    }
+
+    template<class T>
+    inline bool operator>=(const pybuffer_adaptor<T>& x, const pybuffer_adaptor<T>& y)
+    {
+        return !(x < y);
+    }
+
     /*************************************
      * pystrides_iterator implementation *
      *************************************/
