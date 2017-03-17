@@ -51,17 +51,21 @@ PYBIND11_PLUGIN(xtensor_python_test)
 
     py::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
-    m.def("example1", example1, "");
-    m.def("example2", example2, "");
+    m.def("example1", example1);
+    m.def("example2", example2);
 
-    m.def("readme_example1", readme_example1, "");
-    m.def("readme_example2", xt::pyvectorize(readme_example2), "");
+    m.def("readme_example1", readme_example1);
+    m.def("readme_example2", xt::pyvectorize(readme_example2));
 
-    m.def("vectorize_example1", xt::pyvectorize(add), "");
+    m.def("vectorize_example1", xt::pyvectorize(add));
 
-    m.def("rect_to_polar", [](xt::pyarray<complex_t> const& a) {
-            return py::make_tuple(xt::pyvectorize([](complex_t x) { return std::abs(x); })(a),
-                                  xt::pyvectorize([](complex_t x) { return std::arg(x); })(a));
+    m.def("rect_to_polar", [](const xt::pyarray<complex_t>& a) {
+        return py::make_tuple(xt::pyvectorize([](complex_t x) { return std::abs(x); })(a),
+                              xt::pyvectorize([](complex_t x) { return std::arg(x); })(a));
+    });
+
+    m.def("compare_shapes", [](const xt::pyarray<double>& a, const xt::pyarray<double>& b) {
+        return a.shape() == b.shape();
     });
 
     return m.ptr();

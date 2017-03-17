@@ -50,3 +50,10 @@ class ExampleTest(TestCase):
         z = xt.rect_to_polar(x[::2]);
         np.testing.assert_allclose(z, (np.ones(5, dtype=float), np.zeros(5, dtype=float)), 1e-5)
 
+    def test_shape_comparison(self):
+        x = np.ones([4, 4])
+        y = np.ones([5, 5])
+        z = np.zeros([4, 4])
+        self.assertFalse(xt.compare_shapes(x, y))
+        self.assertTrue(xt.compare_shapes(x, z))
+
