@@ -295,7 +295,7 @@ namespace xt
     template <class D>
     inline void pycontainer<D>::reshape(const shape_type& shape, layout l)
     {
-        strides_type strides(shape.size());
+        strides_type strides = make_sequence<strides_type>(shape.size(), size_type(1));
         compute_strides(shape, l, strides);
         reshape(shape, strides);
     }

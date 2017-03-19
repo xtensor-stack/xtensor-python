@@ -72,7 +72,7 @@ namespace xt
     struct xcontainer_inner_types<pytensor<T, N>>
     {
         using container_type = pybuffer_adaptor<T>;
-        using shape_type = std::array<npy_int, N>;
+        using shape_type = std::array<npy_intp, N>;
         using strides_type = shape_type;
         using backstrides_type = shape_type;
         using inner_shape_type = shape_type;
@@ -132,12 +132,12 @@ namespace xt
         void init_from_python();
         void compute_backstrides();
 
-        const inner_shape_type& shape_impl() const;
-        const inner_strides_type& strides_impl() const;
-        const backstrides_type& backstrides_impl() const;
+        const inner_shape_type& shape_impl() const noexcept;
+        const inner_strides_type& strides_impl() const noexcept;
+        const backstrides_type& backstrides_impl() const noexcept;
 
-        container_type& data_impl();
-        const container_type& data_impl() const;
+        container_type& data_impl() noexcept;
+        const container_type& data_impl() const noexcept;
 
         friend class pycontainer<pytensor<T, N>>;
     };
@@ -226,9 +226,9 @@ namespace xt
             flags |= NPY_ARRAY_WRITEABLE;
         }
         int type_num = detail::numpy_traits<T>::type_num;
-        
+
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
-                PyArray_New(&PyArray_Type, N, reinterpret_cast<npy_intp*>(shape.data()),
+                PyArray_New(&PyArray_Type, N, const_cast<npy_intp*>(shape.data()),
                             type_num, python_strides, nullptr, sizeof(T), flags, nullptr)
                 );
         
@@ -274,31 +274,31 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::shape_impl() const -> const inner_shape_type&
+    inline auto pytensor<T, N>::shape_impl() const noexcept -> const inner_shape_type&
     {
         return m_shape;
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::strides_impl() const -> const inner_strides_type&
+    inline auto pytensor<T, N>::strides_impl() const noexcept -> const inner_strides_type&
     {
         return m_strides;
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::backstrides_impl() const -> const backstrides_type&
+    inline auto pytensor<T, N>::backstrides_impl() const noexcept -> const backstrides_type&
     {
         return m_backstrides;
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::data_impl() -> container_type&
+    inline auto pytensor<T, N>::data_impl() noexcept -> container_type&
     {
         return m_data;
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::data_impl() const -> const container_type&
+    inline auto pytensor<T, N>::data_impl() const noexcept -> const container_type&
     {
         return m_data;
     }
