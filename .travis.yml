@@ -8,7 +8,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env: COMPILER=gcc GCC=4.9
+      env: COMPILER=gcc GCC=4.9 PYBIND=stable
     - os: linux
       addons:
         apt:
@@ -16,7 +16,15 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-      env: COMPILER=gcc GCC=5
+      env: COMPILER=gcc GCC=5 PYBIND=stable
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env: COMPILER=gcc GCC=6 PYBIND=stable
     - os: linux
       addons:
         apt:
@@ -25,7 +33,7 @@ matrix:
             - llvm-toolchain-precise-3.6
           packages:
             - clang-3.6
-      env: COMPILER=clang CLANG=3.6
+      env: COMPILER=clang CLANG=3.6 PYBIND=stable
     - os: linux
       addons:
         apt:
@@ -34,10 +42,28 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
-      env: COMPILER=clang CLANG=3.7
+      env: COMPILER=clang CLANG=3.7 PYBIND=stable
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+          packages:
+            - clang-3.8
+      env: COMPILER=clang CLANG=3.8 PYBIND=stable
     - os: osx
       osx_image: xcode8
       compiler: clang
+  allow_failures:
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: COMPILER=gcc GCC=6 PYBIND=master
 env:
   global:
     - MINCONDA_VERSION="latest"
@@ -59,7 +85,12 @@ install:
     # Useful for debugging any issues with conda
     - conda info -a
     - cd test
-    - conda install xtensor==0.7.2 pytest numpy pybind11==2.0.1 -c conda-forge
+    - conda install xtensor==0.7.2 pytest numpy -c conda-forge
+    - if [[ "$PYBIND" == "master" ]]; then
+         pip install git+git://github.com/pybind11/pybind11.git;
+      elif [[ "$PYBIND" == "stable" ]]; then
+         conda install pybind11==2.0.1 -c conda-forge;
+      fi
     - cp -r $TRAVIS_BUILD_DIR/include/* $HOME/miniconda/include/
 
 script:
