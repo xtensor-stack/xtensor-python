@@ -64,7 +64,7 @@ namespace xt
 
     template <class T, std::size_t N>
     struct xiterable_inner_types<pytensor<T, N>>
-        : pycontainer_iterable_types<pytensor<T, N>>
+        : xcontainer_iterable_types<pytensor<T, N>>
     {
     };
 
@@ -77,6 +77,7 @@ namespace xt
         using backstrides_type = shape_type;
         using inner_shape_type = shape_type;
         using inner_strides_type = strides_type;
+        using inner_backstrides_type = backstrides_type;
         using temporary_type = pytensor<T, N>;
     };
 
@@ -99,6 +100,7 @@ namespace xt
         using backstrides_type = typename base_type::backstrides_type;
         using inner_shape_type = typename base_type::inner_shape_type;
         using inner_strides_type = typename base_type::inner_strides_type;
+        using inner_backstrides_type = typename base_type::inner_backstrides_type;
 
         pytensor() = default;
         pytensor(nested_initializer_list_t<T, N> t);
@@ -125,7 +127,7 @@ namespace xt
 
         inner_shape_type m_shape;
         inner_strides_type m_strides;
-        backstrides_type m_backstrides;
+        inner_backstrides_type m_backstrides;
         container_type m_data;
 
         void init_tensor(const shape_type& shape, const strides_type& strides);
@@ -134,12 +136,12 @@ namespace xt
 
         const inner_shape_type& shape_impl() const noexcept;
         const inner_strides_type& strides_impl() const noexcept;
-        const backstrides_type& backstrides_impl() const noexcept;
+        const inner_backstrides_type& backstrides_impl() const noexcept;
 
         container_type& data_impl() noexcept;
         const container_type& data_impl() const noexcept;
 
-        friend class pycontainer<pytensor<T, N>>;
+        friend class xcontainer<pytensor<T, N>>;
     };
 
     /***************************
@@ -286,7 +288,7 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::backstrides_impl() const noexcept -> const backstrides_type&
+    inline auto pytensor<T, N>::backstrides_impl() const noexcept -> const inner_backstrides_type&
     {
         return m_backstrides;
     }
