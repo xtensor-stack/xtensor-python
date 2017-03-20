@@ -8,10 +8,11 @@
 Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ multi-dimensional array library.
 
  - `xtensor` is a C++ library for multi-dimensional arrays enabling numpy-style broadcasting and lazy computing.
- - `xtensor-python` enables inplace use of numpy arrays with all the benefits from `xtensor`
+ - `xtensor-python` enables inplace use of numpy arrays in C++ with all the benefits from `xtensor`
 
      - C++ universal function and broadcasting 
      - STL - compliant APIs.
+     - A broad coverage of numpy APIs (see [the numpy to xtensor cheat sheet](http://xtensor.readthedocs.io/en/latest/numpy.html)).
 
 The Python bindings for `xtensor` are based on the [pybind11](https://github.com/pybind/pybind11/) C++ library, which enables seemless interoperability between C++ and Python.
 
@@ -41,6 +42,18 @@ conda install -c conda-forge xtensor-python
 These dependencies are automatically resolved when using the conda package manager.
 
 ## Usage
+
+xtensor-python offers two container types wrapping numpy arrays inplace to provide an xtensor semantics
+
+ - ``pytensor``
+ - ``pyarray``.
+
+Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtensor cheat sheet](http://xtensor.readthedocs.io/en/latest/numpy.html)).
+
+ - On the one hand, ``pyarray`` has a dynamic number of dimensions. Just like numpy arrays, it can be reshaped with a shape of a different length (and the new shape is reflected on the python side).
+
+ - On the other hand ``pytensor`` has a compile time number of dimensions, specified with a template parameter. Shapes of ``pytensor`` instances are stack allocated, making ``pytensor`` a significantly
+faster expression than ``pyarray``.
 
 ### Example 1: Use an algorithm of the C++ library on a numpy array inplace.
 
