@@ -83,7 +83,7 @@ namespace xt
 
     template <class T>
     struct xiterable_inner_types<pyarray<T>>
-        : pycontainer_iterable_types<pyarray<T>>
+        : xcontainer_iterable_types<pyarray<T>>
     {
     };
 
@@ -96,6 +96,7 @@ namespace xt
         using backstrides_type = pyarray_backstrides<pyarray<T>>;
         using inner_shape_type = pybuffer_adaptor<std::size_t>;
         using inner_strides_type = pystrides_adaptor<sizeof(T)>;
+        using inner_backstrides_type = backstrides_type;
         using temporary_type = pyarray<T>;
     };
 
@@ -122,6 +123,7 @@ namespace xt
         using backstrides_type = typename base_type::backstrides_type;
         using inner_shape_type = typename base_type::inner_shape_type;
         using inner_strides_type = typename base_type::inner_strides_type;
+        using inner_backstrides_type = typename base_type::inner_backstrides_type;
 
         pyarray() = default;
         pyarray(const value_type& t);
@@ -154,7 +156,7 @@ namespace xt
 
         inner_shape_type m_shape;
         inner_strides_type m_strides;
-        mutable backstrides_type m_backstrides;
+        mutable inner_backstrides_type m_backstrides;
         container_type m_data;
 
         void init_array(const shape_type& shape, const strides_type& strides);
@@ -162,12 +164,12 @@ namespace xt
 
         const inner_shape_type& shape_impl() const;
         const inner_strides_type& strides_impl() const;
-        const backstrides_type& backstrides_impl() const;
+        const inner_backstrides_type& backstrides_impl() const;
 
         container_type& data_impl();
         const container_type& data_impl() const;
 
-        friend class pycontainer<pyarray<T>>;
+        friend class xcontainer<pyarray<T>>;
     };
     
     /**************************************
@@ -175,7 +177,7 @@ namespace xt
      **************************************/
 
     template <class A>
-    inline pyarray_backstrides<A>::pyarray_backstrides(const A& a)
+    inline pyarray_backstrides<A>::pyarray_backstrides(const array_type& a)
         : p_a(&a)
     {
     }
@@ -349,10 +351,10 @@ namespace xt
     }
 
     template <class T>
-    inline auto pyarray<T>::backstrides_impl() const -> const backstrides_type&
+    inline auto pyarray<T>::backstrides_impl() const -> const inner_backstrides_type&
     {
-        // The pyarray objet may be copied, invalidating m_backstrides. Building
-        // it each time it isasked avoids tricky bugs.
+        // The pyarray object may be copied, invalidating m_backstrides. Building
+        // it each time it is needed avoids tricky bugs.
         m_backstrides = backstrides_type(*this);
         return m_backstrides;
     }
