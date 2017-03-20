@@ -264,14 +264,7 @@ namespace xt
     {
         for(size_type i = 0; i < m_shape.size(); ++i)
         {
-            if(m_shape[i] == 1)
-            {
-                m_backstrides[i] = 0;
-            }
-            else
-            {
-                m_backstrides[i] = m_strides[i] * (m_shape[i] - 1);
-            }
+            m_backstrides[i] = m_strides[i] * (m_shape[i] - 1);
         }
     }
 
