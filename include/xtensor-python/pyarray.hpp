@@ -261,7 +261,7 @@ namespace xt
     inline pyarray<T>::pyarray(const shape_type& shape, layout l)
     {
         strides_type strides;
-        base_type::fill_default_strides(shape, l, strides);
+        compute_strides(shape, l, strides);
         init_array(shape, strides);
     }
 
