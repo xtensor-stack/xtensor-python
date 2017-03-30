@@ -76,6 +76,8 @@ namespace xt
 
         value_type operator[](size_type i) const;
 
+        size_type size() const;
+
     private:
 
         const array_type* p_a;
@@ -108,7 +110,6 @@ namespace xt
     class pyarray : public pycontainer<pyarray<T>>,
                     public xcontainer_semantic<pyarray<T>>
     {
-
     public:
 
         using self_type = pyarray<T>;
@@ -116,6 +117,8 @@ namespace xt
         using base_type = pycontainer<self_type>;
         using container_type = typename base_type::container_type;
         using value_type = typename base_type::value_type; 
+        using reference = typename base_type::reference; 
+        using const_reference = typename base_type::const_reference; 
         using pointer = typename base_type::pointer;
         using size_type = typename base_type::size_type;
         using shape_type = typename base_type::shape_type;
@@ -125,7 +128,9 @@ namespace xt
         using inner_strides_type = typename base_type::inner_strides_type;
         using inner_backstrides_type = typename base_type::inner_backstrides_type;
 
-        pyarray() = default;
+        pyarray();
+        pyarray(const self_type&) = default;
+        pyarray(self_type&&) = default;
         pyarray(const value_type& t);
         pyarray(nested_initializer_list_t<T, 1> t);
         pyarray(nested_initializer_list_t<T, 2> t);
@@ -138,10 +143,15 @@ namespace xt
         pyarray(const pybind11::object &o);
         
         explicit pyarray(const shape_type& shape, layout l = layout::row_major);
-        pyarray(const shape_type& shape, const strides_type& strides);
+        explicit pyarray(const shape_type& shape, const_reference value, layout l = layout::row_major);
+        explicit pyarray(const shape_type& shape, const strides_type& strides, const_reference value);
+        explicit pyarray(const shape_type& shape, const strides_type& strides);
 
         template <class E>
         pyarray(const xexpression<E>& e);
+
+        self_type& operator=(const self_type& e) = default;
+        self_type& operator=(self_type&& e) = default;
 
         template <class E>
         self_type& operator=(const xexpression<E>& e);
@@ -183,6 +193,12 @@ namespace xt
     }
 
     template <class A>
+    inline auto pyarray_backstrides<A>::size() const -> size_type
+    {
+        return p_a->dimension();
+    }
+
+    template <class A>
     inline auto pyarray_backstrides<A>::operator[](size_type i) const -> value_type
     {
         value_type sh = p_a->shape()[i];
@@ -193,6 +209,16 @@ namespace xt
     /**************************
      * pyarray implementation *
      **************************/
+
+    template <class T>
+    inline pyarray<T>::pyarray()
+    {
+        // TODO: avoid allocation
+        shape_type shape = make_sequence<shape_type>(0, size_type(1));
+        strides_type strides = make_sequence<strides_type>(0, size_type(0));
+        init_array(shape, strides);
+        m_data[0] = T();
+    }
 
     template <class T>
     inline pyarray<T>::pyarray(const value_type& t)
@@ -260,9 +286,25 @@ namespace xt
     template <class T>
     inline pyarray<T>::pyarray(const shape_type& shape, layout l)
     {
-        strides_type strides;
+        strides_type strides(shape.size());
         compute_strides(shape, l, strides);
         init_array(shape, strides);
+    }
+
+    template <class T>
+    inline pyarray<T>::pyarray(const shape_type& shape, const_reference value, layout l)
+    {
+        strides_type strides(shape.size());
+        compute_strides(shape, l, strides);
+        init_array(shape, strides);
+        std::fill(m_data.begin(), m_data.end(), value);
+    }
+    
+    template <class T>
+    inline pyarray<T>::pyarray(const shape_type& shape, const strides_type& strides, const_reference value)
+    {
+        init_array(shape, strides);
+        std::fill(m_data.begin(), m_data.end(), value);
     }
 
     template <class T>
@@ -306,7 +348,7 @@ namespace xt
                 [](auto v) { return sizeof(T) * v; });
 
         int flags = NPY_ARRAY_ALIGNED;
-        if(!std::is_const<T>::value)
+        if (!std::is_const<T>::value)
         {
             flags |= NPY_ARRAY_WRITEABLE;
         }
@@ -319,8 +361,10 @@ namespace xt
                             nullptr, static_cast<int>(sizeof(T)), flags, nullptr)
                 );
         
-        if(!tmp)
+        if (!tmp)
+        {
             throw std::runtime_error("NumPy: unable to create ndarray");
+        }
 
         this->m_ptr = tmp.release().ptr();
         init_from_python();
@@ -370,7 +414,6 @@ namespace xt
     {
         return m_data;
     }
-
 }
 
 #endif
