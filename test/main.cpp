@@ -8,12 +8,7 @@
 
 #include <Python.h>
 
-#include "pybind11/numpy.h"
-#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
-#include "numpy/arrayobject.h"
-
 #include "gtest/gtest.h"
-#include <iostream>
 
 int main(int argc, char* argv[])
 {
