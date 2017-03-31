@@ -85,7 +85,6 @@ namespace xt
     class pytensor : public pycontainer<pytensor<T, N>>,
                      public xcontainer_semantic<pytensor<T, N>>
     {
-
     public:
 
         using self_type = pytensor<T, N>;
@@ -93,6 +92,8 @@ namespace xt
         using base_type = pycontainer<self_type>;
         using container_type = typename base_type::container_type;
         using value_type = typename base_type::value_type; 
+        using reference = typename base_type::reference; 
+        using const_reference = typename base_type::const_reference;
         using pointer = typename base_type::pointer;
         using size_type = typename base_type::size_type;
         using shape_type = typename base_type::shape_type;
@@ -102,14 +103,21 @@ namespace xt
         using inner_strides_type = typename base_type::inner_strides_type;
         using inner_backstrides_type = typename base_type::inner_backstrides_type;
 
-        pytensor() = default;
+        pytensor();
+        pytensor(const self_type&) = default;
+        pytensor(self_type&&) = default;
         pytensor(nested_initializer_list_t<T, N> t);
         pytensor(pybind11::handle h, pybind11::object::borrowed_t);
         pytensor(pybind11::handle h, pybind11::object::stolen_t);
-        pytensor(const pybind11::object &o);
+        pytensor(const pybind11::object& o);
         
         explicit pytensor(const shape_type& shape, layout l = layout::row_major);
-        pytensor(const shape_type& shape, const strides_type& strides);
+        explicit pytensor(const shape_type& shape, const_reference value, layout l = layout::row_major);
+        explicit pytensor(const shape_type& shape, const strides_type& strides, const_reference value);
+        explicit pytensor(const shape_type& shape, const strides_type& strides);
+
+        self_type& operator=(const self_type& e) = default;
+        self_type& operator=(self_type&& e) = default;
 
         template <class E>
         pytensor(const xexpression<E>& e);
@@ -134,8 +142,11 @@ namespace xt
         void init_from_python();
         void compute_backstrides();
 
+        inner_shape_type& shape_impl() noexcept;
         const inner_shape_type& shape_impl() const noexcept;
+        inner_strides_type& strides_impl() noexcept;
         const inner_strides_type& strides_impl() const noexcept;
+        inner_backstrides_type& backstrides_impl() noexcept;
         const inner_backstrides_type& backstrides_impl() const noexcept;
 
         container_type& data_impl() noexcept;
@@ -147,6 +158,15 @@ namespace xt
     /***************************
      * pytensor implementation *
      ***************************/
+
+    template <class T, std::size_t N>
+    inline pytensor<T, N>::pytensor()
+    {
+        m_shape = make_sequence<shape_type>(N, size_type(1));
+        m_strides = make_sequence<strides_type>(N, size_type(0));
+        init_tensor(m_shape, m_strides);
+        m_data[0] = T();
+    }
 
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
@@ -181,6 +201,25 @@ namespace xt
     {
         compute_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
+    }
+
+    template <class T, std::size_t N>
+    inline pytensor<T, N>::pytensor(const shape_type& shape,
+                                    const_reference value,
+                                    layout l)
+    {
+        compute_strides(shape, l, m_strides);
+        init_tensor(shape, m_strides);
+        std::fill(m_data.begin(), m_data.end(), value);
+    }
+
+    template <class T, std::size_t N>
+    inline pytensor<T, N>::pytensor(const shape_type& shape,
+                                    const strides_type& strides,
+                                    const_reference value)
+    {
+        init_tensor(shape, strides);
+        std::fill(m_data.begin(), m_data.end(), value);
     }
 
     template <class T, std::size_t N>
@@ -223,7 +262,7 @@ namespace xt
         std::transform(strides.begin(), strides.end(), python_strides,
                 [](auto v) { return sizeof(T) * v; });
         int flags = NPY_ARRAY_ALIGNED;
-        if(!std::is_const<T>::value)
+        if (!std::is_const<T>::value)
         {
             flags |= NPY_ARRAY_WRITEABLE;
         }
@@ -234,8 +273,10 @@ namespace xt
                             type_num, python_strides, nullptr, sizeof(T), flags, nullptr)
                 );
         
-        if(!tmp)
+        if (!tmp)
+        {
             throw std::runtime_error("NumPy: unable to create ndarray");
+        }
 
         this->m_ptr = tmp.release().ptr();
         m_shape = shape;
@@ -248,8 +289,10 @@ namespace xt
     template <class T, std::size_t N>
     inline void pytensor<T, N>::init_from_python()
     {
-        if(PyArray_NDIM(this->python_array()) != N)
+        if (PyArray_NDIM(this->python_array()) != N)
+        {
             throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");
+        }
 
         std::copy(PyArray_DIMS(this->python_array()), PyArray_DIMS(this->python_array()) + N, m_shape.begin());
         std::transform(PyArray_STRIDES(this->python_array()), PyArray_STRIDES(this->python_array()) + N, m_strides.begin(),
@@ -262,10 +305,16 @@ namespace xt
     template <class T, std::size_t N>
     inline void pytensor<T, N>::compute_backstrides()
     {
-        for(size_type i = 0; i < m_shape.size(); ++i)
+        for (size_type i = 0; i < m_shape.size(); ++i)
         {
             m_backstrides[i] = m_strides[i] * (m_shape[i] - 1);
         }
+    }
+
+    template <class T, std::size_t N>
+    inline auto pytensor<T, N>::shape_impl() noexcept -> inner_shape_type&
+    {
+        return m_shape;
     }
 
     template <class T, std::size_t N>
@@ -275,9 +324,21 @@ namespace xt
     }
 
     template <class T, std::size_t N>
+    inline auto pytensor<T, N>::strides_impl() noexcept -> inner_strides_type&
+    {
+        return m_strides;
+    }
+
+    template <class T, std::size_t N>
     inline auto pytensor<T, N>::strides_impl() const noexcept -> const inner_strides_type&
     {
         return m_strides;
+    }
+
+    template <class T, std::size_t N>
+    inline auto pytensor<T, N>::backstrides_impl() noexcept -> inner_backstrides_type&
+    {
+        return m_backstrides;
     }
 
     template <class T, std::size_t N>
@@ -297,7 +358,6 @@ namespace xt
     {
         return m_data;
     }
-
 }
 
 #endif

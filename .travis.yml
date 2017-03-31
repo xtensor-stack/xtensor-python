@@ -67,7 +67,6 @@ install:
     - conda update -q conda
     # Useful for debugging any issues with conda
     - conda info -a
-    - cd test
     - conda install xtensor==0.8.0 pytest numpy pybind11==2.1.0 -c conda-forge
     - cp -r $TRAVIS_BUILD_DIR/include/* $HOME/miniconda/include/
 
@@ -84,4 +83,5 @@ script:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         export CXX=clang++ CC=clang;
       fi
-    - py.test .
+    - py.test -s
+

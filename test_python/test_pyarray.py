@@ -48,7 +48,7 @@ class ExampleTest(TestCase):
     def test_rect_to_polar(self):
         x = np.ones(10, dtype=complex)
         z = xt.rect_to_polar(x[::2]);
-        np.testing.assert_allclose(z, (np.ones(5, dtype=float), np.zeros(5, dtype=float)), 1e-5)
+        np.testing.assert_allclose(z, np.ones(5, dtype=float), 1e-5)
 
     def test_shape_comparison(self):
         x = np.ones([4, 4])

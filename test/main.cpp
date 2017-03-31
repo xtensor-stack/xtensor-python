@@ -1,72 +1,31 @@
+/***************************************************************************
+* Copyright (c) 2016, Johan Mabille and Sylvain Corlay                     *
+*                                                                          *
+* Distributed under the terms of the BSD 3-Clause License.                 *
+*                                                                          *
+* The full license is in the file LICENSE, distributed with this software. *
+****************************************************************************/
+
+#include <Python.h>
+
+#include "pybind11/numpy.h"
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "numpy/arrayobject.h"
-#include "xtensor/xmath.hpp"
-#include "xtensor/xarray.hpp"
-#include "xtensor-python/pyarray.hpp"
-#include "xtensor-python/pyvectorize.hpp"
-#include <numeric>
 
-namespace py = pybind11;
-using complex_t = std::complex<double>;
+#include "gtest/gtest.h"
+#include <iostream>
 
-// Examples
-
-double example1(xt::pyarray<double>& m)
+int main(int argc, char* argv[])
 {
-    return m(0);
+    // Initialize all the things (google-test and Python interpreter)
+    Py_Initialize();
+    ::testing::InitGoogleTest(&argc, argv);
+
+    // Run test suite
+    int ret = RUN_ALL_TESTS();
+
+    // Closure of the Python interpreter
+    Py_Finalize();
+    return ret;
 }
 
-xt::pyarray<double> example2(xt::pyarray<double>& m)
-{
-    return m + 2;
-}
-
-// Readme Examples
-
-double readme_example1(xt::pyarray<double>& m)
-{
-    auto sines = xt::sin(m);
-    return std::accumulate(sines.begin(), sines.end(), 0.0);
-}
-
-double readme_example2(double i, double j)
-{
-    return std::sin(i) -  std::cos(j);
-}
-
-// Vectorize Examples
-
-int add(int i, int j)
-{
-    return i + j;
-}
-
-PYBIND11_PLUGIN(xtensor_python_test)
-{
-    if(_import_array() < 0)
-    {
-        PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
-        return nullptr;
-    }
-
-    py::module m("xtensor_python_test", "Test module for xtensor python bindings");
-
-    m.def("example1", example1);
-    m.def("example2", example2);
-
-    m.def("readme_example1", readme_example1);
-    m.def("readme_example2", xt::pyvectorize(readme_example2));
-
-    m.def("vectorize_example1", xt::pyvectorize(add));
-
-    m.def("rect_to_polar", [](const xt::pyarray<complex_t>& a) {
-        return py::make_tuple(xt::pyvectorize([](complex_t x) { return std::abs(x); })(a),
-                              xt::pyvectorize([](complex_t x) { return std::arg(x); })(a));
-    });
-
-    m.def("compare_shapes", [](const xt::pyarray<double>& a, const xt::pyarray<double>& b) {
-        return a.shape() == b.shape();
-    });
-
-    return m.ptr();
-}

@@ -17,16 +17,39 @@
 #include "pybind11/common.h"
 #include "pybind11/complex.h"
 
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include "numpy/arrayobject.h"
+
 #include "xtensor/xcontainer.hpp"
 
 namespace xt
 {
+    static bool is_numpy_imported = false;
+
+    class numpy_import
+    {
+    protected:
+
+        inline numpy_import()
+        {
+            if (!is_numpy_imported)
+            {
+                _import_array();
+                is_numpy_imported = true;
+            }
+        }
+
+        numpy_import(const numpy_import&) = default;
+        numpy_import(numpy_import&&) = default;
+        numpy_import& operator=(const numpy_import&) = default;
+        numpy_import& operator=(numpy_import&&) = default;
+    };
 
     template <class D>
     class pycontainer : public pybind11::object,
-                        public xcontainer<D>
+                        public xcontainer<D>,
+                        private numpy_import
     {
-
     public:
 
         using derived_type = D;
@@ -64,12 +87,13 @@ namespace xt
         void reshape(const shape_type& shape, const strides_type& strides);
 
         using base_type::operator();
+        using base_type::operator[];
         using base_type::begin;
         using base_type::end;
 
     protected:
 
-        pycontainer() = default;
+        pycontainer();
         ~pycontainer() = default;
 
         pycontainer(pybind11::handle h, borrowed_t);
@@ -117,6 +141,12 @@ namespace xt
      ******************************/
 
     template <class D>
+    inline pycontainer<D>::pycontainer()
+        : pybind11::object()
+    {
+    }
+
+    template <class D>
     inline pycontainer<D>::pycontainer(pybind11::handle h, borrowed_t)
         : pybind11::object(h, borrowed)
     {
@@ -132,16 +162,20 @@ namespace xt
     inline pycontainer<D>::pycontainer(const pybind11::object& o)
         : pybind11::object(raw_array_t(o.ptr()), pybind11::object::stolen)
     {
-        if(!this->m_ptr)
+        if (!this->m_ptr)
+        {
             throw pybind11::error_already_set();
+        }
     }
 
     template <class D>
     inline auto pycontainer<D>::ensure(pybind11::handle h) -> derived_type
     {
         auto result = pybind11::reinterpret_steal<derived_type>(raw_array_t(h.ptr()));
-        if(result.ptr() == nullptr)
+        if (result.ptr() == nullptr)
+        {
             PyErr_Clear();
+        }
         return result;
     }
 
@@ -156,9 +190,10 @@ namespace xt
     template <class D>
     inline PyObject* pycontainer<D>::raw_array_t(PyObject* ptr)
     {
-        if(ptr == nullptr)
+        if (ptr == nullptr)
+        {
             return nullptr;
-
+        }
         int type_num = detail::numpy_traits<value_type>::type_num;
         auto res = PyArray_FromAny(ptr, PyArray_DescrFromType(type_num), 0, 0, 
                                    NPY_ARRAY_ENSUREARRAY | NPY_ARRAY_FORCECAST, nullptr);
@@ -174,7 +209,7 @@ namespace xt
     template <class D>
     inline void pycontainer<D>::reshape(const shape_type& shape)
     {
-        if(shape.size() != this->dimension() || !std::equal(shape.begin(), shape.end(), this->shape().begin()))
+        if (shape.size() != this->dimension() || !std::equal(shape.begin(), shape.end(), this->shape().begin()))
         {
             reshape(shape, layout::row_major);
         }

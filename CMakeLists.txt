@@ -43,25 +43,22 @@ set(XTENSOR_PYTHON_HEADERS
 )
 
 if(BUILD_TESTS)
-
     include_directories(${XTENSOR_PYTHON_INCLUDE_DIR})
     find_package(xtensor REQUIRED)
     include_directories(${xtensor_INCLUDE_DIR})
     find_package(NumPy REQUIRED)
     include_directories(${NUMPY_INCLUDE_DIRS})
 
-    #TODO replace this with a find_package(pybind11 REQUIRED)
-    # in parent CMakeLists when pybind11 CMakeLists has been fixed.
-    find_package(PythonLibs REQUIRED)
-    include_directories(${PYTHON_INCLUDE_DIRS})
+    find_package(pybind11 REQUIRED)
+    include_directories(${pybind11_INCLUDE_DIRS})
 
-if(MSVC)
-    set(PYTHON_MODULE_EXTENSION ".pyd")
-else()
-    set(PYTHON_MODULE_EXTENSION ".so")
-endif()
+    if(MSVC)
+        set(PYTHON_MODULE_EXTENSION ".pyd")
+    else()
+        set(PYTHON_MODULE_EXTENSION ".so")
+    endif()
 
-#add_subdirectory(test)
+    add_subdirectory(test)
     add_subdirectory(benchmark)
 endif()
 
