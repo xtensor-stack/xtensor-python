@@ -10,7 +10,7 @@
 
 #include "xtensor/xmath.hpp"
 #include "xtensor/xarray.hpp"
-
+#define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyarray.hpp"
 #include "xtensor-python/pyvectorize.hpp"
 
@@ -51,6 +51,7 @@ int add(int i, int j)
 
 PYBIND11_PLUGIN(xtensor_python_test)
 {
+    import_array()
     py::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
     m.def("example1", example1);

@@ -8,12 +8,19 @@
 
 #include <Python.h>
 
+#include "pybind11/numpy.h"
+
+#define FORCE_IMPORT_ARRAY
+#include "xtensor-python/pyarray.hpp"
+
 #include "gtest/gtest.h"
+#include <iostream>
 
 int main(int argc, char* argv[])
 {
     // Initialize all the things (google-test and Python interpreter)
     Py_Initialize();
+    import_array()
     ::testing::InitGoogleTest(&argc, argv);
 
     // Run test suite

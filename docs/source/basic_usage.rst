@@ -17,6 +17,7 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
     #include <numeric>                        // Standard library import for std::accumulate
     #include "pybind11/pybind11.h"            // Pybind11 import to define Python bindings
     #include "xtensor/xmath.hpp"              // xtensor import for the C++ universal functions
+    #define FORCE_IMPORT_ARRAY                // numpy C api loading
     #include "xtensor-python/pyarray.hpp"     // Numpy bindings
 
     double sum_of_sines(xt::pyarray<double> &m)
@@ -28,6 +29,7 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
 
     PYBIND11_PLUGIN(xtensor_python_test)
     {
+        import_array() //this is actually a macro
         pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
         m.def("sum_of_sines", sum_of_sines,
@@ -64,6 +66,7 @@ Example 2: Create a universal function from a C++ scalar function
 .. code::
 
     #include "pybind11/pybind11.h"
+    #define FORCE_IMPORT_ARRAY
     #include "xtensor-python/pyvectorize.hpp"
     #include <numeric>
     #include <cmath>
@@ -77,6 +80,7 @@ Example 2: Create a universal function from a C++ scalar function
 
     PYBIND11_PLUGIN(xtensor_python_test)
     {
+        import_array()
         py::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
         m.def("vectorized_func", xt::pyvectorize(scalar_func), "");
