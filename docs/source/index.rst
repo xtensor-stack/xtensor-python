@@ -8,6 +8,9 @@
 
 Python bindings for the xtensor_ C++ multi-dimensional array library.
 
+Introduction
+------------
+
 What are ``xtensor`` and ``xtensor-python``?
 
  - ``xtensor`` is a C++ library for multi-dimensional arrays enabling numpy-style broadcasting and lazy computing.
@@ -16,10 +19,13 @@ What are ``xtensor`` and ``xtensor-python``?
      - C++ universal functions and broadcasting 
      - STL - compliant APIs.
 
+
+The `numpy to xtensor cheat sheet`_ from the ``xtensor`` documentation shows how numpy APIs translate to C++ with ``xtensor``.
+
 The Python bindings for ``xtensor`` are based on the pybind11_ C++ library, which enables seemless interoperability between C++ and Python.
 
-Introduction
-------------
+Enabling numpy arrays in your C++ libraries
+-------------------------------------------
 
 Instead of exposing new types to python, ``xtensor-python`` enables the use of NumPy_ data structures from C++ using Python's `Buffer Protocol`_.
 
@@ -70,6 +76,7 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 
 .. _NumPy: http://www.numpy.org
 .. _`Buffer Protocol`: https://docs.python.org/3/c-api/buffer.html
+.. _`numpy to xtensor cheat sheet`: http://xtensor.readthedocs.io/en/latest/numpy.html 
 .. _xtensor: https://github.com/QuantStack/xtensor
 .. _pybind11: https://github.com/pybind/pybind11 
 .. _xtensor-cookiecutter: https://github.com/QuantStack/xtensor-cookiecutter 
