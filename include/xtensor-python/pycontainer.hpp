@@ -17,6 +17,12 @@
 #include "pybind11/common.h"
 #include "pybind11/complex.h"
 
+#ifndef FORCE_IMPORT_ARRAY
+#define NO_IMPORT_ARRAY
+#endif
+#ifndef PY_ARRAY_UNIQUE_SYMBOL
+#define PY_ARRAY_UNIQUE_SYMBOL xtensor_python_ARRAY_API
+#endif
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include "numpy/arrayobject.h"
 
@@ -24,31 +30,10 @@
 
 namespace xt
 {
-    static bool is_numpy_imported = false;
-
-    class numpy_import
-    {
-    protected:
-
-        inline numpy_import()
-        {
-            if (!is_numpy_imported)
-            {
-                _import_array();
-                is_numpy_imported = true;
-            }
-        }
-
-        numpy_import(const numpy_import&) = default;
-        numpy_import(numpy_import&&) = default;
-        numpy_import& operator=(const numpy_import&) = default;
-        numpy_import& operator=(numpy_import&&) = default;
-    };
 
     template <class D>
     class pycontainer : public pybind11::object,
-                        public xcontainer<D>,
-                        private numpy_import
+                        public xcontainer<D>
     {
     public:
 

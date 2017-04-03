@@ -7,9 +7,7 @@
 ****************************************************************************/
 
 #include "gtest/gtest.h"
-
 #include "test_common.hpp"
-
 #include "xtensor-python/pyarray.hpp"
 
 namespace xt
