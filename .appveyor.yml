@@ -22,9 +22,13 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda install pytest -c conda-forge
-  - conda install xtensor==0.8.0 pytest numpy pybind11==2.1.0 -c conda-forge
-  - xcopy /S %APPVEYOR_BUILD_FOLDER%\include %MINICONDA%\include
+  - conda install gtest cmake -c conda-forge
+  - conda install xtensor==0.8.1 pytest numpy pybind11==2.1.0 -c conda-forge
+  - cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\Library -DBUILD_TESTS=ON .
+  - nmake test_xtensor_python
+  - nmake install
 
 build_script:
   - py.test -s
+  - cd test
+  - .\test_xtensor_python

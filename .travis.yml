@@ -52,6 +52,20 @@ env:
     - MINCONDA_VERSION="latest"
     - MINCONDA_LINUX="Linux-x86_64"
     - MINCONDA_OSX="MacOSX-x86_64"
+before_install:
+    - |
+      # Configure build variables
+      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+        if [[ "$COMPILER" == "gcc" ]]; then
+          export CXX=g++-$GCC CC=gcc-$GCC;
+        fi
+        if [[ "$COMPILER" == "clang" ]]; then
+          export CXX=clang++-$CLANG CC=clang-$CLANG;
+        fi
+      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+        export CXX=clang++ CC=clang PYTHONHOME=$HOME/miniconda;
+      fi
+    
 install:
     # Define the version of miniconda to download
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
@@ -67,21 +81,17 @@ install:
     - conda update -q conda
     # Useful for debugging any issues with conda
     - conda info -a
-    - conda install xtensor==0.8.0 pytest numpy pybind11==2.1.0 -c conda-forge
-    - cp -r $TRAVIS_BUILD_DIR/include/* $HOME/miniconda/include/
+    - conda install xtensor==0.8.1 pytest numpy pybind11==2.1.0 -c conda-forge
+    - cd test
+    - conda env create -f ./test-environment.yml
+    - source activate test-xtensor-python
+    - cd ..
+    - cmake -DBUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda .
+    - make -j2 test_xtensor_python
+    - make install
 
 script:
-    - |
-      # Configure build variables
-      if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-        if [[ "$COMPILER" == "gcc" ]]; then
-          export CXX=g++-$GCC CC=gcc-$GCC;
-        fi
-        if [[ "$COMPILER" == "clang" ]]; then
-          export CXX=clang++-$CLANG CC=clang-$CLANG;
-        fi
-      elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-        export CXX=clang++ CC=clang;
-      fi
     - py.test -s
+    - cd test
+    - ./test_xtensor_python
 
