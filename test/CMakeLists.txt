@@ -106,8 +106,9 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 set(XTENSOR_PYTHON_TESTS
     main.cpp
-    test_pytensor.cpp
     test_pyarray.cpp
+    test_pytensor.cpp
+    test_pyvectorize.cpp
 )
 
 set(XTENSOR_PYTHON_TARGET test_xtensor_python)
