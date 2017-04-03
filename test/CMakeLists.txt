@@ -68,9 +68,14 @@ if(MSVC)
     endforeach()
 endif()
 
-if (DOWNLOAD_GTEST)
-    # Download and unpack googletest at configure time
-    configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+if (DOWNLOAD_GTEST OR GTEST_SRC_DIR)
+    if(DOWNLOAD_GTEST)
+        # Download and unpack googletest at configure time
+        configure_file(downloadGTest.cmake.in googletest-download/CMakeLists.txt)
+    else()
+        # Copy local source of googletest at configure time
+        configure_file(copyGTest.cmake.in googletest-download/CMakeLists.txt)
+    endif()
     execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
                     RESULT_VARIABLE result
                     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
@@ -115,7 +120,7 @@ set(XTENSOR_PYTHON_TARGET test_xtensor_python)
 add_executable(${XTENSOR_PYTHON_TARGET} ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON_HEADERS} ${XTENSOR_HEADERS})
 target_link_libraries(${XTENSOR_PYTHON_TARGET} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES})
 
-if(DOWNLOAD_GTEST)
+if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_custom_target(xtest COMMAND ./test_xtensor_python DEPENDS gtest_main ${XTENSOR_PYTHON_TARGET})
 else()
     add_custom_target(xtest COMMAND ./test_xtensor_python DEPENDS ${XTENSOR_PYTHON_TARGET})

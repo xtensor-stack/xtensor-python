@@ -31,8 +31,6 @@ message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 # Build
 # =====
 
-OPTION(BUILD_TESTS "xtensor test suite" ON)
-
 set(XTENSOR_PYTHON_HEADERS
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pyarray.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pybuffer_adaptor.hpp
@@ -41,6 +39,13 @@ set(XTENSOR_PYTHON_HEADERS
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pyvectorize.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/xtensor_python_config.hpp
 )
+
+OPTION(BUILD_TESTS "xtensor test suite" OFF)
+OPTION(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
+
+if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
+    set(BUILD_TESTS ON)
+endif()
 
 if(BUILD_TESTS)
     include_directories(${XTENSOR_PYTHON_INCLUDE_DIR})
