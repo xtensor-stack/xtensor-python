@@ -4,7 +4,7 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-.. image:: http://quantstack.net/assets/images/xtensor-python.svg
+.. image:: xtensor-python.svg
 
 Python bindings for the xtensor_ C++ multi-dimensional array library.
 
