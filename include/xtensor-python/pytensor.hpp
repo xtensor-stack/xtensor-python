@@ -140,7 +140,6 @@ namespace xt
 
         void init_tensor(const shape_type& shape, const strides_type& strides);
         void init_from_python();
-        void compute_backstrides();
 
         inner_shape_type& shape_impl() noexcept;
         const inner_shape_type& shape_impl() const noexcept;
@@ -281,7 +280,7 @@ namespace xt
         this->m_ptr = tmp.release().ptr();
         m_shape = shape;
         m_strides = strides;
-        compute_backstrides();
+        adapt_strides(m_shape, m_strides, m_backstrides);
         m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
                                 static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
@@ -297,18 +296,9 @@ namespace xt
         std::copy(PyArray_DIMS(this->python_array()), PyArray_DIMS(this->python_array()) + N, m_shape.begin());
         std::transform(PyArray_STRIDES(this->python_array()), PyArray_STRIDES(this->python_array()) + N, m_strides.begin(),
                 [](auto v) { return v / sizeof(T); });
-        compute_backstrides();
+        adapt_strides(m_shape, m_strides, m_backstrides);
         m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
                                 static_cast<size_type>(PyArray_SIZE(this->python_array())));
-    }
-
-    template <class T, std::size_t N>
-    inline void pytensor<T, N>::compute_backstrides()
-    {
-        for (size_type i = 0; i < m_shape.size(); ++i)
-        {
-            m_backstrides[i] = m_strides[i] * (m_shape[i] - 1);
-        }
     }
 
     template <class T, std::size_t N>
