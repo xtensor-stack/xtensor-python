@@ -31,6 +31,16 @@
 namespace xt
 {
 
+    /**
+     * @class pycontainer
+     * @brief Base class for xtensor containers wrapping numpy arryays.
+     *
+     * The pycontainer class should not be instantiated directly. Instead, used should
+     * use pytensor and pyarray instancs.
+     *
+     * @tparam D The derived type, i.e. the inheriting class for which pycontainer
+     *           provides the interface.
+     */
     template <class D>
     class pycontainer : public pybind11::object,
                         public xcontainer<D>
@@ -191,6 +201,10 @@ namespace xt
         return reinterpret_cast<PyArrayObject*>(this->m_ptr);
     }
 
+    /**
+     * Reshapes the container.
+     * @param shape the new shape
+     */
     template <class D>
     inline void pycontainer<D>::reshape(const shape_type& shape)
     {
@@ -200,6 +214,11 @@ namespace xt
         }
     }
 
+    /**
+     * Reshapes the container.
+     * @param shape the new shape
+     * @param l the new layout
+     */
     template <class D>
     inline void pycontainer<D>::reshape(const shape_type& shape, layout l)
     {
@@ -208,6 +227,11 @@ namespace xt
         reshape(shape, strides);
     }
 
+    /**
+     * Reshapes the container.
+     * @param shape the new shape
+     * @param strides the new strides
+     */
     template <class D>
     inline void pycontainer<D>::reshape(const shape_type& shape, const strides_type& strides)
     {
