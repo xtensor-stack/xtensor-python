@@ -172,12 +172,12 @@ namespace xt
         void init_array(const shape_type& shape, const strides_type& strides);
         void init_from_python();
 
-        const inner_shape_type& shape_impl() const;
-        const inner_strides_type& strides_impl() const;
-        const inner_backstrides_type& backstrides_impl() const;
+        const inner_shape_type& shape_impl() const noexcept;
+        const inner_strides_type& strides_impl() const noexcept;
+        const inner_backstrides_type& backstrides_impl() const noexcept;
 
-        container_type& data_impl();
-        const container_type& data_impl() const;
+        container_type& data_impl() noexcept;
+        const container_type& data_impl() const noexcept;
 
         friend class xcontainer<pyarray<T>>;
     };
@@ -383,19 +383,19 @@ namespace xt
     }
 
     template <class T>
-    inline auto pyarray<T>::shape_impl() const -> const inner_shape_type&
+    inline auto pyarray<T>::shape_impl() const noexcept -> const inner_shape_type&
     {
         return m_shape;
     }
 
     template <class T>
-    inline auto pyarray<T>::strides_impl() const -> const inner_strides_type&
+    inline auto pyarray<T>::strides_impl() const noexcept -> const inner_strides_type&
     {
         return m_strides;
     }
 
     template <class T>
-    inline auto pyarray<T>::backstrides_impl() const -> const inner_backstrides_type&
+    inline auto pyarray<T>::backstrides_impl() const noexcept -> const inner_backstrides_type&
     {
         // The pyarray object may be copied, invalidating m_backstrides. Building
         // it each time it is needed avoids tricky bugs.
@@ -404,13 +404,13 @@ namespace xt
     }
 
     template <class T>
-    inline auto pyarray<T>::data_impl() -> container_type&
+    inline auto pyarray<T>::data_impl() noexcept -> container_type&
     {
         return m_data;
     }
 
     template <class T>
-    inline auto pyarray<T>::data_impl() const -> const container_type&
+    inline auto pyarray<T>::data_impl() const noexcept -> const container_type&
     {
         return m_data;
     }
