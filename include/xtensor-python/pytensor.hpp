@@ -81,6 +81,20 @@ namespace xt
         using temporary_type = pytensor<T, N>;
     };
 
+    /**
+     * @class pytensor
+     * @brief Multidimensional container providing the xtensor container semantics wrapping a numpy array.
+     *
+     * pytensor is similar to the xtensor container in that it has a static dimensionality.
+     *
+     * Unlike with the pyarray container, pytensor cannot be reshaped with a different number of dimensions
+     * and reshapes are not reflected on the Python side. However, pytensor has benefits compared to pyarray
+     * in terms of performances. pytensor shapes are stack-allocated which makes iteration upon pytensor
+     * faster than with pyarray.
+     *
+     * @tparam T The type of the element stored in the pyarray.
+     * @sa pyarray
+     */
     template <class T, std::size_t N>
     class pytensor : public pycontainer<pytensor<T, N>>,
                      public xcontainer_semantic<pytensor<T, N>>
@@ -158,6 +172,13 @@ namespace xt
      * pytensor implementation *
      ***************************/
 
+    /**
+     * @name Constructors
+     */
+    //@{
+    /**
+     * Allocates an uninitialized pytensor that holds 1 element.
+     */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor()
     {
@@ -167,6 +188,9 @@ namespace xt
         m_data[0] = T();
     }
 
+    /**
+     * Allocates a pytensor with a nested initializer list.
+     */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
     {
@@ -195,6 +219,12 @@ namespace xt
         init_from_python();
     }
 
+    /**
+     * Allocates an uninitialized pytensor with the specified shape and
+     * layout.
+     * @param shape the shape of the pytensor
+     * @param l the layout of the pytensor
+     */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape, layout l)
     {
@@ -202,6 +232,13 @@ namespace xt
         init_tensor(shape, m_strides);
     }
 
+    /**
+     * Allocates a pytensor with the specified shape and layout. Elements
+     * are initialized to the specified value.
+     * @param shape the shape of the pytensor
+     * @param value the value of the elements
+     * @param l the layout of the pytensor
+     */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape,
                                     const_reference value,
@@ -212,6 +249,13 @@ namespace xt
         std::fill(m_data.begin(), m_data.end(), value);
     }
 
+    /**
+     * Allocates an uninitialized pytensor with the specified shape and strides.
+     * Elements are initialized to the specified value.
+     * @param shape the shape of the pytensor
+     * @param strides the strides of the pytensor
+     * @param value the value of the elements
+     */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape,
                                     const strides_type& strides,
@@ -221,13 +265,26 @@ namespace xt
         std::fill(m_data.begin(), m_data.end(), value);
     }
 
+    /**
+     * Allocates an uninitialized pytensor with the specified shape and strides.
+     * @param shape the shape of the pytensor
+     * @param strides the strides of the pytensor
+     */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape,
                                     const strides_type& strides)
     {
         init_tensor(shape, strides);
     }
+    //@}
 
+    /**
+     * @name Extended copy semantic
+     */
+    //@{
+    /**
+     * The extended copy constructor.
+     */
     template <class T, std::size_t N>
     template <class E>
     inline pytensor<T, N>::pytensor(const xexpression<E>& e)
@@ -235,12 +292,16 @@ namespace xt
         semantic_base::assign(e);
     }
 
+    /**
+     * The extended assignment operator.
+     */
     template <class T, std::size_t N>
     template <class E>
     inline auto pytensor<T, N>::operator=(const xexpression<E>& e) -> self_type&
     {
         return semantic_base::operator=(e);
     }
+    //@}
 
     template <class T, std::size_t N>
     inline auto pytensor<T, N>::ensure(pybind11::handle h) -> self_type

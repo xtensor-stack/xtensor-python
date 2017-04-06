@@ -7,8 +7,19 @@
 API reference
 =============
 
+Containers
+----------
+
 .. toctree::
    :maxdepth: 2
 
    pyarray
    pytensor
+
+Numpy universal functions
+-------------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   pyvectorize

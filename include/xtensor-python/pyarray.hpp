@@ -64,7 +64,6 @@ namespace xt
     template <class A>
     class pyarray_backstrides
     {
-
     public:
 
         using array_type = A;
@@ -104,7 +103,13 @@ namespace xt
 
     /**
      * @class pyarray
-     * @brief Wrapper on the Python buffer protocol.
+     * @brief Multidimensional container providing the xtensor container semantics to a numpy array.
+     *
+     * pyarray is similar to the xarray container in that it has a dynamic dimensionality. Reshapes of
+     * a pyarray container are reflected in the underlying numpy array.
+     *
+     * @tparam T The type of the element stored in the pyarray.
+     * @sa pytensor
      */
     template <class T>
     class pyarray : public pycontainer<pyarray<T>>,
@@ -210,6 +215,10 @@ namespace xt
      * pyarray implementation *
      **************************/
 
+    /**
+     * @name Constructors
+     */
+    //@{
     template <class T>
     inline pyarray<T>::pyarray()
     {
@@ -220,6 +229,9 @@ namespace xt
         m_data[0] = T();
     }
 
+    /**
+     * Allocates a pyarray with nested initializer lists.
+     */
     template <class T>
     inline pyarray<T>::pyarray(const value_type& t)
     {
@@ -283,6 +295,12 @@ namespace xt
         init_from_python();
     }
 
+    /**
+     * Allocates an uninitialized pyarray with the specified shape and
+     * layout.
+     * @param shape the shape of the pyarray
+     * @param l the layout of the pyarray
+     */
     template <class T>
     inline pyarray<T>::pyarray(const shape_type& shape, layout l)
     {
@@ -291,6 +309,13 @@ namespace xt
         init_array(shape, strides);
     }
 
+    /**
+     * Allocates a pyarray with the specified shape and layout. Elements
+     * are initialized to the specified value.
+     * @param shape the shape of the pyarray
+     * @param value the value of the elements
+     * @param l the layout of the pyarray
+     */
     template <class T>
     inline pyarray<T>::pyarray(const shape_type& shape, const_reference value, layout l)
     {
@@ -300,6 +325,13 @@ namespace xt
         std::fill(m_data.begin(), m_data.end(), value);
     }
     
+    /**
+     * Allocates an uninitialized pyarray with the specified shape and strides.
+     * Elements are initialized to the specified value.
+     * @param shape the shape of the pyarray
+     * @param strides the strides of the pyarray
+     * @param value the value of the elements
+     */
     template <class T>
     inline pyarray<T>::pyarray(const shape_type& shape, const strides_type& strides, const_reference value)
     {
@@ -307,12 +339,25 @@ namespace xt
         std::fill(m_data.begin(), m_data.end(), value);
     }
 
+    /**
+     * Allocates an uninitialized pyarray with the specified shape and strides.
+     * @param shape the shape of the pyarray
+     * @param strides the strides of the pyarray
+     */
     template <class T>
     inline pyarray<T>::pyarray(const shape_type& shape, const strides_type& strides)
     {
         init_array(shape, strides);
     }
+    //@}
 
+    /**
+     * @name Extended copy semantic
+     */
+    //@{
+    /**
+     * The extended copy constructor.
+     */
     template <class T>
     template <class E>
     inline pyarray<T>::pyarray(const xexpression<E>& e)
@@ -320,12 +365,16 @@ namespace xt
         semantic_base::assign(e);
     }
 
+    /**
+     * The extended assignment operator.
+     */
     template <class T>
     template <class E>
     inline auto pyarray<T>::operator=(const xexpression<E>& e) -> self_type&
     {
         return semantic_base::operator=(e);
     }
+    //@}
 
     template <class T>
     inline auto pyarray<T>::ensure(pybind11::handle h) -> self_type
@@ -397,8 +446,9 @@ namespace xt
     template <class T>
     inline auto pyarray<T>::backstrides_impl() const noexcept -> const inner_backstrides_type&
     {
-        // The pyarray object may be copied, invalidating m_backstrides. Building
-        // it each time it is needed avoids tricky bugs.
+        // m_backstrides wraps the numpy array backstrides, which is a raw pointer.
+        // The address of the raw pointer stored in the wrapper would be invalidated when the pyarray is copied.
+        // Hence, we build a new backstrides object (cheap wrapper around the underlying pointer) upon access.
         m_backstrides = backstrides_type(*this);
         return m_backstrides;
     }
