@@ -176,15 +176,15 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::borrowed_t)
-        : base_type(h, pybind11::object::borrowed)
+    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::borrowed_t b)
+        : base_type(h, b)
     {
         init_from_python();
     }
 
     template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::stolen_t)
-        : base_type(h, pybind11::object::stolen)
+    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::stolen_t s)
+        : base_type(h, s)
     {
         init_from_python();
     }
