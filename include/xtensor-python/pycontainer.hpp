@@ -132,14 +132,14 @@ namespace xt
     }
 
     template <class D>
-    inline pycontainer<D>::pycontainer(pybind11::handle h, borrowed_t)
-        : pybind11::object(h, borrowed)
+    inline pycontainer<D>::pycontainer(pybind11::handle h, borrowed_t b)
+        : pybind11::object(h, b)
     {
     }
 
     template <class D>
-    inline pycontainer<D>::pycontainer(pybind11::handle h, stolen_t)
-        : pybind11::object(h, stolen)
+    inline pycontainer<D>::pycontainer(pybind11::handle h, stolen_t s)
+        : pybind11::object(h, s)
     {
     }
     
