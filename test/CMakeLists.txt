@@ -96,7 +96,7 @@ add_executable(${XTENSOR_PYTHON_TARGET} ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON
 target_link_libraries(${XTENSOR_PYTHON_TARGET} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES})
 
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
-    add_dependencies(${XTENSOR_TARGET} gtest_main)
+    add_dependencies(${XTENSOR_PYTHON_TARGET} gtest_main)
 endif()
 
 add_custom_target(xtest COMMAND ./test_xtensor_python DEPENDS ${XTENSOR_PYTHON_TARGET})
