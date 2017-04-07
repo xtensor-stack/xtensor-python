@@ -24,9 +24,12 @@
 #define PY_ARRAY_UNIQUE_SYMBOL xtensor_python_ARRAY_API
 #endif
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+
 #include "numpy/arrayobject.h"
 
 #include "xtensor/xcontainer.hpp"
+
+#define import_numpy() { if (_import_array() < 0) {PyErr_Print(); PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import"); } }
 
 namespace xt
 {
