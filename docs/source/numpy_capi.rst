@@ -17,7 +17,7 @@ When writing an extension module that is self-contained in a single file, its au
 points:
 
 - ``FORCE_IMPORT_ARRAY`` must be defined before including any header of ``xtensor-python``.
-- ``import_numpy()`` must be called in the function initializing the module.
+- ``xt::import_numpy()`` must be called in the function initializing the module.
 
 Thus the basic skeleton of the module looks like:
 
@@ -29,7 +29,7 @@ Thus the basic skeleton of the module looks like:
 
     PYBIND11_PLUGIN(plugin_name)
     {
-        import_numpy();
+        xt::import_numpy();
         pybind11::module m(//...
         //...
         return m.ptr();

@@ -19,6 +19,7 @@
 
 #ifndef FORCE_IMPORT_ARRAY
 #define NO_IMPORT_ARRAY
+static int _import_array() { return 0; };
 #endif
 #ifndef PY_ARRAY_UNIQUE_SYMBOL
 #define PY_ARRAY_UNIQUE_SYMBOL xtensor_python_ARRAY_API
@@ -29,10 +30,20 @@
 
 #include "xtensor/xcontainer.hpp"
 
-#define import_numpy() { if (_import_array() < 0) {PyErr_Print(); PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import"); } }
-
 namespace xt
 {
+
+    /**
+     * Import the numpy Python module.
+     */
+    inline void import_numpy()
+    {
+        if (_import_array() < 0)
+        {
+            PyErr_Print();
+            PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
+        }
+    }
 
     /**
      * @class pycontainer
