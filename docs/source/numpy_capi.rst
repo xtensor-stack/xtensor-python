@@ -29,7 +29,7 @@ Thus the basic skeleton of the module looks like:
 
     PYBIND11_PLUGIN(plugin_name)
     {
-        import_numpy()
+        import_numpy();
         pybind11::module m(//...
         //...
         return m.ptr();
