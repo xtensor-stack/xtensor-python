@@ -11,11 +11,14 @@ cmake_minimum_required(VERSION 3.1)
 if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(xtensor-python-test)
 
+    find_package(pybind11 REQUIRED)
+    set(PYBIND11_INCLUDE_DIR ${pybind11_INCLUDE_DIR})
+
     find_package(xtensor REQUIRED CONFIG)
     set(XTENSOR_INCLUDE_DIR ${xtensor_INCLUDE_DIR})
 
     find_package(xtensor-python REQUIRED CONFIG)
-    set(XTENSOR_INCLUDE_DIR ${xtensor-python_INCLUDE_DIR})
+    set(XTENSOR_PYTHON_INCLUDE_DIR ${xtensor-python_INCLUDE_DIR})
 endif ()
 
 message(STATUS "Forcing tests build type to Release")
@@ -83,6 +86,7 @@ find_package(Threads)
 include_directories(${XTENSOR_INCLUDE_DIR})
 include_directories(${XTENSOR_PYTHON_INCLUDE_DIR})
 include_directories(${GTEST_INCLUDE_DIRS})
+include_directories(${PYBIND11_INCLUDE_DIR})
 
 set(XTENSOR_PYTHON_TESTS
     main.cpp
