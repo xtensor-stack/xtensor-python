@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 {
     // Initialize all the things (google-test and Python interpreter)
     Py_Initialize();
-    import_numpy();
+    xt::import_numpy();
     ::testing::InitGoogleTest(&argc, argv);
 
     // Run test suite

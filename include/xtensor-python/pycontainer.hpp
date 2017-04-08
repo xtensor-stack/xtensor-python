@@ -29,10 +29,10 @@
 
 #include "xtensor/xcontainer.hpp"
 
-#define import_numpy() { if (_import_array() < 0) {PyErr_Print(); PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import"); } }
-
 namespace xt
 {
+
+    inline void import_numpy();
 
     /**
      * @class pycontainer
@@ -242,6 +242,19 @@ namespace xt
         *static_cast<derived_type*>(this) = std::move(tmp);
     }
 
+    /**
+     * Import the numpy Python module.
+     */
+    inline void import_numpy()
+    {
+        #ifdef FORCE_IMPORT_ARRAY
+        if (_import_array() < 0)
+        {
+            PyErr_Print();
+            PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
+        }
+        #endif
+    }
 }
 
 #endif
