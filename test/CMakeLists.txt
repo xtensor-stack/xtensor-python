@@ -12,7 +12,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(xtensor-python-test)
 
     find_package(pybind11 REQUIRED)
-    set(PYBIND11_INCLUDE_DIR ${pybind11_INCLUDE_DIR})
+    set(PYBIND11_INCLUDE_DIR ${pybind11_INCLUDE_DIRS})
 
     find_package(xtensor REQUIRED CONFIG)
     set(XTENSOR_INCLUDE_DIR ${xtensor_INCLUDE_DIR})
