@@ -8,7 +8,7 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-4.9
-      env: COMPILER=gcc GCC=4.9
+      env: COMPILER=gcc GCC=4.9 PY=3
     - os: linux
       addons:
         apt:
@@ -16,7 +16,15 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-5
-      env: COMPILER=gcc GCC=5
+      env: COMPILER=gcc GCC=5 PY=3
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env: COMPILER=gcc GCC=5 PY=2
     - os: linux
       addons:
         apt:
@@ -25,7 +33,7 @@ matrix:
             - llvm-toolchain-precise-3.6
           packages:
             - clang-3.6
-      env: COMPILER=clang CLANG=3.6
+      env: COMPILER=clang CLANG=3.6 PY=3
     - os: linux
       addons:
         apt:
@@ -34,7 +42,7 @@ matrix:
             - llvm-toolchain-precise-3.7
           packages:
             - clang-3.7
-      env: COMPILER=clang CLANG=3.7
+      env: COMPILER=clang CLANG=3.7 PY=3
     - os: linux
       addons:
         apt:
@@ -43,10 +51,11 @@ matrix:
             - llvm-toolchain-precise-3.8
           packages:
             - clang-3.8
-      env: COMPILER=clang CLANG=3.8
+      env: COMPILER=clang CLANG=3.8 PY=3
     - os: osx
       osx_image: xcode8
       compiler: clang
+      env: PY=3
 env:
   global:
     - MINCONDA_VERSION="latest"
@@ -73,7 +82,11 @@ install:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         MINCONDA_OS=$MINCONDA_OSX;
       fi
-    - wget "http://repo.continuum.io/miniconda/Miniconda3-$MINCONDA_VERSION-$MINCONDA_OS.sh" -O miniconda.sh;
+    - if [[ "$PY" == "3" ]]; then
+          wget "http://repo.continuum.io/miniconda/Miniconda3-$MINCONDA_VERSION-$MINCONDA_OS.sh" -O miniconda.sh;
+      else
+          wget "http://repo.continuum.io/miniconda/Miniconda2-$MINCONDA_VERSION-$MINCONDA_OS.sh" -O miniconda.sh;
+      fi
     - bash miniconda.sh -b -p $HOME/miniconda
     - export PATH="$HOME/miniconda/bin:$PATH"
     - hash -r
@@ -86,7 +99,7 @@ install:
     - conda env create -f ./test-environment.yml
     - source activate test-xtensor-python
     - cd ..
-    - cmake -DBUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda .
+    - cmake -D BUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda .
     - make -j2 test_xtensor_python
     - make install
 

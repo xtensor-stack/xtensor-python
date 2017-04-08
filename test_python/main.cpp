@@ -51,7 +51,7 @@ int add(int i, int j)
 
 PYBIND11_PLUGIN(xtensor_python_test)
 {
-    import_array()
+    import_numpy()
     py::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
     m.def("example1", example1);

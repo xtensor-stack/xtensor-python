@@ -29,7 +29,7 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
 
     PYBIND11_PLUGIN(xtensor_python_test)
     {
-        import_array() //this is actually a macro
+        import_numpy() //this is actually a macro
         pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
         m.def("sum_of_sines", sum_of_sines,
@@ -80,7 +80,7 @@ Example 2: Create a universal function from a C++ scalar function
 
     PYBIND11_PLUGIN(xtensor_python_test)
     {
-        import_array()
+        import_numpy()
         py::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
         m.def("vectorized_func", xt::pyvectorize(scalar_func), "");
