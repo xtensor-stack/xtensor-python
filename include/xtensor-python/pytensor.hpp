@@ -18,7 +18,6 @@
 
 #include "pycontainer.hpp"
 #include "pybuffer_adaptor.hpp"
-#include "pytraits.hpp"
 
 namespace xt
 {

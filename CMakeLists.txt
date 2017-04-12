@@ -38,7 +38,6 @@ set(XTENSOR_PYTHON_HEADERS
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pytensor.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pyvectorize.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/xtensor_python_config.hpp
-    ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pytraits.hpp
 )
 
 OPTION(BUILD_TESTS "xtensor test suite" OFF)
