@@ -113,6 +113,34 @@ namespace xt
 
     namespace detail
     {
+
+        template <typename T, typename SFINAE = void>
+        struct is_fmt_numeric
+        {
+            static constexpr bool value = false;
+        };
+
+        constexpr int log2(size_t n, int k = 0)
+        {
+            return (n <= 1) ? k : log2(n >> 1, k + 1);
+        }
+		
+        template <typename T>		
+        struct is_fmt_numeric<T, std::enable_if_t<std::is_arithmetic<T>::value>>
+        {
+            static constexpr bool value = true;
+            static constexpr int index = std::is_same<T, bool>::value ? 0 : 1 + (
+                 std::is_integral<T>::value ? log2(sizeof(T)) * 2 + std::is_unsigned<T>::value : 8 + (
+                     std::is_same<T, double>::value ? 1 : std::is_same<T, long double>::value ? 2 : 0));
+        };
+ 	
+        template <class T>		
+        struct is_fmt_numeric<std::complex<T>>
+        {
+            static constexpr bool value = true;
+            static constexpr int index = is_fmt_numeric<T>::index + 3;
+        };
+
         template <class T>
         struct numpy_traits
         {
@@ -130,7 +158,7 @@ namespace xt
 
             using value_type = std::remove_const_t<T>;
 
-            static constexpr int type_num = value_list[pybind11::detail::is_fmt_numeric<value_type>::index];
+            static constexpr int type_num = value_list[is_fmt_numeric<value_type>::index];
         };
     }
 
