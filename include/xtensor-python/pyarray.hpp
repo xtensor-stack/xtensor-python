@@ -49,7 +49,7 @@ namespace pybind11
                 if (!PyArray_Check(src.ptr()))
                   return false;
                 int type_num = xt::detail::numpy_traits<T>::type_num;
-                if (PyArray_TYPE(src.ptr()) != type_num)
+                if (PyArray_TYPE(reinterpret_cast<PyArrayObject*>(src.ptr())) != type_num)
                   return false;
               }
                 value = type::ensure(src);
