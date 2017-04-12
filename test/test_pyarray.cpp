@@ -9,6 +9,7 @@
 #include "gtest/gtest.h"
 #include "test_common.hpp"
 #include "xtensor-python/pyarray.hpp"
+#include "xtensor/xarray.hpp"
 
 namespace xt
 {
@@ -138,6 +139,17 @@ namespace xt
             compare_shape(a, c);
             EXPECT_EQ(a.data(), c.data());
         }
+    }
+
+    TEST(pyarray, extended_constructor)
+    {
+        xt::xarray<int> a1 = { { 1, 2 },{ 3, 4 } };
+        xt::xarray<int> a2 = { { 1, 2 },{ 3, 4 } };
+        pyarray<int> c = a1 + a2;
+        EXPECT_EQ(c(0, 0), a1(0, 0) + a2(0, 0));
+        EXPECT_EQ(c(0, 1), a1(0, 1) + a2(0, 1));
+        EXPECT_EQ(c(1, 0), a1(1, 0) + a2(1, 0));
+        EXPECT_EQ(c(1, 1), a1(1, 1) + a2(1, 1));
     }
 
     TEST(pyarray, reshape)
