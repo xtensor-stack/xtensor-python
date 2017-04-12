@@ -323,7 +323,7 @@ namespace xt
         shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
         strides_type strides = make_sequence<strides_type>(N, size_type(0));
         compute_strides(shape, layout::row_major, strides);
-        init_array(shape, strides);
+        init_tensor(shape, strides);
         semantic_base::assign(e);
     }
 
