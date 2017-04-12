@@ -18,6 +18,7 @@
 
 #include "pycontainer.hpp"
 #include "pybuffer_adaptor.hpp"
+#include "pytraits.hpp"
 
 namespace xt
 {
@@ -43,9 +44,16 @@ namespace pybind11
         {
             using type = xt::pytensor<T, N>;
 
-            bool load(handle src, bool)
+            bool load(handle src, bool convert)
             {
-                value = type::ensure(src);
+              if (!convert) {
+                if (!PyArray_Check(src.ptr()))
+                  return false;
+                int type_num = xt::detail::numpy_traits<T>::type_num;
+                if (PyArray_TYPE(src.ptr()) != type_num)
+                  return false;
+              }
+              value = type::ensure(src);
                 return static_cast<bool>(value);
             }
 
