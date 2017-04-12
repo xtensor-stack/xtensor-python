@@ -289,6 +289,10 @@ namespace xt
     template <class E>
     inline pytensor<T, N>::pytensor(const xexpression<E>& e)
     {
+        shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
+        strides_type strides = make_sequence<strides_type>(N, size_type(0));
+        compute_strides(shape, layout::row_major, strides);
+        init_array(shape, strides);
         semantic_base::assign(e);
     }
 
