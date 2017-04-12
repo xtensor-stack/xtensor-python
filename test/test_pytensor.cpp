@@ -96,6 +96,8 @@ namespace xt
             pytensor<int, 3> b(a);
             compare_shape(a, b);
             EXPECT_EQ(a.data(), b.data());
+            a.data()[0] += 1;
+            EXPECT_NE(a.data()[0], b.data()[0]);
         }
 
         {
@@ -106,6 +108,8 @@ namespace xt
             c = a;
             compare_shape(a, c);
             EXPECT_EQ(a.data(), c.data());
+            a.data()[0] += 1;
+            EXPECT_NE(a.data()[0], c.data()[0]);
         }
     }
 

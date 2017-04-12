@@ -108,7 +108,7 @@ namespace xt
         static bool check_(pybind11::handle h);
         static PyObject* raw_array_t(PyObject* ptr);
 
-        PyArrayObject* python_array();
+        PyArrayObject* python_array() const;
     };
 
     namespace detail
@@ -199,7 +199,7 @@ namespace xt
     }
 
     template <class D>
-    inline PyArrayObject* pycontainer<D>::python_array()
+    inline PyArrayObject* pycontainer<D>::python_array() const
     {
         return reinterpret_cast<PyArrayObject*>(this->m_ptr);
     }

@@ -118,8 +118,6 @@ namespace xt
         using inner_backstrides_type = typename base_type::inner_backstrides_type;
 
         pytensor();
-        pytensor(const self_type&) = default;
-        pytensor(self_type&&) = default;
         pytensor(nested_initializer_list_t<T, N> t);
         pytensor(pybind11::handle h, pybind11::object::borrowed_t);
         pytensor(pybind11::handle h, pybind11::object::stolen_t);
@@ -130,7 +128,10 @@ namespace xt
         explicit pytensor(const shape_type& shape, const strides_type& strides, const_reference value);
         explicit pytensor(const shape_type& shape, const strides_type& strides);
 
-        self_type& operator=(const self_type& e) = default;
+        pytensor(const self_type& rhs) ;
+        self_type& operator=(const self_type& rhs);
+
+        pytensor(self_type&&) = default;
         self_type& operator=(self_type&& e) = default;
 
         template <class E>
@@ -181,6 +182,7 @@ namespace xt
      */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor()
+        : base_type()
     {
         m_shape = make_sequence<shape_type>(N, size_type(1));
         m_strides = make_sequence<strides_type>(N, size_type(0));
@@ -193,6 +195,7 @@ namespace xt
      */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
+        : base_type()
     {
         base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
         nested_copy(m_data.begin(), t);
@@ -279,6 +282,33 @@ namespace xt
     //@}
 
     /**
+     * @name Copy semantic
+     */
+    //@{
+    /**
+     * The copy constructor.
+     */
+    template <class T, std::size_t N>
+    inline pytensor<T, N>::pytensor(const self_type& rhs)
+        : base_type()
+    {
+        init_tensor(rhs.shape(), rhs.strides());
+        std::copy(rhs.data().begin(), rhs.data().end(), this->data().begin());
+    }
+
+    /**
+     * The assignment operator.
+     */
+    template <class T, std::size_t N>
+    inline auto pytensor<T, N>::operator=(const self_type& rhs) -> self_type&
+    {
+        self_type tmp(rhs);
+        *this = std::move(tmp);
+        return *this;
+    }
+    //@}
+
+    /**
      * @name Extended copy semantic
      */
     //@{
@@ -288,6 +318,7 @@ namespace xt
     template <class T, std::size_t N>
     template <class E>
     inline pytensor<T, N>::pytensor(const xexpression<E>& e)
+        : base_type()
     {
         shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
         strides_type strides = make_sequence<strides_type>(N, size_type(0));
