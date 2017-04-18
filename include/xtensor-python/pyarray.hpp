@@ -145,8 +145,8 @@ namespace xt
         pyarray(pybind11::handle h, pybind11::object::stolen_t);
         pyarray(const pybind11::object &o);
         
-        explicit pyarray(const shape_type& shape, layout l = layout::row_major);
-        explicit pyarray(const shape_type& shape, const_reference value, layout l = layout::row_major);
+        explicit pyarray(const shape_type& shape, layout_type l = layout_type::row_major);
+        explicit pyarray(const shape_type& shape, const_reference value, layout_type l = layout_type::row_major);
         explicit pyarray(const shape_type& shape, const strides_type& strides, const_reference value);
         explicit pyarray(const shape_type& shape, const strides_type& strides);
 
@@ -238,7 +238,7 @@ namespace xt
     inline pyarray<T>::pyarray(const value_type& t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -246,7 +246,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 1> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -254,7 +254,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 2> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -262,7 +262,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 3> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -270,7 +270,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 4> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -278,7 +278,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 5> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -310,7 +310,7 @@ namespace xt
      * @param l the layout of the pyarray
      */
     template <class T>
-    inline pyarray<T>::pyarray(const shape_type& shape, layout l)
+    inline pyarray<T>::pyarray(const shape_type& shape, layout_type l)
         : base_type()
     {
         strides_type strides(shape.size());
@@ -326,7 +326,7 @@ namespace xt
      * @param l the layout of the pyarray
      */
     template <class T>
-    inline pyarray<T>::pyarray(const shape_type& shape, const_reference value, layout l)
+    inline pyarray<T>::pyarray(const shape_type& shape, const_reference value, layout_type l)
         : base_type()
     {
         strides_type strides(shape.size());
@@ -415,7 +415,7 @@ namespace xt
     {
         shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
         strides_type strides = make_sequence<strides_type>(shape.size(), size_type(0));
-        compute_strides(shape, layout::row_major, strides);
+        compute_strides(shape, layout_type::row_major, strides);
         init_array(shape, strides);
         semantic_base::assign(e);
     }

@@ -123,8 +123,8 @@ namespace xt
         pytensor(pybind11::handle h, pybind11::object::stolen_t);
         pytensor(const pybind11::object& o);
         
-        explicit pytensor(const shape_type& shape, layout l = layout::row_major);
-        explicit pytensor(const shape_type& shape, const_reference value, layout l = layout::row_major);
+        explicit pytensor(const shape_type& shape, layout_type l = layout_type::row_major);
+        explicit pytensor(const shape_type& shape, const_reference value, layout_type l = layout_type::row_major);
         explicit pytensor(const shape_type& shape, const strides_type& strides, const_reference value);
         explicit pytensor(const shape_type& shape, const strides_type& strides);
 
@@ -197,7 +197,7 @@ namespace xt
     inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout::row_major);
+        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -226,10 +226,10 @@ namespace xt
      * Allocates an uninitialized pytensor with the specified shape and
      * layout.
      * @param shape the shape of the pytensor
-     * @param l the layout of the pytensor
+     * @param l the layout_type of the pytensor
      */
     template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const shape_type& shape, layout l)
+    inline pytensor<T, N>::pytensor(const shape_type& shape, layout_type l)
     {
         compute_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
@@ -240,12 +240,12 @@ namespace xt
      * are initialized to the specified value.
      * @param shape the shape of the pytensor
      * @param value the value of the elements
-     * @param l the layout of the pytensor
+     * @param l the layout_type of the pytensor
      */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const shape_type& shape,
                                     const_reference value,
-                                    layout l)
+                                    layout_type l)
     {
         compute_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
@@ -322,7 +322,7 @@ namespace xt
     {
         shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
         strides_type strides = make_sequence<strides_type>(N, size_type(0));
-        compute_strides(shape, layout::row_major, strides);
+        compute_strides(shape, layout_type::row_major, strides);
         init_tensor(shape, strides);
         semantic_base::assign(e);
     }

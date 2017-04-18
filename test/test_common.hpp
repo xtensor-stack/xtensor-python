@@ -162,14 +162,14 @@ namespace xt
         {
             SCOPED_TRACE("row_major reshape");
             row_major_result<C> rm;
-            vec.reshape(rm.m_shape, layout::row_major);
+            vec.reshape(rm.m_shape, layout_type::row_major);
             compare_shape(vec, rm);
         }
 
         {
             SCOPED_TRACE("column_major reshape");
             column_major_result<C> cm;
-            vec.reshape(cm.m_shape, layout::column_major);
+            vec.reshape(cm.m_shape, layout_type::column_major);
             compare_shape(vec, cm);
         }
 
@@ -183,12 +183,14 @@ namespace xt
         {
             SCOPED_TRACE("unit_shape reshape");
             unit_shape_result<C> usr;
-            vec.reshape(usr.m_shape, layout::row_major);
+            vec.reshape(usr.m_shape, layout_type::row_major);
             compare_shape(vec, usr);
         }
     }
 
-    template <class V, class C = std::vector<std::size_t>>
+    // TODO: add back when in place transpose methods have been added
+    // into xtensor
+    /*template <class V, class C = std::vector<std::size_t>>
     void test_transpose(V& vec)
     {
         using inner_shape_type = typename V::inner_shape_type;
@@ -280,7 +282,7 @@ namespace xt
             EXPECT_THROW(vec.transpose({1, 2}, check_policy::full()), transpose_error);
             EXPECT_THROW(vec.transpose({3, 0, 1}, check_policy::full()), transpose_error);
         }
-    }
+    }*/
 
     template <class V1, class V2>
     void assign_array(V1& dst, const V2& src)
@@ -313,7 +315,7 @@ namespace xt
         {
             SCOPED_TRACE("row_major access");
             row_major_result<C> rm;
-            vec.reshape(rm.m_shape, layout::row_major);
+            vec.reshape(rm.m_shape, layout_type::row_major);
             assign_array(vec, rm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), rm.m_data.cbegin()));
             EXPECT_EQ(vec(2, 1, 0), vec(2, 1));
@@ -324,7 +326,7 @@ namespace xt
         {
             SCOPED_TRACE("column_major access");
             column_major_result<C> cm;
-            vec.reshape(cm.m_shape, layout::column_major);
+            vec.reshape(cm.m_shape, layout_type::column_major);
             assign_array(vec, cm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), cm.m_data.cbegin()));
             EXPECT_EQ(vec(2, 1, 0), vec(2, 1));
@@ -346,7 +348,7 @@ namespace xt
         {
             SCOPED_TRACE("unit_shape access");
             unit_shape_result<C> usr;
-            vec.reshape(usr.m_shape, layout::row_major);
+            vec.reshape(usr.m_shape, layout_type::row_major);
             assign_array(vec, usr.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), usr.m_data.cbegin()));
             EXPECT_EQ(vec(2, 0, 0), vec(2, 0));
@@ -382,7 +384,7 @@ namespace xt
         {
             SCOPED_TRACE("row_major access");
             row_major_result<C> rm;
-            vec.reshape(rm.m_shape, layout::row_major);
+            vec.reshape(rm.m_shape, layout_type::row_major);
             indexed_assign_array(vec, rm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), rm.m_data.cbegin()));
             EXPECT_EQ(vec(2, 1, 0), vec[index1]);
@@ -392,7 +394,7 @@ namespace xt
         {
             SCOPED_TRACE("column_major access");
             column_major_result<C> cm;
-            vec.reshape(cm.m_shape, layout::column_major);
+            vec.reshape(cm.m_shape, layout_type::column_major);
             indexed_assign_array(vec, cm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), cm.m_data.cbegin()));
             EXPECT_EQ(vec(2, 1, 0), vec[index1]);
@@ -412,7 +414,7 @@ namespace xt
         {
             SCOPED_TRACE("unit_shape access");
             unit_shape_result<C> usr;
-            vec.reshape(usr.m_shape, layout::row_major);
+            vec.reshape(usr.m_shape, layout_type::row_major);
             indexed_assign_array(vec, usr.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), usr.m_data.cbegin()));
             xindex id1 = { 2, 0 };
@@ -488,7 +490,7 @@ namespace xt
         {
             SCOPED_TRACE("row_major storage iterator");
             row_major_result<C> rm;
-            vec.reshape(rm.m_shape, layout::row_major);
+            vec.reshape(rm.m_shape, layout_type::row_major);
             std::copy(rm.data().cbegin(), rm.data().cend(), vec.begin());
             EXPECT_TRUE(std::equal(rm.data().cbegin(), rm.data().cend(), vec.data().cbegin()));
         }
@@ -496,7 +498,7 @@ namespace xt
         {
             SCOPED_TRACE("column_major storage iterator");
             column_major_result<C> cm;
-            vec.reshape(cm.m_shape, layout::column_major);
+            vec.reshape(cm.m_shape, layout_type::column_major);
             std::copy(cm.data().cbegin(), cm.data().cend(), vec.begin());
             EXPECT_TRUE(std::equal(cm.data().cbegin(), cm.data().cend(), vec.data().cbegin()));
         }
@@ -512,7 +514,7 @@ namespace xt
         {
             SCOPED_TRACE("unit_shape storage iterator");
             unit_shape_result<C> usr;
-            vec.reshape(usr.m_shape, layout::row_major);
+            vec.reshape(usr.m_shape, layout_type::row_major);
             std::copy(usr.data().cbegin(), usr.data().cend(), vec.begin());
             EXPECT_TRUE(std::equal(usr.data().cbegin(), usr.data().cend(), vec.data().cbegin()));
         }

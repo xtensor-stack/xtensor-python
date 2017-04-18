@@ -80,9 +80,14 @@ namespace xt
         using broadcast_iterator = typename iterable_base::broadcast_iterator;
         using const_broadcast_iterator = typename iterable_base::broadcast_iterator;
 
+        static constexpr layout_type static_layout = layout_type::dynamic;
+        static constexpr bool contiguous_layout = false;
+
         void reshape(const shape_type& shape);
-        void reshape(const shape_type& shape, layout l);
+        void reshape(const shape_type& shape, layout_type l);
         void reshape(const shape_type& shape, const strides_type& strides);
+
+        layout_type layout() const;
 
         using base_type::operator();
         using base_type::operator[];
@@ -213,7 +218,7 @@ namespace xt
     {
         if (shape.size() != this->dimension() || !std::equal(shape.begin(), shape.end(), this->shape().begin()))
         {
-            reshape(shape, layout::row_major);
+            reshape(shape, layout_type::row_major);
         }
     }
 
@@ -223,7 +228,7 @@ namespace xt
      * @param l the new layout
      */
     template <class D>
-    inline void pycontainer<D>::reshape(const shape_type& shape, layout l)
+    inline void pycontainer<D>::reshape(const shape_type& shape, layout_type l)
     {
         strides_type strides = make_sequence<strides_type>(shape.size(), size_type(1));
         compute_strides(shape, l, strides);
@@ -240,6 +245,21 @@ namespace xt
     {
         derived_type tmp(shape, strides);
         *static_cast<derived_type*>(this) = std::move(tmp);
+    }
+
+    /**
+     * Return the layout_type of the container
+     * @return layout_type of the container
+     */
+    template <class D>
+    inline layout_type pycontainer<D>::layout() const
+    {
+        if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_C_CONTIGUOUS))
+            return layout_type::row_major;
+        else if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_F_CONTIGUOUS))
+            return layout_type::column_major;
+        else
+            return layout_type::dynamic;
     }
 
     /**

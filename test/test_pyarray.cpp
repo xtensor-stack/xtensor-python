@@ -37,13 +37,15 @@ namespace xt
             row_major_result<> rm;
             pyarray<int> ra(rm.m_shape);
             compare_shape(ra, rm);
+            EXPECT_EQ(layout_type::row_major, ra.layout());
         }
         
         {
             SCOPED_TRACE("column_major constructor");
             column_major_result<> cm;
-            pyarray<int> ca(cm.m_shape, layout::column_major);
+            pyarray<int> ca(cm.m_shape, layout_type::column_major);
             compare_shape(ca, cm);
+            EXPECT_EQ(layout_type::column_major, ca.layout());
         }
     }
 
@@ -70,7 +72,7 @@ namespace xt
             SCOPED_TRACE("column_major valued constructor");
             column_major_result<> cm;
             int value = 2;
-            pyarray<int> ca(cm.m_shape, value, layout::column_major);
+            pyarray<int> ca(cm.m_shape, value, layout_type::column_major);
             compare_shape(ca, cm);
             std::vector<int> vec(ca.size(), value);
             EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ca.data().cbegin()));
