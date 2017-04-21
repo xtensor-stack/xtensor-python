@@ -153,7 +153,7 @@ This will pull the dependencies to xtensor-python, that is `pybind11` and `xtens
 
 ## Project cookiecutter
 
-A template for a project making use of `xtensor-python` is available in the form of a cookie cutter [here](https://github.com/QuantStack/xtensor-cookiecutter).
+A template for a project making use of `xtensor-python` is available in the form of a cookiecutter [here](https://github.com/QuantStack/xtensor-python-cookiecutter).
 
 This project is meant to help library authors get started with the xtensor python bindings.
 
