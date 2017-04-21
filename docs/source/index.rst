@@ -33,7 +33,7 @@ In addition to the basic accessors and iterators of ``xtensor`` containers, it a
 
 Besides ``xtensor-python`` provides an API to create *Universal functions* from simple scalar functions from your C++ code.
 
-Finally, a cookiecutter template project is provided. It takes care of the initial work of generating a project skeleton for a C++ extension based on ``xtensor-python`` containing a few examples, unit tests and HTML documentation. Find out more about the xtensor-cookiecutter_.
+Finally, a cookiecutter template project is provided. It takes care of the initial work of generating a project skeleton for a C++ extension based on ``xtensor-python`` containing a few examples, unit tests and HTML documentation. Find out more about the xtensor-python-cookiecutter_.
 
 ``xtensor`` and ``xtensor-python`` require a modern C++ compiler supporting C++14. The following C++ compilers are supported:
 
@@ -62,7 +62,7 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
    basic_usage
    array_tensor
    numpy_capi
-   cookie_cutter
+   cookiecutter
 
 .. toctree::
    :caption: API REFERENCE
@@ -80,4 +80,4 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 .. _`numpy to xtensor cheat sheet`: http://xtensor.readthedocs.io/en/latest/numpy.html 
 .. _xtensor: https://github.com/QuantStack/xtensor
 .. _pybind11: https://github.com/pybind/pybind11 
-.. _xtensor-cookiecutter: https://github.com/QuantStack/xtensor-cookiecutter 
+.. _xtensor-python-cookiecutter: https://github.com/QuantStack/xtensor-python-cookiecutter 

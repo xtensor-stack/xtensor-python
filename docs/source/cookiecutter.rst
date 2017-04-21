@@ -4,10 +4,10 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-Getting started with xtensor-cookiecutter
-=========================================
+Getting started with xtensor-python-cookiecutter
+================================================
 
-`xtensor-cookiecutter`_ helps extension authors create Python extension modules making use of xtensor.
+`xtensor-python-cookiecutter`_ helps extension authors create Python extension modules making use of xtensor.
 
 It takes care of the initial work of generating a project skeleton with
 
@@ -32,9 +32,9 @@ After installing cookiecutter, use the xtensor_cookiecutter_:
 
 .. code::
 
-    cookiecutter https://github.com/QuantStack/xtensor-cookiecutter.git
+    cookiecutter https://github.com/QuantStack/xtensor-python-cookiecutter.git
 
-As xtensor-cookiecutter runs, you will be asked for basic information about
+As xtensor-python-cookiecutter runs, you will be asked for basic information about
 your custom extension project. You will be prompted for the following
 information:
 
@@ -50,5 +50,5 @@ This will produce a directory containing all the required content for a minimal 
 project making use of xtensor with all the required boilerplate for package management,
 together with a few basic examples.
 
-.. _xtensor_cookicutter: https://github.com/QuantStack/xtensor-cookiecutter
+.. _xtensor_cookicutter: https://github.com/QuantStack/xtensor-python-cookiecutter
 .. _cookiecutter: https://github.com/audreyr/cookiecutter
