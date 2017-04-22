@@ -24,19 +24,6 @@ The Python bindings for `xtensor` are based on the [pybind11](https://github.com
 conda install -c conda-forge xtensor-python
 ```
 
-### Dependences on `xtensor` and `pybind11`
-
-`xtensor-python` depends on the `xtensor` and `pybind11` libraries
-
-| `xtensor-python`  | `xtensor`  |  `pybind11` |
-|-------------------|------------|-------------|
-| master            |  ^0.9.0    | ^2.1.0      |
-| 0.10.x            |  ^0.9.0    | ^2.1.0      |
-| 0.9.x             |  ^0.8.1    | ^2.1.0      |
-| 0.8.x             |  ^0.8.1    | ^2.1.0      |
-
-These dependencies are automatically resolved when using the conda package manager.
-
 ## Usage
 
 xtensor-python offers two container types wrapping numpy arrays inplace to provide an xtensor semantics
@@ -51,7 +38,7 @@ Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtenso
  - On the other hand ``pytensor`` has a compile time number of dimensions, specified with a template parameter. Shapes of ``pytensor`` instances are stack allocated, making ``pytensor`` a significantly
 faster expression than ``pyarray``.
 
-### Example 1: Use an algorithm of the C++ library on a numpy array inplace.
+### Example 1: Use an algorithm of the C++ standard library on a numpy array inplace.
 
 **C++ code**
 
@@ -61,7 +48,7 @@ faster expression than ``pyarray``.
 #include "xtensor/xmath.hpp"              // xtensor import for the C++ universal functions
 #include "xtensor-python/pyarray.hpp"     // Numpy bindings
 
-double sum_of_sines(xt::pyarray<double> &m)
+double sum_of_sines(xt::pyarray<double>& m)
 {
     auto sines = xt::sin(m);  // sines does not actually hold any value, which are only computed upon access
     return std::accumulate(sines.begin(), sines.end(), 0.0);
@@ -196,6 +183,19 @@ make html
 ```
 
 from the `docs` subdirectory.
+
+## Dependencies on `xtensor` and `pybind11`
+
+`xtensor-python` depends on the `xtensor` and `pybind11` libraries
+
+| `xtensor-python`  | `xtensor`  |  `pybind11` |
+|-------------------|------------|-------------|
+| master            |  ^0.9.0    | ^2.1.0      |
+| 0.10.x            |  ^0.9.0    | ^2.1.0      |
+| 0.9.x             |  ^0.8.1    | ^2.1.0      |
+| 0.8.x             |  ^0.8.1    | ^2.1.0      |
+
+These dependencies are automatically resolved when using the conda package manager.
 
 ## License
 
