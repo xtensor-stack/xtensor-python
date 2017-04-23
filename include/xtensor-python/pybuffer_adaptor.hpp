@@ -66,6 +66,9 @@ namespace xt
         const_reverse_iterator crbegin() const;
         const_reverse_iterator crend() const;
 
+        pointer data();
+        const_pointer data() const;
+
     private:
 
         pointer p_data;
@@ -257,6 +260,18 @@ namespace xt
     inline auto pybuffer_adaptor<T>::crend() const -> const_reverse_iterator
     {
         return rend();
+    }
+
+    template <class T>
+    inline auto pybuffer_adaptor<T>::data() -> pointer
+    {
+        return p_data;
+    }
+
+    template <class T>
+    inline auto pybuffer_adaptor<T>::data() const -> const_pointer
+    {
+        return p_data;
     }
  
     template<class T>
