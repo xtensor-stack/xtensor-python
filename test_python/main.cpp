@@ -51,6 +51,16 @@ auto no_complex_overload(const xt::pyarray<double>& a)
     return a;
 }
 
+auto complex_overload_reg(const std::complex<double>& a)
+{
+    return a;
+}
+
+auto no_complex_overload_reg(const double& a)
+{
+    return a;
+}
+
 // Vectorize Examples
 
 int add(int i, int j)
@@ -69,6 +79,8 @@ PYBIND11_PLUGIN(xtensor_python_test)
 
     m.def("complex_overload", no_complex_overload);
     m.def("complex_overload", complex_overload);
+    m.def("complex_overload_reg", no_complex_overload_reg);
+    m.def("complex_overload_reg", complex_overload_reg);
 
     m.def("readme_example1", readme_example1);
     m.def("readme_example2", xt::pyvectorize(readme_example2));
