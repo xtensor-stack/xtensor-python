@@ -42,8 +42,20 @@ namespace pybind11
         {
             using type = xt::pyarray<T>;
 
-            bool load(handle src, bool)
+            bool load(handle src, bool convert)
             {
+                if (!convert)
+                {
+                    if (!PyArray_Check(src.ptr()))
+                    {
+                        return false;
+                    }
+                    int type_num = xt::detail::numpy_traits<T>::type_num;
+                    if (PyArray_TYPE(reinterpret_cast<PyArrayObject*>(src.ptr())) != type_num)
+                    {
+                        return false;
+                    }
+                }
                 value = type::ensure(src);
                 return static_cast<bool>(value);
             }

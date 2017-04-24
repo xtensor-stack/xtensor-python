@@ -36,6 +36,23 @@ class ExampleTest(TestCase):
         y = xt.readme_example1(v)
         np.testing.assert_allclose(y, 1.2853996391883833, 1e-12)
 
+    def test_complex_overload_reg(self):
+        a = 23.23
+        c = 2.0 + 3.1j
+        self.assertEqual(xt.complex_overload_reg(a), a)
+        self.assertEqual(xt.complex_overload_reg(c), c)
+
+    def test_complex_overload(self):
+        a = np.random.rand(3, 3)
+        b = np.random.rand(3, 3)
+        c = a + b * 1j
+        y = xt.complex_overload(c)
+        np.testing.assert_allclose(np.imag(y), np.imag(c))
+        np.testing.assert_allclose(np.real(y), np.real(c))
+        x = xt.complex_overload(b)
+        self.assertEqual(x.dtype, b.dtype)
+        np.testing.assert_allclose(x, b)
+
     def test_readme_example2(self):
         x = np.arange(15).reshape(3, 5)
         y = [1, 2, 3, 4, 5]
