@@ -47,7 +47,6 @@ class ExampleTest(TestCase):
         b = np.random.rand(3, 3)
         c = a + b * 1j
         y = xt.complex_overload(c)
-        print(y)
         np.testing.assert_allclose(np.imag(y), np.imag(c))
         np.testing.assert_allclose(np.real(y), np.real(c))
         x = xt.complex_overload(b)
