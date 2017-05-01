@@ -15,10 +15,10 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     set(PYBIND11_INCLUDE_DIR ${pybind11_INCLUDE_DIRS})
 
     find_package(xtensor REQUIRED CONFIG)
-    set(XTENSOR_INCLUDE_DIR ${xtensor_INCLUDE_DIR})
+    set(XTENSOR_INCLUDE_DIR ${xtensor_INCLUDE_DIRS})
 
     find_package(xtensor-python REQUIRED CONFIG)
-    set(XTENSOR_PYTHON_INCLUDE_DIR ${xtensor-python_INCLUDE_DIR})
+    set(XTENSOR_PYTHON_INCLUDE_DIR ${xtensor-python_INCLUDE_DIRS})
 endif ()
 
 message(STATUS "Forcing tests build type to Release")

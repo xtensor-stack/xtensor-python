@@ -50,7 +50,7 @@ endif()
 if(BUILD_TESTS)
     include_directories(${XTENSOR_PYTHON_INCLUDE_DIR})
     find_package(xtensor REQUIRED)
-    include_directories(${xtensor_INCLUDE_DIR})
+    include_directories(${xtensor_INCLUDE_DIRS})
     find_package(NumPy REQUIRED)
     include_directories(${NUMPY_INCLUDE_DIRS})
 
