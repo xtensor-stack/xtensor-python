@@ -495,7 +495,7 @@ namespace xt
                                        static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_backstrides = backstrides_type(*this);
         m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
+                                this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T>

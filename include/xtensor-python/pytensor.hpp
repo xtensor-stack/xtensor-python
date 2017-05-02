@@ -407,7 +407,7 @@ namespace xt
                 [](auto v) { return v / sizeof(T); });
         adapt_strides(m_shape, m_strides, m_backstrides);
         m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
+                                this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>

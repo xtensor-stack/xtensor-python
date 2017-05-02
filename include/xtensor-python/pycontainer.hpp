@@ -77,9 +77,6 @@ namespace xt
         using stepper = typename iterable_base::stepper;
         using const_stepper = typename iterable_base::const_stepper;
 
-        using broadcast_iterator = typename iterable_base::broadcast_iterator;
-        using const_broadcast_iterator = typename iterable_base::broadcast_iterator;
-
         static constexpr layout_type static_layout = layout_type::dynamic;
         static constexpr bool contiguous_layout = false;
 
@@ -114,6 +111,7 @@ namespace xt
         static PyObject* raw_array_t(PyObject* ptr);
 
         PyArrayObject* python_array() const;
+        size_type get_min_stride() const;
     };
 
     namespace detail
@@ -207,6 +205,13 @@ namespace xt
     inline PyArrayObject* pycontainer<D>::python_array() const
     {
         return reinterpret_cast<PyArrayObject*>(this->m_ptr);
+    }
+
+    template <class D>
+    inline auto pycontainer<D>::get_min_stride() const -> size_type
+    {
+        const size_type & (*min) (const size_type&, const size_type&) = std::min<size_type>;
+        return std::max(size_type(1), std::accumulate(this->strides().cbegin(), this->strides().cend(), std::numeric_limits<size_type>::max(), min));
     }
 
     /**
