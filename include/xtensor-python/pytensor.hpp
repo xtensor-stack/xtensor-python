@@ -390,8 +390,10 @@ namespace xt
         m_shape = shape;
         m_strides = strides;
         adapt_strides(m_shape, m_strides, m_backstrides);
+        const size_type & (*min) (const size_type&, const size_type&) = std::min<size_type>;
+        size_type min_stride = std::accumulate(m_strides.cbegin(), m_strides.cend(), std::numeric_limits<size_type>::max(), min);
         m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
+                                min_stride * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>
