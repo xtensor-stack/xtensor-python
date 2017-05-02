@@ -77,9 +77,6 @@ namespace xt
         using stepper = typename iterable_base::stepper;
         using const_stepper = typename iterable_base::const_stepper;
 
-        using broadcast_iterator = typename iterable_base::broadcast_iterator;
-        using const_broadcast_iterator = typename iterable_base::broadcast_iterator;
-
         static constexpr layout_type static_layout = layout_type::dynamic;
         static constexpr bool contiguous_layout = false;
 
