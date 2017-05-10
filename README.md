@@ -28,15 +28,14 @@ conda install -c conda-forge xtensor-python
 
 xtensor-python offers two container types wrapping numpy arrays inplace to provide an xtensor semantics
 
- - ``pytensor``
- - ``pyarray``.
+ - `pytensor`
+ - `pyarray`.
 
 Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtensor cheat sheet](http://xtensor.readthedocs.io/en/latest/numpy.html)).
 
- - On the one hand, ``pyarray`` has a dynamic number of dimensions. Just like numpy arrays, it can be reshaped with a shape of a different length (and the new shape is reflected on the python side).
+ - On the one hand, `pyarray` has a dynamic number of dimensions. Just like numpy arrays, it can be reshaped with a shape of a different length (and the new shape is reflected on the python side).
 
- - On the other hand ``pytensor`` has a compile time number of dimensions, specified with a template parameter. Shapes of ``pytensor`` instances are stack allocated, making ``pytensor`` a significantly
-faster expression than ``pyarray``.
+ - On the other hand `pytensor` has a compile time number of dimensions, specified with a template parameter. Shapes of `pytensor` instances are stack allocated, making `pytensor` a significantly faster expression than `pyarray`.
 
 ### Example 1: Use an algorithm of the C++ standard library on a numpy array inplace.
 
