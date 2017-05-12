@@ -397,7 +397,7 @@ namespace xt
 
         this->m_ptr = tmp.release().ptr();
         init_from_python();
-        std::copy(rhs.data().begin(), rhs.data().end(), this->data().begin());
+        std::copy(rhs.data().cbegin(), rhs.data().cend(), this->data().begin());
     }
 
     /**
@@ -425,6 +425,7 @@ namespace xt
     inline pyarray<T>::pyarray(const xexpression<E>& e)
         : base_type()
     {
+        // TODO: prevent intermediary shape allocation
         shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
         strides_type strides = make_sequence<strides_type>(shape.size(), size_type(0));
         compute_strides(shape, layout_type::row_major, strides);

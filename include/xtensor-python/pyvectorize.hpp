@@ -9,6 +9,8 @@
 #ifndef PY_VECTORIZE_HPP
 #define PY_VECTORIZE_HPP
 
+#include <type_traits>
+
 #include "pyarray.hpp"
 #include "xtensor/xvectorize.hpp"
 
@@ -20,13 +22,13 @@ namespace xt
     {
         xvectorizer<Func, R> m_vectorizer;
 
-        template <class F>
+        template <class F, class = std::enable_if_t<!std::is_same<std::decay_t<F>, pyvectorizer>::value>>
         pyvectorizer(F&& func)
             : m_vectorizer(std::forward<F>(func))
         {
         }
 
-        inline pyarray<R> operator()(const pyarray<Args>&... args)
+        inline pyarray<R> operator()(const pyarray<Args>&... args) const
         {
             pyarray<R> res = m_vectorizer(args...);
             return res;

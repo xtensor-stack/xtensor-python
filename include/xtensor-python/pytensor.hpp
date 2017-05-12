@@ -306,7 +306,7 @@ namespace xt
         : base_type()
     {
         init_tensor(rhs.shape(), rhs.strides());
-        std::copy(rhs.data().begin(), rhs.data().end(), this->data().begin());
+        std::copy(rhs.data().cbegin(), rhs.data().cend(), this->data().begin());
     }
 
     /**
