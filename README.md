@@ -49,7 +49,7 @@ Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtenso
 
 double sum_of_sines(xt::pyarray<double>& m)
 {
-    auto sines = xt::sin(m);  // sines does not actually hold any value, which are only computed upon access
+    auto sines = xt::sin(m);  // sines does not actually hold values.
     return std::accumulate(sines.begin(), sines.end(), 0.0);
 }
 
@@ -57,7 +57,7 @@ PYBIND11_PLUGIN(xtensor_python_test)
 {
     pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
-    m.def("sum_of_sines", sum_of_sines, "Computes the sum of the sines of the values of the input array");
+    m.def("sum_of_sines", sum_of_sines, "Sum the sines of the input values");
 
     return m.ptr();
 }
@@ -189,7 +189,7 @@ from the `docs` subdirectory.
 
 | `xtensor-python`  | `xtensor`  |  `pybind11` |
 |-------------------|------------|-------------|
-| master            |  ^0.10.0   | ^2.1.0      |
+| master            |  ^0.10.2   | ^2.1.0      |
 | 0.11.x            |  ^0.10.0   | ^2.1.0      |
 | 0.10.x            |  ^0.9.0    | ^2.1.0      |
 | 0.9.x             |  ^0.8.1    | ^2.1.0      |

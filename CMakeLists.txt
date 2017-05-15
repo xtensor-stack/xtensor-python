@@ -33,8 +33,8 @@ message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 
 set(XTENSOR_PYTHON_HEADERS
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pyarray.hpp
-    ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pybuffer_adaptor.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pycontainer.hpp
+    ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pystrides_adaptor.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pytensor.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pyvectorize.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/xtensor_python_config.hpp

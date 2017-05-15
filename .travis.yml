@@ -94,7 +94,7 @@ install:
     - conda update -q conda
     # Useful for debugging any issues with conda
     - conda info -a
-    - conda install xtensor==0.10.0 pytest numpy pybind11==2.1.1 -c conda-forge
+    - conda install xtensor==0.10.2 pytest numpy pybind11==2.1.1 -c conda-forge
     - cd test
     - conda env create -f ./test-environment.yml
     - source activate test-xtensor-python

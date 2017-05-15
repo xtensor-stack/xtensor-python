@@ -12,12 +12,14 @@
 #include <cstddef>
 #include <array>
 #include <algorithm>
+
 #include "xtensor/xutils.hpp"
 #include "xtensor/xsemantic.hpp"
 #include "xtensor/xiterator.hpp"
+#include "xtensor/xbuffer_adaptor.hpp"
 
 #include "pycontainer.hpp"
-#include "pybuffer_adaptor.hpp"
+#include "pystrides_adaptor.hpp"
 
 namespace xt
 {
@@ -84,7 +86,7 @@ namespace xt
     template <class T, std::size_t N>
     struct xcontainer_inner_types<pytensor<T, N>>
     {
-        using container_type = pybuffer_adaptor<T>;
+        using container_type = xbuffer_adaptor<T>;
         using shape_type = std::array<npy_intp, N>;
         using strides_type = shape_type;
         using backstrides_type = shape_type;
