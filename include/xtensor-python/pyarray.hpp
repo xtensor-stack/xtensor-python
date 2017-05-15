@@ -12,11 +12,13 @@
 #include <cstddef>
 #include <vector>
 #include <algorithm>
+
 #include "xtensor/xsemantic.hpp"
 #include "xtensor/xiterator.hpp"
+#include "xtensor/xbuffer_adaptor.hpp"
 
 #include "pycontainer.hpp"
-#include "pybuffer_adaptor.hpp"
+#include "pystrides_adaptor.hpp"
 
 namespace xt
 {
@@ -103,11 +105,11 @@ namespace xt
     template <class T>
     struct xcontainer_inner_types<pyarray<T>>
     {
-        using container_type = pybuffer_adaptor<T>;
+        using container_type = xbuffer_adaptor<T>;
         using shape_type = std::vector<typename container_type::size_type>;
         using strides_type = shape_type;
         using backstrides_type = pyarray_backstrides<pyarray<T>>;
-        using inner_shape_type = pybuffer_adaptor<std::size_t>;
+        using inner_shape_type = xbuffer_adaptor<std::size_t>;
         using inner_strides_type = pystrides_adaptor<sizeof(T)>;
         using inner_backstrides_type = backstrides_type;
         using temporary_type = pyarray<T>;

@@ -20,11 +20,10 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
     #define FORCE_IMPORT_ARRAY                // numpy C api loading
     #include "xtensor-python/pyarray.hpp"     // Numpy bindings
 
-    double sum_of_sines(xt::pyarray<double> &m)
+    double sum_of_sines(xt::pyarray<double>& m)
     {
-        auto sines = xt::sin(m);
-        // sines does not actually hold any value, which are only computed upon access
-        return std::accumulate(sines.begin(), sines.end(), 0.0);
+        auto sines = xt::sin(m);  // sines does not actually hold values.
+        return std::accumulate(sines.cbegin(), sines.cend(), 0.0);
     }
 
     PYBIND11_PLUGIN(xtensor_python_test)
@@ -32,8 +31,7 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
         xt::import_numpy();
         pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
-        m.def("sum_of_sines", sum_of_sines,
-            "Computes the sum of the sines of the values of the input array");
+        m.def("sum_of_sines", sum_of_sines, "Sum the sines of the input values");
 
         return m.ptr();
     }
