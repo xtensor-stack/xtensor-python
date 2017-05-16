@@ -253,7 +253,7 @@ namespace xt
         : base_type()
     {
         base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(this->xbegin(), t);
     }
 
     template <class T>
@@ -261,7 +261,7 @@ namespace xt
         : base_type()
     {
         base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(this->xbegin(), t);
     }
 
     template <class T>
@@ -269,7 +269,7 @@ namespace xt
         : base_type()
     {
         base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(this->xbegin(), t);
     }
 
     template <class T>
@@ -277,7 +277,7 @@ namespace xt
         : base_type()
     {
         base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(this->xbegin(), t);
     }
 
     template <class T>
@@ -285,7 +285,7 @@ namespace xt
         : base_type()
     {
         base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(this->xbegin(), t);
     }
 
     template <class T>
@@ -293,7 +293,7 @@ namespace xt
         : base_type()
     {
         base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(this->xbegin(), t);
     }
 
     template <class T>
