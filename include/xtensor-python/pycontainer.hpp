@@ -161,7 +161,7 @@ namespace xt
     
     template <class D>
     inline pycontainer<D>::pycontainer(const pybind11::object& o)
-        : pybind11::object(raw_array_t(o.ptr()), pybind11::object::stolen)
+        : pybind11::object(raw_array_t(o.ptr()), pybind11::object::stolen_t{})
     {
         if (!this->m_ptr)
         {
