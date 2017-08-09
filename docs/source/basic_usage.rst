@@ -40,8 +40,6 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
 
 .. code::
 
-    Python Code
-
     import numpy as np
     import xtensor_python_test as xt
 
@@ -56,8 +54,8 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
     1.2853996391883833
 
 
-Example 2: Create a universal function from a C++ scalar function
------------------------------------------------------------------
+Example 2: Create a numpy-style universal function from a C++ scalar function
+-----------------------------------------------------------------------------
 
 **C++ code**
 

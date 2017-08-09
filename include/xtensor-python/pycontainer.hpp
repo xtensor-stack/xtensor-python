@@ -9,13 +9,13 @@
 #ifndef PY_CONTAINER_HPP
 #define PY_CONTAINER_HPP
 
+#include <cmath>
 #include <functional>
 #include <numeric>
-#include <cmath>
 
-#include "pybind11/pybind11.h"
 #include "pybind11/common.h"
 #include "pybind11/complex.h"
+#include "pybind11/pybind11.h"
 
 #ifndef FORCE_IMPORT_ARRAY
 #define NO_IMPORT_ARRAY
@@ -123,11 +123,10 @@ namespace xt
 
             constexpr static const int value_list[15] = {
                 NPY_BOOL,
-                NPY_BYTE,   NPY_UBYTE,   NPY_SHORT,      NPY_USHORT,
-                NPY_INT,    NPY_UINT,    NPY_LONGLONG,   NPY_ULONGLONG,
-                NPY_FLOAT,  NPY_DOUBLE,  NPY_LONGDOUBLE,
-                NPY_CFLOAT, NPY_CDOUBLE, NPY_CLONGDOUBLE
-            };
+                NPY_BYTE, NPY_UBYTE, NPY_SHORT, NPY_USHORT,
+                NPY_INT, NPY_UINT, NPY_LONGLONG, NPY_ULONGLONG,
+                NPY_FLOAT, NPY_DOUBLE, NPY_LONGDOUBLE,
+                NPY_CFLOAT, NPY_CDOUBLE, NPY_CLONGDOUBLE};
 
         public:
 
@@ -158,7 +157,7 @@ namespace xt
         : pybind11::object(h, s)
     {
     }
-    
+
     template <class D>
     inline pycontainer<D>::pycontainer(const pybind11::object& o)
         : pybind11::object(raw_array_t(o.ptr()), pybind11::object::stolen_t{})
@@ -196,7 +195,7 @@ namespace xt
             return nullptr;
         }
         int type_num = detail::numpy_traits<value_type>::type_num;
-        auto res = PyArray_FromAny(ptr, PyArray_DescrFromType(type_num), 0, 0, 
+        auto res = PyArray_FromAny(ptr, PyArray_DescrFromType(type_num), 0, 0,
                                    NPY_ARRAY_ENSUREARRAY | NPY_ARRAY_FORCECAST, nullptr);
         return res;
     }
@@ -210,7 +209,7 @@ namespace xt
     template <class D>
     inline auto pycontainer<D>::get_min_stride() const -> size_type
     {
-        const size_type & (*min) (const size_type&, const size_type&) = std::min<size_type>;
+        const size_type& (*min)(const size_type&, const size_type&) = std::min<size_type>;
         return std::max(size_type(1), std::accumulate(this->strides().cbegin(), this->strides().cend(), std::numeric_limits<size_type>::max(), min));
     }
 
@@ -272,15 +271,14 @@ namespace xt
      */
     inline void import_numpy()
     {
-        #ifdef FORCE_IMPORT_ARRAY
+#ifdef FORCE_IMPORT_ARRAY
         if (_import_array() < 0)
         {
             PyErr_Print();
             PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
         }
-        #endif
+#endif
     }
 }
 
 #endif
-

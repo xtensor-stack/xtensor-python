@@ -9,13 +9,13 @@
 #ifndef PY_ARRAY_HPP
 #define PY_ARRAY_HPP
 
+#include <algorithm>
 #include <cstddef>
 #include <vector>
-#include <algorithm>
 
-#include "xtensor/xsemantic.hpp"
-#include "xtensor/xiterator.hpp"
 #include "xtensor/xbuffer_adaptor.hpp"
+#include "xtensor/xiterator.hpp"
+#include "xtensor/xsemantic.hpp"
 
 #include "pycontainer.hpp"
 #include "pystrides_adaptor.hpp"
@@ -62,7 +62,7 @@ namespace pybind11
                 return static_cast<bool>(value);
             }
 
-            static handle cast(const handle &src, return_value_policy, handle)
+            static handle cast(const handle& src, return_value_policy, handle)
             {
                 return src.inc_ref();
             }
@@ -135,9 +135,9 @@ namespace xt
         using semantic_base = xcontainer_semantic<self_type>;
         using base_type = pycontainer<self_type>;
         using container_type = typename base_type::container_type;
-        using value_type = typename base_type::value_type; 
-        using reference = typename base_type::reference; 
-        using const_reference = typename base_type::const_reference; 
+        using value_type = typename base_type::value_type;
+        using reference = typename base_type::reference;
+        using const_reference = typename base_type::const_reference;
         using pointer = typename base_type::pointer;
         using size_type = typename base_type::size_type;
         using shape_type = typename base_type::shape_type;
@@ -157,8 +157,8 @@ namespace xt
 
         pyarray(pybind11::handle h, pybind11::object::borrowed_t);
         pyarray(pybind11::handle h, pybind11::object::stolen_t);
-        pyarray(const pybind11::object &o);
-        
+        pyarray(const pybind11::object& o);
+
         explicit pyarray(const shape_type& shape, layout_type l = layout_type::row_major);
         explicit pyarray(const shape_type& shape, const_reference value, layout_type l = layout_type::row_major);
         explicit pyarray(const shape_type& shape, const strides_type& strides, const_reference value);
@@ -201,7 +201,7 @@ namespace xt
 
         friend class xcontainer<pyarray<T>>;
     };
-    
+
     /**************************************
      * pyarray_backstrides implementation *
      **************************************/
@@ -223,7 +223,7 @@ namespace xt
     {
         value_type sh = p_a->shape()[i];
         value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[i];
-        return  res;
+        return res;
     }
 
     /**************************
@@ -311,7 +311,7 @@ namespace xt
     }
 
     template <class T>
-    inline pyarray<T>::pyarray(const pybind11::object &o)
+    inline pyarray<T>::pyarray(const pybind11::object& o)
         : base_type(o)
     {
         init_from_python();
@@ -348,7 +348,7 @@ namespace xt
         init_array(shape, strides);
         std::fill(m_data.begin(), m_data.end(), value);
     }
-    
+
     /**
      * Allocates an uninitialized pyarray with the specified shape and strides.
      * Elements are initialized to the specified value.
@@ -389,8 +389,7 @@ namespace xt
         : base_type()
     {
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
-            PyArray_NewLikeArray(rhs.python_array(), NPY_KEEPORDER, nullptr, 1)
-            );
+            PyArray_NewLikeArray(rhs.python_array(), NPY_KEEPORDER, nullptr, 1));
 
         if (!tmp)
         {
@@ -464,7 +463,7 @@ namespace xt
         strides_type adapted_strides(strides);
 
         std::transform(strides.begin(), strides.end(), adapted_strides.begin(),
-                [](auto v) { return sizeof(T) * v; });
+                       [](auto v) { return sizeof(T) * v; });
 
         int flags = NPY_ARRAY_ALIGNED;
         if (!std::is_const<T>::value)
@@ -472,14 +471,13 @@ namespace xt
             flags |= NPY_ARRAY_WRITEABLE;
         }
         int type_num = detail::numpy_traits<T>::type_num;
-        
+
         npy_intp* shape_data = reinterpret_cast<npy_intp*>(const_cast<size_type*>(shape.data()));
         npy_intp* strides_data = reinterpret_cast<npy_intp*>(adapted_strides.data());
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
-                PyArray_New(&PyArray_Type, static_cast<int>(shape.size()), shape_data, type_num, strides_data,
-                            nullptr, static_cast<int>(sizeof(T)), flags, nullptr)
-                );
-        
+            PyArray_New(&PyArray_Type, static_cast<int>(shape.size()), shape_data, type_num, strides_data,
+                        nullptr, static_cast<int>(sizeof(T)), flags, nullptr));
+
         if (!tmp)
         {
             throw std::runtime_error("NumPy: unable to create ndarray");
@@ -537,5 +535,3 @@ namespace xt
 }
 
 #endif
-
-

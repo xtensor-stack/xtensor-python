@@ -39,14 +39,14 @@ namespace xt
      * @brief Create numpy universal function from scalar function.
      */
     template <class R, class... Args>
-    inline pyvectorizer<R(*)(Args...), R, Args...> pyvectorize(R(*f) (Args...))
+    inline pyvectorizer<R (*)(Args...), R, Args...> pyvectorize(R (*f)(Args...))
     {
-        return pyvectorizer<R(*) (Args...), R, Args...>(f);
+        return pyvectorizer<R (*)(Args...), R, Args...>(f);
     }
 
     /// @cond DOXYGEN_INCLUDE_OVERLOADS
     template <class F, class R, class... Args>
-    inline pyvectorizer<F, R, Args...> pyvectorize(F&& f, R(*) (Args...))
+    inline pyvectorizer<F, R, Args...> pyvectorize(F&& f, R (*)(Args...))
     {
         return pyvectorizer<F, R, Args...>(std::forward<F>(f));
     }

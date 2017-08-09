@@ -1,7 +1,0 @@
-name: test-xtensor-python
-channels:
-    - conda-forge
-    - defaults
-dependencies:
-    - cmake
-    - gtest

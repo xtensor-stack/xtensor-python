@@ -21,7 +21,6 @@ namespace xt
     template <std::size_t N>
     class pystrides_adaptor
     {
-
     public:
 
         using value_type = std::size_t;
@@ -82,14 +81,40 @@ namespace xt
 
         inline reference operator[](difference_type n) { return *(p_current + n) / N; }
 
-        inline self_type& operator++() { ++p_current; return *this; }
-        inline self_type& operator--() { --p_current; return *this; }
+        inline self_type& operator++()
+        {
+            ++p_current;
+            return *this;
+        }
+        inline self_type& operator--()
+        {
+            --p_current;
+            return *this;
+        }
 
-        inline self_type operator++(int) { self_type tmp(*this); ++p_current; return tmp; }
-        inline self_type operator--(int) { self_type tmp(*this); --p_current; return tmp; }
+        inline self_type operator++(int)
+        {
+            self_type tmp(*this);
+            ++p_current;
+            return tmp;
+        }
+        inline self_type operator--(int)
+        {
+            self_type tmp(*this);
+            --p_current;
+            return tmp;
+        }
 
-        inline self_type& operator+=(difference_type n) { p_current += n; return *this; }
-        inline self_type& operator-=(difference_type n) { p_current -= n; return *this; }
+        inline self_type& operator+=(difference_type n)
+        {
+            p_current += n;
+            return *this;
+        }
+        inline self_type& operator-=(difference_type n)
+        {
+            p_current -= n;
+            return *this;
+        }
 
         inline self_type operator+(difference_type n) const { return self_type(p_current + n); }
         inline self_type operator-(difference_type n) const { return self_type(p_current - n); }
@@ -212,8 +237,6 @@ namespace xt
     {
         return end();
     }
-
 }
 
 #endif
-
