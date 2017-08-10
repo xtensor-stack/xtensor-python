@@ -79,7 +79,7 @@ namespace xt
         inline reference operator*() const { return *p_current / N; }
         inline pointer operator->() const { return p_current; }
 
-        inline reference operator[](difference_type n) { return *(p_current + n) / N; }
+        inline reference operator[](difference_type n) const { return *(p_current + n) / N; }
 
         inline self_type& operator++()
         {
