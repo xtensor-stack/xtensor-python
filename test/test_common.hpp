@@ -318,7 +318,7 @@ namespace xt
             vec.reshape(rm.m_shape, layout_type::row_major);
             assign_array(vec, rm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), rm.m_data.cbegin()));
-            EXPECT_EQ(vec(2, 1, 0), vec(2, 1));
+            EXPECT_EQ(vec(0, 1, 1), vec(1, 1));
             EXPECT_EQ(vec(2, 1, 3), vec(2, 2, 2, 1, 3));
             test_bound_check(vec);
         }
@@ -329,7 +329,7 @@ namespace xt
             vec.reshape(cm.m_shape, layout_type::column_major);
             assign_array(vec, cm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), cm.m_data.cbegin()));
-            EXPECT_EQ(vec(2, 1, 0), vec(2, 1));
+            EXPECT_EQ(vec(0, 1, 1), vec(1, 1));
             EXPECT_EQ(vec(2, 1, 3), vec(2, 2, 2, 1, 3));
             test_bound_check(vec);
         }
@@ -340,7 +340,7 @@ namespace xt
             vec.reshape(cem.m_shape, cem.m_strides);
             assign_array(vec, cem.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), cem.m_data.cbegin()));
-            EXPECT_EQ(vec(2, 1, 0), vec(2, 1));
+            EXPECT_EQ(vec(0, 1, 1), vec(1, 1));
             EXPECT_EQ(vec(2, 1, 3), vec(2, 2, 2, 1, 3));
             test_bound_check(vec);
         }
@@ -351,7 +351,7 @@ namespace xt
             vec.reshape(usr.m_shape, layout_type::row_major);
             assign_array(vec, usr.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), usr.m_data.cbegin()));
-            EXPECT_EQ(vec(2, 0, 0), vec(2, 0));
+            EXPECT_EQ(vec(0, 1, 0), vec(1, 0));
             EXPECT_EQ(vec(2, 0, 3), vec(2, 2, 2, 0, 3));
             test_bound_check(vec);
         }
@@ -379,15 +379,15 @@ namespace xt
     template <class V, class C = std::vector<std::size_t>>
     void test_indexed_access(V& vec)
     {
-        xindex index1 = { 2, 1 };
-        xindex index2 = { 2, 2, 2, 1, 3};
+        xindex index1 = {1, 1};
+        xindex index2 = {2, 2, 2, 1, 3};
         {
             SCOPED_TRACE("row_major access");
             row_major_result<C> rm;
             vec.reshape(rm.m_shape, layout_type::row_major);
             indexed_assign_array(vec, rm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), rm.m_data.cbegin()));
-            EXPECT_EQ(vec(2, 1, 0), vec[index1]);
+            EXPECT_EQ(vec(0, 1, 1), vec[index1]);
             EXPECT_EQ(vec(2, 1, 3), vec[index2]);
         }
 
@@ -397,7 +397,7 @@ namespace xt
             vec.reshape(cm.m_shape, layout_type::column_major);
             indexed_assign_array(vec, cm.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), cm.m_data.cbegin()));
-            EXPECT_EQ(vec(2, 1, 0), vec[index1]);
+            EXPECT_EQ(vec(0, 1, 1), vec[index1]);
             EXPECT_EQ(vec(2, 1, 3), vec[index2]);
         }
 
@@ -407,7 +407,7 @@ namespace xt
             vec.reshape(cem.m_shape, cem.m_strides);
             indexed_assign_array(vec, cem.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), cem.m_data.cbegin()));
-            EXPECT_EQ(vec(2, 1, 0), vec[index1]);
+            EXPECT_EQ(vec(0, 1, 1), vec[index1]);
             EXPECT_EQ(vec(2, 1, 3), vec[index2]);
         }
 
@@ -417,9 +417,9 @@ namespace xt
             vec.reshape(usr.m_shape, layout_type::row_major);
             indexed_assign_array(vec, usr.m_assigner);
             EXPECT_TRUE(std::equal(vec.data().cbegin(), vec.data().cend(), usr.m_data.cbegin()));
-            xindex id1 = { 2, 0 };
+            xindex id1 = { 1, 0 };
             xindex id2 = { 2, 2, 2, 0, 3 };
-            EXPECT_EQ(vec(2, 0, 0), vec[id1]);
+            EXPECT_EQ(vec(0, 1, 0), vec[id1]);
             EXPECT_EQ(vec(2, 0, 3), vec[id2]);
         }
     }
