@@ -7,9 +7,12 @@
 ****************************************************************************/
 
 #include "gtest/gtest.h"
-#include "test_common.hpp"
+
 #include "xtensor-python/pyarray.hpp"
+
 #include "xtensor/xarray.hpp"
+
+#include "test_common.hpp"
 
 namespace xt
 {
@@ -159,13 +162,13 @@ namespace xt
         pyarray<int> a;
         test_reshape(a);
     }
-/*
+
     TEST(pyarray, transpose)
     {
         pyarray<int> a;
         test_transpose(a);
     }
-*/
+
     TEST(pyarray, access)
     {
         pyarray<int> a;
@@ -188,7 +191,8 @@ namespace xt
     TEST(pyarray, iterator)
     {
         pyarray<int> a;
-        test_iterator(a);
+        pyarray<int> b;
+        test_iterator(a, b);
     }
 
     TEST(pyarray, initializer_list)

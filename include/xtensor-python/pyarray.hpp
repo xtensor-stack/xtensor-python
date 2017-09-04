@@ -427,13 +427,13 @@ namespace xt
     template <class A>
     inline auto pyarray_backstrides<A>::cbegin() const -> const_iterator
     {
-        const_iterator(this, 0);
+        return const_iterator(this, 0);
     }
 
     template <class A>
     inline auto pyarray_backstrides<A>::cend() const -> const_iterator
     {
-        const_iterator(this, size());
+        return const_iterator(this, size());
     }
 
     /**************************

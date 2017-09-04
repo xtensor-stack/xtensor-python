@@ -7,9 +7,12 @@
 ****************************************************************************/
 
 #include "gtest/gtest.h"
-#include "test_common.hpp"
+
 #include "xtensor-python/pytensor.hpp"
+
 #include "xtensor/xtensor.hpp"
+
+#include "test_common.hpp"
 
 namespace xt
 {
@@ -159,11 +162,11 @@ namespace xt
         test_reshape<pytensor<int, 3>, container_type>(a);
     }
 
-    /*TEST(pytensor, transpose)
+    TEST(pytensor, transpose)
     {
         pytensor<int, 3> a;
         test_transpose<pytensor<int, 3>, container_type>(a);
-    }*/
+    }
 
     TEST(pytensor, access)
     {
@@ -186,7 +189,8 @@ namespace xt
     TEST(pytensor, iterator)
     {
         pytensor<int, 3> a;
-        test_iterator<pytensor<int, 3>, container_type>(a);
+        pytensor<int, 3> b;
+        test_iterator<pytensor<int, 3>, pytensor<int, 3>, container_type>(a, b);
     }
 
     TEST(pytensor, zerod)
