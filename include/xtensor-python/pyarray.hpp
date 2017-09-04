@@ -113,6 +113,7 @@ namespace xt
         using inner_strides_type = pystrides_adaptor<sizeof(T)>;
         using inner_backstrides_type = backstrides_type;
         using temporary_type = pyarray<T>;
+        static constexpr layout_type layout = layout_type::dynamic;
     };
 
     /**
@@ -386,7 +387,7 @@ namespace xt
      */
     template <class T>
     inline pyarray<T>::pyarray(const self_type& rhs)
-        : base_type()
+        : base_type(), semantic_base(rhs)
     {
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
             PyArray_NewLikeArray(rhs.python_array(), NPY_KEEPORDER, nullptr, 1));
