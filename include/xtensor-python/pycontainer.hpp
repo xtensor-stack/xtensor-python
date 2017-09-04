@@ -13,7 +13,6 @@
 #include <functional>
 #include <numeric>
 
-#include "pybind11/common.h"
 #include "pybind11/complex.h"
 #include "pybind11/pybind11.h"
 
