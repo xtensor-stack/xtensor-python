@@ -95,7 +95,7 @@ install:
     - conda update -q conda
     # Useful for debugging any issues with conda
     - conda info -a
-    - conda install xtensor==0.10.9 pytest numpy pybind11==2.1.1 -c conda-forge
+    - conda install xtensor==0.10.9 pytest numpy pybind11==2.2.0 -c conda-forge
     - conda install cmake gtest -c conda-forge
     - cmake -D BUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda .
     - make -j2 test_xtensor_python
