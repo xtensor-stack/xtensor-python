@@ -190,10 +190,10 @@ from the `docs` subdirectory.
 | `xtensor-python`  | `xtensor`  |  `pybind11` |
 |-------------------|------------|-------------|
 | master            |  ^0.10.9   | ^2.1.0      |
-| 0.12.x            |  ^0.10.2   | ^2.1.0      |
-| 0.11.x            |  ^0.10.0   | ^2.1.0      |
-| 0.10.x            |  ^0.9.0    | ^2.1.0      |
-| 0.9.x             |  ^0.8.1    | ^2.1.0      |
+| 0.12.x            |  ^0.10.2   | 2.1.\*      |
+| 0.11.x            |  ^0.10.0   | 2.1.\*      |
+| 0.10.x            |  ^0.9.0    | 2.1.\*      |
+| 0.9.x             |  ^0.8.1    | 2.1.\*      |
 
 These dependencies are automatically resolved when using the conda package manager.
 
