@@ -75,6 +75,154 @@ namespace pybind11
 namespace xt
 {
 
+    /**************************
+     * pybackstrides_iterator *
+     **************************/
+
+    template <class A>
+    class pybackstrides_iterator
+    {
+    public:
+
+        using self_type = pybackstrides_iterator<A>;
+
+        using value_type = typename A::size_type;
+        using pointer = const value_type*;
+        using reference = value_type;
+        using difference_type = std::ptrdiff_t;
+        using iterator_category = std::random_access_iterator_tag;
+
+        inline pybackstrides_iterator(const A* a, std::size_t offset)
+            : p_a(a), m_offset(offset)
+        {
+        }
+
+        inline reference operator*() const
+        {
+            value_type sh = p_a->shape()[m_offset];
+            value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[m_offset];
+            return res;
+        }
+
+        inline pointer operator->() const
+        {
+            // Returning the address of a temporary
+            value_type sh = p_a->shape()[m_offset];
+            value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[m_offset];
+            return &res;
+        }
+
+        inline reference operator[](difference_type n) const
+        {
+            auto index = m_offset + n;
+            value_type sh = p_a->shape()[index];
+            value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[index];
+            return res;
+        }
+
+        inline self_type& operator++()
+        {
+            ++m_offset;
+            return *this;
+        }
+
+        inline self_type& operator--()
+        {
+            --m_offset;
+            return *this;
+        }
+
+        inline self_type operator++(int)
+        {
+            self_type tmp(*this);
+            ++m_offset;
+            return tmp;
+        }
+
+        inline self_type operator--(int)
+        {
+            self_type tmp(*this);
+            --m_offset;
+            return tmp;
+        }
+
+        inline self_type& operator+=(difference_type n)
+        {
+            m_offset += n;
+            return *this;
+        }
+
+        inline self_type& operator-=(difference_type n)
+        {
+            m_offset -= n;
+            return *this;
+        }
+
+        inline self_type operator+(difference_type n) const
+        {
+            return self_type(p_a, m_offset + n);
+        }
+
+        inline self_type operator-(difference_type n) const
+        {
+            return self_type(p_a, m_offset - n);
+        }
+
+        inline self_type operator-(const self_type& rhs) const
+        {
+            self_type tmp(*this);
+            tmp -= (m_offset - rhs.m_offset);
+            return tmp;
+        }
+
+    private:
+
+        const A* p_a;
+        std::size_t m_offset;
+    };
+
+    template <class A>
+    inline bool operator==(const pybackstrides_iterator<A>& lhs,
+                           const pybackstrides_iterator<A>& rhs)
+    {
+        return lhs.m_offset == rhs.m_offset;
+    }
+
+    template <class A>
+    inline bool operator!=(const pybackstrides_iterator<A>& lhs,
+                           const pybackstrides_iterator<A>& rhs)
+    {
+        return !(lhs == rhs);
+    }
+
+    template <class A>
+    inline bool operator<(const pybackstrides_iterator<A>& lhs,
+                          const pybackstrides_iterator<A>& rhs)
+    {
+        return lhs.m_offset < rhs.m_offset;
+    }
+
+    template <class A>
+    inline bool operator<=(const pybackstrides_iterator<A>& lhs,
+                           const pybackstrides_iterator<A>& rhs)
+    {
+        return (lhs < rhs) || (lhs == rhs);
+    }
+
+    template <class A>
+    inline bool operator>(const pybackstrides_iterator<A>& lhs,
+                          const pybackstrides_iterator<A>& rhs)
+    {
+        return !(lhs <= rhs);
+    }
+
+    template <class A>
+    inline bool operator>=(const pybackstrides_iterator<A>& lhs,
+                           const pybackstrides_iterator<A>& rhs)
+    {
+        return !(lhs < rhs);
+    }
+
     template <class A>
     class pyarray_backstrides
     {
@@ -82,14 +230,28 @@ namespace xt
 
         using array_type = A;
         using value_type = typename array_type::size_type;
+        using const_reference = value_type;
+        using const_pointer = const value_type*;
         using size_type = typename array_type::size_type;
+        using difference_type = typename array_type::difference_type;
+
+        using const_iterator = pybackstrides_iterator<A>;
 
         pyarray_backstrides() = default;
         pyarray_backstrides(const array_type& a);
 
+        bool empty() const;
+        size_type size() const;
+
         value_type operator[](size_type i) const;
 
-        size_type size() const;
+        const_reference front() const;
+        const_reference back() const;
+
+        const_iterator begin() const;
+        const_iterator end() const;
+        const_iterator cbegin() const;
+        const_iterator cend() const;
 
     private:
 
@@ -214,6 +376,12 @@ namespace xt
     }
 
     template <class A>
+    inline bool pyarray_backstrides<A>::empty() const
+    {
+        return p_a->dimension() == 0;
+    }
+
+    template <class A>
     inline auto pyarray_backstrides<A>::size() const -> size_type
     {
         return p_a->dimension();
@@ -225,6 +393,47 @@ namespace xt
         value_type sh = p_a->shape()[i];
         value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[i];
         return res;
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::front() const -> const_reference
+    {
+        value_type sh = p_a->shape()[0];
+        value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[0];
+        return res;
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::back() const -> const_reference
+    {
+        auto index = p_a->size() - 1;
+        value_type sh = p_a->shape()[index];
+        value_type res = sh == 1 ? 0 : (sh - 1) * p_a->strides()[index];
+        return res;
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::begin() const -> const_iterator
+    {
+        return cbegin();
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::end() const -> const_iterator
+    {
+        return cend();
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::cbegin() const -> const_iterator
+    {
+        const_iterator(this, 0);
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::cend() const -> const_iterator
+    {
+        const_iterator(this, size());
     }
 
     /**************************
