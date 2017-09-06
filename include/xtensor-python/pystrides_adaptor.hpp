@@ -18,6 +18,10 @@ namespace xt
     template <std::size_t N>
     class pystrides_iterator;
 
+    /*********************************
+     * pystrides_adaptor declaration *
+     *********************************/
+
     template <std::size_t N>
     class pystrides_adaptor
     {
@@ -53,14 +57,13 @@ namespace xt
         size_type m_size;
     };
 
-    /*************************************
-     * pystrides_iterator implementation *
-     *************************************/
+    /**********************************
+     * pystrides_iterator declaration *
+     **********************************/
 
     template <std::size_t N>
     class pystrides_iterator
     {
-
     public:
 
         using self_type = pystrides_iterator<N>;
@@ -76,16 +79,29 @@ namespace xt
         {
         }
 
-        inline reference operator*() const { return *p_current / N; }
-        inline pointer operator->() const { return p_current; }
+        inline reference operator*() const
+        {
+            return *p_current / N;
+        }
 
-        inline reference operator[](difference_type n) const { return *(p_current + n) / N; }
+        inline pointer operator->() const
+        {
+            // Returning the address of a temporary
+            value_type res = *p_current / N;
+            return &res;
+        }
+
+        inline reference operator[](difference_type n) const
+        {
+            return *(p_current + n) / N;
+        }
 
         inline self_type& operator++()
         {
             ++p_current;
             return *this;
         }
+
         inline self_type& operator--()
         {
             --p_current;
@@ -110,14 +126,23 @@ namespace xt
             p_current += n;
             return *this;
         }
+
         inline self_type& operator-=(difference_type n)
         {
             p_current -= n;
             return *this;
         }
 
-        inline self_type operator+(difference_type n) const { return self_type(p_current + n); }
-        inline self_type operator-(difference_type n) const { return self_type(p_current - n); }
+        inline self_type operator+(difference_type n) const
+        {
+            return self_type(p_current + n);
+        }
+
+        inline self_type operator-(difference_type n) const
+        {
+            return self_type(p_current - n);
+        }
+
         inline self_type operator-(const self_type& rhs) const
         {
             self_type tmp(*this);
@@ -217,25 +242,25 @@ namespace xt
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::begin() const -> const_iterator
     {
-        return const_iterator(p_data);
+        return cbegin();
     }
 
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::end() const -> const_iterator
     {
-        return const_iterator(p_data + m_size);
+        return cend();
     }
 
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::cbegin() const -> const_iterator
     {
-        return begin();
+        return const_iterator(p_data);
     }
 
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::cend() const -> const_iterator
     {
-        return end();
+        return const_iterator(p_data + m_size);
     }
 }
 
