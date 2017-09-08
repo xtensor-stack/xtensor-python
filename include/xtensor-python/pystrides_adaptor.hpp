@@ -34,6 +34,7 @@ namespace xt
         using difference_type = std::ptrdiff_t;
 
         using const_iterator = pystrides_iterator<N>;
+        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
         pystrides_adaptor() = default;
         pystrides_adaptor(const_pointer data, size_type size);
@@ -50,6 +51,11 @@ namespace xt
         const_iterator end() const;
         const_iterator cbegin() const;
         const_iterator cend() const;
+
+        const_reverse_iterator rbegin() const;
+        const_reverse_iterator rend() const;
+        const_reverse_iterator crbegin() const;
+        const_reverse_iterator crend() const;
 
     private:
 
@@ -114,6 +120,7 @@ namespace xt
             ++p_current;
             return tmp;
         }
+
         inline self_type operator--(int)
         {
             self_type tmp(*this);
@@ -143,11 +150,10 @@ namespace xt
             return self_type(p_current - n);
         }
 
-        inline self_type operator-(const self_type& rhs) const
+        inline difference_type operator-(const self_type& rhs) const
         {
             self_type tmp(*this);
-            tmp -= (p_current - rhs.p_current);
-            return tmp;
+            return p_current - rhs.p_current;
         }
 
         pointer get_pointer() const { return p_current; }
@@ -261,6 +267,30 @@ namespace xt
     inline auto pystrides_adaptor<N>::cend() const -> const_iterator
     {
         return const_iterator(p_data + m_size);
+    }
+
+    template <std::size_t N>
+    inline auto pystrides_adaptor<N>::rbegin() const -> const_reverse_iterator
+    {
+        return crbegin();
+    }
+
+    template <std::size_t N>
+    inline auto pystrides_adaptor<N>::rend() const -> const_reverse_iterator
+    {
+        return crend();
+    }
+
+    template <std::size_t N>
+    inline auto pystrides_adaptor<N>::crbegin() const -> const_reverse_iterator
+    {
+        return const_reverse_iterator(cend());
+    }
+
+    template <std::size_t N>
+    inline auto pystrides_adaptor<N>::crend() const -> const_reverse_iterator
+    {
+        return const_reverse_iterator(cbegin());
     }
 }
 
