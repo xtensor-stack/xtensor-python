@@ -19,6 +19,7 @@
 
 #include "pycontainer.hpp"
 #include "pystrides_adaptor.hpp"
+#include "xtensor_type_caster_base.hpp"
 
 namespace xt
 {
@@ -68,6 +69,29 @@ namespace pybind11
             }
 
             PYBIND11_TYPE_CASTER(type, handle_type_name<type>::name());
+        };
+
+        // Type caster for casting ndarray to xexpression<pyarray>
+        template<typename T>
+        struct type_caster<xt::xexpression<xt::pyarray<T>>> : pyobject_caster<xt::pyarray<T>>
+        {
+            using Type = xt::xexpression<xt::pyarray<T>>;
+            
+            operator Type&()
+            {
+                return this->value; 
+            }
+
+            operator const Type&()
+            {
+                return this->value;
+            }
+        };
+
+        // Type caster for casting xarray to ndarray
+        template<class T>
+        struct type_caster<xt::xarray<T>> : xtensor_type_caster_base<xt::xarray<T>>
+        {
         };
     }
 }

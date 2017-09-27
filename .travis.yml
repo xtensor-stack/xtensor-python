@@ -59,7 +59,7 @@ matrix:
       env: PY=3
 env:
   global:
-    - MINCONDA_VERSION="latest"
+    - MINCONDA_VERSION="4.3.21"
     - MINCONDA_LINUX="Linux-x86_64"
     - MINCONDA_OSX="MacOSX-x86_64"
 before_install:
