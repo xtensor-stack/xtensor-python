@@ -28,11 +28,14 @@ namespace pybind11
         template<typename Type>
         handle xtensor_array_cast(Type const &src, handle base = handle(), bool writeable = true)
         {
-            std::vector<ssize_t> python_strides(src.strides().size());
-            std::transform(src.strides().begin(), src.strides().end(), python_strides.data(),
+            std::vector<size_t> python_strides(src.strides().size());
+            std::transform(src.strides().begin(), src.strides().end(), python_strides.begin(),
                            [](auto v) { return sizeof(typename Type::value_type) * v; });
 
-            array a(src.shape(), python_strides, src.begin(), base);
+	    std::vector<size_t> python_shape(src.shape().size());
+	    std::copy(src.shape().begin(), src.shape().end(), python_shape.begin());
+
+            array a(python_shape, python_strides, src.begin(), base);
 
             if (!writeable)
             {
@@ -151,7 +154,7 @@ namespace pybind11
             }
 
             template <typename T>
-            using cast_op_type = movable_cast_op_type<T>;
+            using cast_op_type = cast_op_type<T>;
         };
     }
 }
