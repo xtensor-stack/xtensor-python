@@ -1,7 +1,7 @@
 /*  
     xtensor-python/xtensor_type_caster.hpp: Transparent conversion for xtensor and xarray
 
-    This code was inspired by the following code written by Wenzei Jakob
+    This code is based on the following code written by Wenzei Jakob
 
     pybind11/eigen.h: Transparent conversion for dense and sparse Eigen matrices
 
@@ -19,110 +19,141 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 
-NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
-NAMESPACE_BEGIN(detail)
+namespace pybind11
+{
+    namespace detail
+    {
+        // Casts an xtensor (or xarray) type to numpy array.  If given a base, the numpy array references the src data,
+        // otherwise it'll make a copy.  writeable lets you turn off the writeable flag for the array.
+        template<typename Type>
+        handle xtensor_array_cast(Type const &src, handle base = handle(), bool writeable = true)
+        {
+            std::vector<ssize_t> python_strides(src.strides().size());
+            std::transform(src.strides().begin(), src.strides().end(), python_strides.data(),
+                           [](auto v) { return sizeof(typename Type::value_type) * v; });
 
+            array a(src.shape(), python_strides, src.begin(), base);
 
-// Casts an xtensor (or xarray) type to numpy array.  If given a base, the numpy array references the src data,
-// otherwise it'll make a copy.  writeable lets you turn off the writeable flag for the array.
-template<typename Type>
-handle xtensor_array_cast(Type const &src, handle base = handle(), bool writeable = true) {
-    std::vector<ssize_t> python_strides(src.strides().size());
-    std::transform(src.strides().begin(), src.strides().end(), python_strides.data(),
-                  [](auto v) { return sizeof(typename Type::value_type) * v; });
+            if (!writeable)
+            {
+                array_proxy(a.ptr())->flags &= ~detail::npy_api::NPY_ARRAY_WRITEABLE_;
+            }
 
-    array a(src.shape(), python_strides, src.begin(), base);
+            return a.release();
+        }
 
-    if (!writeable)
-        array_proxy(a.ptr())->flags &= ~detail::npy_api::NPY_ARRAY_WRITEABLE_;
+        // Takes an lvalue ref to some xtensor (or xarray) type and a (python) base object, creating a numpy array that
+        // reference the xtensor object's data with `base` as the python-registered base class (if omitted,
+        // the base will be set to None, and lifetime management is up to the caller).  The numpy array is
+        // non-writeable if the given type is const.
+        template <typename Type, typename CType>
+        handle xtensor_ref_array(CType &src, handle parent = none())
+        {
+            return xtensor_array_cast<Type>(src, parent, !std::is_const<CType>::value);
+        }
 
-    return a.release();
-}
+        // Takes a pointer to xtensor (or xarray), builds a capsule around it, then returns a numpy
+        // array that references the encapsulated data with a python-side reference to the capsule to tie
+        // its destruction to that of any dependent python objects.  Const-ness is determined by whether or
+        // not the CType of the pointer given is const.
+        template <typename Type, typename CType>
+        handle xtensor_encapsulate(CType *src)
+        {
+            capsule base(src, [](void *o) { delete static_cast<CType *>(o); });
+            return xtensor_ref_array<Type>(*src, base);
+        }
 
+        // Base class of type_caster for xtensor and xarray
+        template<class Type>
+        struct xtensor_type_caster_base
+        {
+            bool load(handle src, bool)
+            {
+                return false;
+            }
 
-// Takes an lvalue ref to some xtensor (or xarray) type and a (python) base object, creating a numpy array that
-// reference the xtensor object's data with `base` as the python-registered base class (if omitted,
-// the base will be set to None, and lifetime management is up to the caller).  The numpy array is
-// non-writeable if the given type is const.
-template <typename Type, typename CType>
-handle xtensor_ref_array(CType &src, handle parent = none()) {
-    return xtensor_array_cast<Type>(src, parent, !std::is_const<CType>::value);
-}
+        private:
+    
+            // Cast implementation
+            template <typename CType>
+            static handle cast_impl(CType *src, return_value_policy policy, handle parent)
+            {
+                switch (policy)
+                {
+                case return_value_policy::take_ownership:
+                case return_value_policy::automatic:
+                    return xtensor_encapsulate<Type>(src);
+                case return_value_policy::move:
+                    return xtensor_encapsulate<Type>(new CType(std::move(*src)));
+                case return_value_policy::copy:
+                    return xtensor_array_cast<Type>(*src);
+                case return_value_policy::reference:
+                case return_value_policy::automatic_reference:
+                    return xtensor_ref_array<Type>(*src);
+                case return_value_policy::reference_internal:
+                    return xtensor_ref_array<Type>(*src, parent);
+                default:
+                    throw cast_error("unhandled return_value_policy: should not happen!");
+                };
+            }
 
+        public:
 
-// Takes a pointer to xtensor (or xarray), builds a capsule around it, then returns a numpy
-// array that references the encapsulated data with a python-side reference to the capsule to tie
-// its destruction to that of any dependent python objects.  Const-ness is determined by whether or
-// not the CType of the pointer given is const.
-template <typename Type, typename CType>
-handle xtensor_encapsulate(CType *src) {
-    capsule base(src, [](void *o) { delete static_cast<CType *>(o); });
-    return xtensor_ref_array<Type>(*src, base);
-}
+            // Normal returned non-reference, non-const value:
+            static handle cast(Type &&src, return_value_policy /* policy */, handle parent)
+            {
+                return cast_impl(&src, return_value_policy::move, parent);
+            }
 
-// Base class of type_caster for xtensor and xarray
-template<class Type>
-struct xtensor_type_caster_base {
-    bool load(handle src, bool) {
-        return false;
-    }
+            // If you return a non-reference const, we mark the numpy array readonly:
+            static handle cast(const Type &&src, return_value_policy /* policy */, handle parent)
+            {
+                return cast_impl(&src, return_value_policy::move, parent);
+            }
 
-private:
-    // Cast implementation
-    template <typename CType>
-    static handle cast_impl(CType *src, return_value_policy policy, handle parent) {
-        switch (policy) {
-          case return_value_policy::take_ownership:
-          case return_value_policy::automatic:
-              return xtensor_encapsulate<Type>(src);
-          case return_value_policy::move:
-              return xtensor_encapsulate<Type>(new CType(std::move(*src)));
-          case return_value_policy::copy:
-              return xtensor_array_cast<Type>(*src);
-          case return_value_policy::reference:
-          case return_value_policy::automatic_reference:
-              return xtensor_ref_array<Type>(*src);
-          case return_value_policy::reference_internal:
-              return xtensor_ref_array<Type>(*src, parent);
-          default:
-              throw cast_error("unhandled return_value_policy: should not happen!");
+            // lvalue reference return; default (automatic) becomes copy
+            static handle cast(Type &src, return_value_policy policy, handle parent)
+            {
+                if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
+                {
+                    policy = return_value_policy::copy;
+                }
+
+                return cast_impl(&src, policy, parent);
+            }
+
+            // const lvalue reference return; default (automatic) becomes copy
+            static handle cast(const Type &src, return_value_policy policy, handle parent)
+            {
+                if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
+                {
+                    policy = return_value_policy::copy;
+                }
+
+                return cast(&src, policy, parent);
+            }
+
+            // non-const pointer return
+            static handle cast(Type *src, return_value_policy policy, handle parent)
+            {
+                return cast_impl(src, policy, parent);
+            }
+
+            // const pointer return
+            static handle cast(const Type *src, return_value_policy policy, handle parent)
+            {
+                return cast_impl(src, policy, parent);
+            }
+
+            static PYBIND11_DESCR name()
+            {
+                return _("xt::xtensor"); 
+            }
+
+            template <typename T>
+            using cast_op_type = movable_cast_op_type<T>;
         };
     }
-public:
-    // Normal returned non-reference, non-const value:
-    static handle cast(Type &&src, return_value_policy /* policy */, handle parent) {
-        return cast_impl(&src, return_value_policy::move, parent);
-    }
-    // If you return a non-reference const, we mark the numpy array readonly:
-    static handle cast(const Type &&src, return_value_policy /* policy */, handle parent) {
-        return cast_impl(&src, return_value_policy::move, parent);
-    }
-    // lvalue reference return; default (automatic) becomes copy
-    static handle cast(Type &src, return_value_policy policy, handle parent) {
-        if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
-            policy = return_value_policy::copy;
-        return cast_impl(&src, policy, parent);
-    }
-    // const lvalue reference return; default (automatic) becomes copy
-    static handle cast(const Type &src, return_value_policy policy, handle parent) {
-        if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
-            policy = return_value_policy::copy;
-        return cast(&src, policy, parent);
-    }
-    // non-const pointer return
-    static handle cast(Type *src, return_value_policy policy, handle parent) {
-        return cast_impl(src, policy, parent);
-    }
-    // const pointer return
-    static handle cast(const Type *src, return_value_policy policy, handle parent) {
-        return cast_impl(src, policy, parent);
-    }
-
-    static PYBIND11_DESCR name() { return _("xt::xtensor"); }
-    template <typename T> using cast_op_type = movable_cast_op_type<T>;
-};
-
-NAMESPACE_END(detail)
-NAMESPACE_END(PYBIND11_NAMESPACE)
+}
 
 #endif
