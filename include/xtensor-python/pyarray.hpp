@@ -72,14 +72,14 @@ namespace pybind11
         };
 
         // Type caster for casting ndarray to xexpression<pyarray>
-        template<typename T>
+        template <typename T>
         struct type_caster<xt::xexpression<xt::pyarray<T>>> : pyobject_caster<xt::pyarray<T>>
         {
             using Type = xt::xexpression<xt::pyarray<T>>;
-            
+
             operator Type&()
             {
-                return this->value; 
+                return this->value;
             }
 
             operator const Type&()
@@ -89,7 +89,7 @@ namespace pybind11
         };
 
         // Type caster for casting xarray to ndarray
-        template<class T>
+        template <class T>
         struct type_caster<xt::xarray<T>> : xtensor_type_caster_base<xt::xarray<T>>
         {
         };

@@ -16,8 +16,9 @@
 #define XTENSOR_TYPE_CASTER_HPP
 
 #include "xtensor/xtensor.hpp"
-#include <pybind11/pybind11.h>
+
 #include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 
 namespace pybind11
 {
@@ -25,15 +26,16 @@ namespace pybind11
     {
         // Casts an xtensor (or xarray) type to numpy array.  If given a base, the numpy array references the src data,
         // otherwise it'll make a copy.  writeable lets you turn off the writeable flag for the array.
-        template<typename Type>
-        handle xtensor_array_cast(Type const &src, handle base = handle(), bool writeable = true)
+        template <typename Type>
+        handle xtensor_array_cast(Type const& src, handle base = handle(), bool writeable = true)
         {
+            // TODO: make use of xt::pyarray instead of array.
             std::vector<size_t> python_strides(src.strides().size());
             std::transform(src.strides().begin(), src.strides().end(), python_strides.begin(),
                            [](auto v) { return sizeof(typename Type::value_type) * v; });
 
-	    std::vector<size_t> python_shape(src.shape().size());
-	    std::copy(src.shape().begin(), src.shape().end(), python_shape.begin());
+            std::vector<size_t> python_shape(src.shape().size());
+            std::copy(src.shape().begin(), src.shape().end(), python_shape.begin());
 
             array a(python_shape, python_strides, src.begin(), base);
 
@@ -50,7 +52,7 @@ namespace pybind11
         // the base will be set to None, and lifetime management is up to the caller).  The numpy array is
         // non-writeable if the given type is const.
         template <typename Type, typename CType>
-        handle xtensor_ref_array(CType &src, handle parent = none())
+        handle xtensor_ref_array(CType& src, handle parent = none())
         {
             return xtensor_array_cast<Type>(src, parent, !std::is_const<CType>::value);
         }
@@ -60,14 +62,14 @@ namespace pybind11
         // its destruction to that of any dependent python objects.  Const-ness is determined by whether or
         // not the CType of the pointer given is const.
         template <typename Type, typename CType>
-        handle xtensor_encapsulate(CType *src)
+        handle xtensor_encapsulate(CType* src)
         {
-            capsule base(src, [](void *o) { delete static_cast<CType *>(o); });
+            capsule base(src, [](void* o) { delete static_cast<CType*>(o); });
             return xtensor_ref_array<Type>(*src, base);
         }
 
         // Base class of type_caster for xtensor and xarray
-        template<class Type>
+        template <class Type>
         struct xtensor_type_caster_base
         {
             bool load(handle src, bool)
@@ -79,7 +81,7 @@ namespace pybind11
     
             // Cast implementation
             template <typename CType>
-            static handle cast_impl(CType *src, return_value_policy policy, handle parent)
+            static handle cast_impl(CType* src, return_value_policy policy, handle parent)
             {
                 switch (policy)
                 {
@@ -103,19 +105,19 @@ namespace pybind11
         public:
 
             // Normal returned non-reference, non-const value:
-            static handle cast(Type &&src, return_value_policy /* policy */, handle parent)
+            static handle cast(Type&& src, return_value_policy /* policy */, handle parent)
             {
                 return cast_impl(&src, return_value_policy::move, parent);
             }
 
             // If you return a non-reference const, we mark the numpy array readonly:
-            static handle cast(const Type &&src, return_value_policy /* policy */, handle parent)
+            static handle cast(const Type&& src, return_value_policy /* policy */, handle parent)
             {
                 return cast_impl(&src, return_value_policy::move, parent);
             }
 
             // lvalue reference return; default (automatic) becomes copy
-            static handle cast(Type &src, return_value_policy policy, handle parent)
+            static handle cast(Type& src, return_value_policy policy, handle parent)
             {
                 if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
                 {
@@ -126,7 +128,7 @@ namespace pybind11
             }
 
             // const lvalue reference return; default (automatic) becomes copy
-            static handle cast(const Type &src, return_value_policy policy, handle parent)
+            static handle cast(const Type& src, return_value_policy policy, handle parent)
             {
                 if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
                 {
@@ -137,20 +139,20 @@ namespace pybind11
             }
 
             // non-const pointer return
-            static handle cast(Type *src, return_value_policy policy, handle parent)
+            static handle cast(Type* src, return_value_policy policy, handle parent)
             {
                 return cast_impl(src, policy, parent);
             }
 
             // const pointer return
-            static handle cast(const Type *src, return_value_policy policy, handle parent)
+            static handle cast(const Type* src, return_value_policy policy, handle parent)
             {
                 return cast_impl(src, policy, parent);
             }
 
             static PYBIND11_DESCR name()
             {
-                return _("xt::xtensor"); 
+                return _("xt::xtensor");
             }
 
             template <typename T>
