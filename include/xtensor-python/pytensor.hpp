@@ -224,8 +224,8 @@ namespace xt
     inline pytensor<T, N>::pytensor()
         : base_type()
     {
-        m_shape = make_sequence<shape_type>(N, size_type(1));
-        m_strides = make_sequence<strides_type>(N, size_type(0));
+        m_shape = xtl::make_sequence<shape_type>(N, size_type(1));
+        m_strides = xtl::make_sequence<strides_type>(N, size_type(0));
         init_tensor(m_shape, m_strides);
         m_data[0] = T();
     }
@@ -360,8 +360,8 @@ namespace xt
     inline pytensor<T, N>::pytensor(const xexpression<E>& e)
         : base_type()
     {
-        shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
-        strides_type strides = make_sequence<strides_type>(N, size_type(0));
+        shape_type shape = xtl::forward_sequence<shape_type>(e.derived_cast().shape());
+        strides_type strides = xtl::make_sequence<strides_type>(N, size_type(0));
         compute_strides(shape, layout_type::row_major, strides);
         init_tensor(shape, strides);
         semantic_base::assign(e);

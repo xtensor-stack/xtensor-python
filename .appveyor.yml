@@ -23,7 +23,7 @@ install:
   - conda update -q conda
   - conda info -a
   - conda install gtest cmake -c conda-forge
-  - conda install xtensor==0.11.0 pytest numpy pybind11==2.1.1 -c conda-forge
+  - conda install xtensor==0.12.0 pytest numpy pybind11==2.1.1 -c conda-forge
   - "set PYTHONHOME=%MINICONDA%"
   - cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\Library -D BUILD_TESTS=ON -D PYTHON_EXECUTABLE=%MINICONDA%\\python.exe .
   - nmake test_xtensor_python
