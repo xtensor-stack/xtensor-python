@@ -28,6 +28,18 @@ set(${PROJECT_NAME}_VERSION
     ${XTENSOR_PYTHON_VERSION_MAJOR}.${XTENSOR_PYTHON_VERSION_MINOR}.${XTENSOR_PYTHON_VERSION_PATCH})
 message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 
+# Dependencies
+# ============
+
+find_package(xtl REQUIRED)
+message(STATUS "Found xtl: ${xtl_INCLUDE_DIRS}/xtl")
+find_package(xtensor REQUIRED)
+message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
+find_package(pybind11 REQUIRED)
+message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
+find_package(NumPy REQUIRED)
+message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
+
 # Build
 # =====
 
@@ -50,12 +62,9 @@ endif()
 
 if(BUILD_TESTS)
     include_directories(${XTENSOR_PYTHON_INCLUDE_DIR})
-    find_package(xtensor REQUIRED)
+    include_directories(${xtl_INCLUDE_DIRS})
     include_directories(${xtensor_INCLUDE_DIRS})
-    find_package(NumPy REQUIRED)
     include_directories(${NUMPY_INCLUDE_DIRS})
-
-    find_package(pybind11 REQUIRED)
     include_directories(${pybind11_INCLUDE_DIRS})
 
     if(MSVC)
