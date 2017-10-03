@@ -12,6 +12,8 @@
 #include "xtensor/xlayout.hpp"
 #include "xtensor/xstridedview.hpp"
 
+#include "xtl/xsequence.hpp"
+
 namespace xt
 {
     template <class T, class A>
@@ -218,7 +220,7 @@ namespace xt
         using strides_type = typename V::strides_type;
         {
             SCOPED_TRACE("transpose");
-            shape_type shape_new = xt::make_sequence<shape_type>(vec.dimension(), 0);
+            shape_type shape_new = xtl::make_sequence<shape_type>(vec.dimension(), 0);
             std::copy(vec.shape().cbegin(), vec.shape().cend(), shape_new.begin());
             auto vt = transpose(vec);
             std::reverse(shape_new.begin(), shape_new.end());
@@ -268,7 +270,7 @@ namespace xt
 
             auto vec_copy = vec;
 
-            shape_type a = xt::make_sequence<shape_type>(vec.dimension(), 0);
+            shape_type a = xtl::make_sequence<shape_type>(vec.dimension(), 0);
             std::copy(vec.shape().cbegin(), vec.shape().cend(), a.begin());
             auto vt = transpose(vec, {1, 0, 2});
             shape_type shape_new = {a[1], a[0], a[2]};

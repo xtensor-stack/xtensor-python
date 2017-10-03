@@ -473,8 +473,8 @@ namespace xt
         : base_type()
     {
         // TODO: avoid allocation
-        shape_type shape = make_sequence<shape_type>(0, size_type(1));
-        strides_type strides = make_sequence<strides_type>(0, size_type(0));
+        shape_type shape = xtl::make_sequence<shape_type>(0, size_type(1));
+        strides_type strides = xtl::make_sequence<strides_type>(0, size_type(0));
         init_array(shape, strides);
         m_data[0] = T();
     }
@@ -661,8 +661,8 @@ namespace xt
         : base_type()
     {
         // TODO: prevent intermediary shape allocation
-        shape_type shape = forward_sequence<shape_type>(e.derived_cast().shape());
-        strides_type strides = make_sequence<strides_type>(shape.size(), size_type(0));
+        shape_type shape = xtl::forward_sequence<shape_type>(e.derived_cast().shape());
+        strides_type strides = xtl::make_sequence<strides_type>(shape.size(), size_type(0));
         compute_strides(shape, layout_type::row_major, strides);
         init_array(shape, strides);
         semantic_base::assign(e);
