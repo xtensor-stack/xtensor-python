@@ -40,10 +40,26 @@ namespace pybind11
             }
         };
 
+
         template <typename T>
         struct pyobject_caster<xt::pyarray<T>>
         {
             using type = xt::pyarray<T>;
+
+            // we need to do special checks for unsigned long long and long long
+            inline int get_py_type_num(handle src)
+            {
+                int type_num = PyArray_TYPE(reinterpret_cast<PyArrayObject*>(src.ptr()));
+                if (type_num == NPY_LONGLONG)
+                {
+                    return xt::detail::numpy_traits<long long>::type_num;
+                }
+                if (type_num == NPY_ULONGLONG)
+                {
+                    return xt::detail::numpy_traits<unsigned long long>::type_num;
+                }
+                return type_num;
+            }
 
             bool load(handle src, bool convert)
             {
@@ -54,7 +70,8 @@ namespace pybind11
                         return false;
                     }
                     int type_num = xt::detail::numpy_traits<T>::type_num;
-                    if (PyArray_TYPE(reinterpret_cast<PyArrayObject*>(src.ptr())) != type_num)
+                    int py_type_num = get_py_type_num(src);
+                    if (py_type_num != type_num)
                     {
                         return false;
                     }

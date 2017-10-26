@@ -25,7 +25,7 @@ Thus the basic skeleton of the module looks like:
 
     #include "pybind11/pybind11.h"
     #define FORCE_IMPORT_ARRAY
-    #include "xgtensor-python/pyarray.hpp"
+    #include "xtensor-python/pyarray.hpp"
 
     PYBIND11_PLUGIN(plugin_name)
     {

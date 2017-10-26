@@ -125,7 +125,7 @@ namespace xt
             constexpr static const int value_list[15] = {
                 NPY_BOOL,
                 NPY_BYTE, NPY_UBYTE, NPY_SHORT, NPY_USHORT,
-                NPY_INT, NPY_UINT, NPY_LONGLONG, NPY_ULONGLONG,
+                NPY_INT, NPY_UINT, NPY_INT64, NPY_UINT64,
                 NPY_FLOAT, NPY_DOUBLE, NPY_LONGDOUBLE,
                 NPY_CFLOAT, NPY_CDOUBLE, NPY_CLONGDOUBLE};
 
