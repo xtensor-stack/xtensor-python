@@ -81,9 +81,12 @@ namespace xt
         static constexpr layout_type static_layout = layout_type::dynamic;
         static constexpr bool contiguous_layout = false;
 
-        void reshape(const shape_type& shape);
-        void reshape(const shape_type& shape, layout_type l);
-        void reshape(const shape_type& shape, const strides_type& strides);
+        template <class S = shape_type>
+        void reshape(const S& shape);
+        template <class S = shape_type>
+        void reshape(const S& shape, layout_type l);
+        template <class S = shape_type>
+        void reshape(const S& shape, const strides_type& strides);
 
         layout_type layout() const;
 
@@ -219,7 +222,8 @@ namespace xt
      * @param shape the new shape
      */
     template <class D>
-    inline void pycontainer<D>::reshape(const shape_type& shape)
+    template <class S>
+    inline void pycontainer<D>::reshape(const S& shape)
     {
         if (shape.size() != this->dimension() || !std::equal(shape.begin(), shape.end(), this->shape().begin()))
         {
@@ -233,7 +237,8 @@ namespace xt
      * @param l the new layout
      */
     template <class D>
-    inline void pycontainer<D>::reshape(const shape_type& shape, layout_type l)
+    template <class S>
+    inline void pycontainer<D>::reshape(const S& shape, layout_type l)
     {
         strides_type strides = xtl::make_sequence<strides_type>(shape.size(), size_type(1));
         compute_strides(shape, l, strides);
@@ -246,7 +251,8 @@ namespace xt
      * @param strides the new strides
      */
     template <class D>
-    inline void pycontainer<D>::reshape(const shape_type& shape, const strides_type& strides)
+    template <class S>
+    inline void pycontainer<D>::reshape(const S& shape, const strides_type& strides)
     {
         derived_type tmp(shape, strides);
         *static_cast<derived_type*>(this) = std::move(tmp);
