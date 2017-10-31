@@ -161,6 +161,10 @@ namespace xt
     {
         pyarray<int> a;
         test_reshape(a);
+
+        pyarray<int> b = { {1, 2}, {3, 4} };
+        a.reshape(b.shape());
+        EXPECT_EQ(a.shape(), b.shape());
     }
 
     TEST(pyarray, transpose)

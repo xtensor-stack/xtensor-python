@@ -130,7 +130,7 @@ namespace xt
             m_data = {-1, 1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19};
             m_layout = layout_type::dynamic;
             m_assigner.resize(m_shape[0]);
-            for (std::size_t i = 0; i < m_shape[0]; ++i)
+            for (std::size_t i = 0; i < std::size_t(m_shape[0]); ++i)
             {
                 m_assigner[i].resize(m_shape[1]);
             }
@@ -184,10 +184,10 @@ namespace xt
             auto v_copy_b = vec;
             std::array<std::size_t, 3> ar = {3, 2, 4};
             std::vector<std::size_t> vr = {3, 2, 4};
-            // v_copy_a.reshape(ar, true);
-            // compare_shape(v_copy_a, rm);
-            // v_copy_b.reshape(vr, true);
-            // compare_shape(v_copy_b, rm);
+            v_copy_a.reshape(ar);
+            compare_shape(v_copy_a, rm);
+            v_copy_b.reshape(vr);
+            compare_shape(v_copy_b, rm);
         }
 
         {

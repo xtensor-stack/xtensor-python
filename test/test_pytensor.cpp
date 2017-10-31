@@ -160,6 +160,10 @@ namespace xt
     {
         pytensor<int, 3> a;
         test_reshape<pytensor<int, 3>, container_type>(a);
+
+        pytensor<int, 3> b = { { { 1, 2 },{ 3, 4 } } };
+        a.reshape(b.shape());
+        EXPECT_EQ(a.shape(), b.shape());
     }
 
     TEST(pytensor, transpose)
