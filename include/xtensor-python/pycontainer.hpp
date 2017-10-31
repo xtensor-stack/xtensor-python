@@ -225,7 +225,7 @@ namespace xt
     template <class S>
     inline void pycontainer<D>::reshape(const S& shape)
     {
-        if (shape.size() != this->dimension() || !std::equal(shape.begin(), shape.end(), this->shape().begin()))
+        if (shape.size() != this->dimension() || !std::equal(std::begin(shape), std::end(shape), std::begin(this->shape())))
         {
             reshape(shape, layout_type::row_major);
         }
@@ -254,7 +254,7 @@ namespace xt
     template <class S>
     inline void pycontainer<D>::reshape(const S& shape, const strides_type& strides)
     {
-        derived_type tmp(shape, strides);
+        derived_type tmp(xtl::forward_sequence<shape_type>(shape), strides);
         *static_cast<derived_type*>(this) = std::move(tmp);
     }
 
