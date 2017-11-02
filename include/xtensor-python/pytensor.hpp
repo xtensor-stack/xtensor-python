@@ -110,7 +110,7 @@ namespace xt
     template <class T, std::size_t N>
     struct xcontainer_inner_types<pytensor<T, N>>
     {
-        using container_type = xbuffer_adaptor<T>;
+        using container_type = xbuffer_adaptor<T*>;
         using shape_type = std::array<npy_intp, N>;
         using strides_type = shape_type;
         using backstrides_type = shape_type;
