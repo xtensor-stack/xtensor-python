@@ -45,6 +45,7 @@ Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtenso
 #include <numeric>                        // Standard library import for std::accumulate
 #include "pybind11/pybind11.h"            // Pybind11 import to define Python bindings
 #include "xtensor/xmath.hpp"              // xtensor import for the C++ universal functions
+#define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyarray.hpp"     // Numpy bindings
 
 double sum_of_sines(xt::pyarray<double>& m)
@@ -55,6 +56,7 @@ double sum_of_sines(xt::pyarray<double>& m)
 
 PYBIND11_PLUGIN(xtensor_python_test)
 {
+    xt::import_numpy();
     pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
 
     m.def("sum_of_sines", sum_of_sines, "Sum the sines of the input values");

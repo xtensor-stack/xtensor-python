@@ -21,8 +21,6 @@
 #include "pystrides_adaptor.hpp"
 #include "xtensor_type_caster_base.hpp"
 
-#include <iostream>
-
 namespace xt
 {
     template <class T>
