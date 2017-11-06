@@ -125,10 +125,16 @@ namespace xt
         {
         private:
 
+            // On Windows 64 bits, NPY_INT != NPY_INT32 and NPY_UINT != NPY_UINT32
+            // We use the NPY_INT32 and NPY_UINT32 which are consistent with the values
+            // of NPY_LONG and NPY_ULONG
+            // On Linux x64, NPY_INT64 != NPY_LONGLONG and NPY_UINT64 != NPY_ULONGLONG,
+            // we use the values of NPY_INT64 and NPY_UINT64 which are consistent with the
+            // values of NPY_LONG and NPY_ULONG.
             constexpr static const int value_list[15] = {
                 NPY_BOOL,
                 NPY_BYTE, NPY_UBYTE, NPY_SHORT, NPY_USHORT,
-                NPY_INT, NPY_UINT, NPY_LONGLONG, NPY_ULONGLONG,
+                NPY_INT32, NPY_UINT32, NPY_INT64, NPY_UINT64,
                 NPY_FLOAT, NPY_DOUBLE, NPY_LONGDOUBLE,
                 NPY_CFLOAT, NPY_CDOUBLE, NPY_CLONGDOUBLE};
 
@@ -138,6 +144,37 @@ namespace xt
 
             static constexpr int type_num = value_list[pybind11::detail::is_fmt_numeric<value_type>::index];
         };
+
+        // On Linux x64, NPY_INT64 != NPY_LONGLONG and NPY_UINT64 != NPY_ULONGLONG
+        // NPY_LONGLONG and NPY_ULONGLONG must be adjusted so the right type is
+        // selected
+        template <bool>
+        struct numpy_enum_adjuster
+        {
+            static inline int pyarray_type(PyArrayObject* obj)
+            {
+                return PyArray_TYPE(obj);
+            }
+        };
+
+        template <>
+        struct numpy_enum_adjuster<true>
+        {
+            static inline int pyarray_type(PyArrayObject* obj)
+            {
+                int res = PyArray_TYPE(obj);
+                if(res == NPY_LONGLONG || res == NPY_ULONGLONG)
+                {
+                    res -= 2;
+                }
+                return res;
+            }
+        };
+
+        inline int pyarray_type(PyArrayObject* obj)
+        {
+            return numpy_enum_adjuster<NPY_LONGLONG != NPY_INT64>::pyarray_type(obj);
+        }
     }
 
     /******************************

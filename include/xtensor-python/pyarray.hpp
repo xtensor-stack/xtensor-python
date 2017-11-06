@@ -21,6 +21,8 @@
 #include "pystrides_adaptor.hpp"
 #include "xtensor_type_caster_base.hpp"
 
+#include <iostream>
+
 namespace xt
 {
     template <class T>
@@ -54,7 +56,7 @@ namespace pybind11
                         return false;
                     }
                     int type_num = xt::detail::numpy_traits<T>::type_num;
-                    if (PyArray_TYPE(reinterpret_cast<PyArrayObject*>(src.ptr())) != type_num)
+                    if(xt::detail::pyarray_type(reinterpret_cast<PyArrayObject*>(src.ptr())) != type_num)
                     {
                         return false;
                     }
