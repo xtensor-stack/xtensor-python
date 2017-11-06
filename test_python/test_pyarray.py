@@ -82,3 +82,8 @@ class ExampleTest(TestCase):
         self.assertFalse(xt.compare_shapes(x, y))
         self.assertTrue(xt.compare_shapes(x, z))
 
+    def test_int_overload(self):
+        for dtype in [np.uint8, np.int8, np.uint16, np.int16, np.uint32, np.int32, np.uint64, np.int64]:
+            b = xt.int_overload(np.ones((10), dtype))
+            self.assertEqual(str(dtype.__name__), b)
+
