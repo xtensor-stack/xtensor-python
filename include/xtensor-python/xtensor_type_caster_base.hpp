@@ -1,7 +1,7 @@
-/*  
+/*
     xtensor-python/xtensor_type_caster.hpp: Transparent conversion for xtensor and xarray
 
-    This code is based on the following code written by Wenzei Jakob
+    This code is based on the following code written by Wenzel Jakob
 
     pybind11/eigen.h: Transparent conversion for dense and sparse Eigen matrices
 
@@ -78,7 +78,7 @@ namespace pybind11
             }
 
         private:
-    
+
             // Cast implementation
             template <typename CType>
             static handle cast_impl(CType* src, return_value_policy policy, handle parent)
