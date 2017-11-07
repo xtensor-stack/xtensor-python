@@ -192,12 +192,9 @@ from the `docs` subdirectory.
 | `xtensor-python` | `xtensor` |  `pybind11`      |
 |------------------|-----------|------------------|
 | master           |  ^0.13.1  | ~2.1.0 or ~2.2.1 |
+| 0.15.x           |  ^0.13.1  | ~2.1.0 or ~2.2.1 |
 | 0.14.x           |  ^0.12.0  | ~2.1.0 or ~2.2.1 |
 | 0.13.x           |  ^0.11.0  | ~2.1.0 or ~2.2.1 |
-| 0.12.x           |  ^0.10.2  | 2.1.\*           |
-| 0.11.x           |  ^0.10.0  | 2.1.\*           |
-| 0.10.x           |  ^0.9.0   | 2.1.\*           |
-| 0.9.x            |  ^0.8.1   | 2.1.\*           |
 
 These dependencies are automatically resolved when using the conda package manager.
 
