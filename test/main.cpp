@@ -6,6 +6,8 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
+// Required to avoid the error "std does not have memeber copysign"
+#include <cmath>
 #include <Python.h>
 
 #include "pybind11/numpy.h"
