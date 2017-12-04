@@ -25,7 +25,10 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 #include "numpy/arrayobject.h"
+// Required because pyconfig.hpp defines copysign to _copysign
+#undef copysign
 
+#include <cmath>
 #include "xtensor/xcontainer.hpp"
 
 #include "xtl/xsequence.hpp"
