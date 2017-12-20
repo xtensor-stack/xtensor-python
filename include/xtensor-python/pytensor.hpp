@@ -127,8 +127,8 @@ namespace xt
      *
      * pytensor is similar to the xtensor container in that it has a static dimensionality.
      *
-     * Unlike with the pyarray container, pytensor cannot be reshaped with a different number of dimensions
-     * and reshapes are not reflected on the Python side. However, pytensor has benefits compared to pyarray
+     * Unlike with the pyarray container, pytensor cannot be resized with a different number of dimensions
+     * and resizes are not reflected on the Python side. However, pytensor has benefits compared to pyarray
      * in terms of performances. pytensor shapes are stack-allocated which makes iteration upon pytensor
      * faster than with pyarray.
      *
@@ -237,7 +237,7 @@ namespace xt
     inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -330,7 +330,7 @@ namespace xt
      */
     template <class T, std::size_t N>
     inline pytensor<T, N>::pytensor(const self_type& rhs)
-        : base_type()
+        : base_type(), semantic_base()
     {
         init_tensor(rhs.shape(), rhs.strides());
         std::copy(rhs.data().cbegin(), rhs.data().cend(), this->data().begin());

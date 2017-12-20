@@ -156,13 +156,13 @@ namespace xt
         EXPECT_EQ(c(1, 1), a1(1, 1) + a2(1, 1));
     }
 
-    TEST(pytensor, reshape)
+    TEST(pytensor, resize)
     {
         pytensor<int, 3> a;
-        test_reshape<pytensor<int, 3>, container_type>(a);
+        test_resize<pytensor<int, 3>, container_type>(a);
 
         pytensor<int, 3> b = { { { 1, 2 },{ 3, 4 } } };
-        a.reshape(b.shape());
+        a.resize(b.shape());
         EXPECT_EQ(a.shape(), b.shape());
     }
 

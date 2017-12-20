@@ -21,13 +21,7 @@
 namespace xt
 {
     template <class T>
-    using pyoptional_array_data_type = pyarray<T>;
-
-    using pyoptional_array_mask_type = pyarray<bool>;
-
-    template <class T>
-    using pyoptional_array = xoptional_assembly<pyoptional_array_data_type<T>,
-                                                pyoptional_array_mask_type>;
+    class pyoptional_array;
 }
 
 namespace pybind11
@@ -44,24 +38,103 @@ namespace pybind11
         };
 
         template <class T>
-        struct type_caster<xt::pyoptional_array<T>> {
-        public:
+        struct pyobject_caster<xt::pyoptional_array<T>>
+        {
+            using type = xt::pyoptional_array<T>;
 
-            bool load(const handle& src, bool)
+            bool load(handle src, bool convert)
             {
-                using optional_type = xt::pyoptional_array<T>;
-                using pymask_type = xt::pyoptional_array_mask_type;
-                using pydata_type = xt::pyoptional_array_data_type<T>;
-                value = optional_type(pydata_type(src.attr("_data")), pymask_type(src.attr("_mask")));
-                return true;
+                value = reinterpret_borrow<type>(src);
+                return static_cast<bool>(value);
             }
 
-            static handle cast(xt::pyoptional_array<T> src, return_value_policy /* policy */, handle /* parent */) {
-                // src.inc_ref();
+            static handle cast(const handle& src, return_value_policy, handle)
+            {
+                return src.inc_ref();
             }
 
-            PYBIND11_TYPE_CASTER(xt::pyoptional_array<T>, handle_type_name<T>::name());
+            PYBIND11_TYPE_CASTER(type, handle_type_name<type>::name());
         };
+    }
+}
+
+namespace xt
+{
+    template <class T>
+    using pyoptional_array_data_type = pyarray<T>;
+
+    using pyoptional_array_mask_type = pyarray<bool>;
+
+    template <class T>
+    class pyoptional_array : public pybind11::object,
+                             public xoptional_assembly<pyoptional_array_data_type<T>,
+                                                       pyoptional_array_mask_type>
+    {
+    public:
+
+        using self_type = pyoptional_array<T>;
+        using base_type = xoptional_assembly<pyoptional_array_data_type<T>,
+                                             pyoptional_array_mask_type>;
+
+        using pydata_type = xt::pyoptional_array_data_type<T>;
+        using pymask_type = xt::pyoptional_array_mask_type;
+
+        using shape_type = typename pydata_type::shape_type;
+        using inner_shape_type = typename pydata_type::inner_shape_type;
+
+        pyoptional_array();
+        pyoptional_array(pybind11::handle h, pybind11::object::borrowed_t b);
+
+        self_type& operator=(const self_type& rhs) = default;
+        self_type& operator=(self_type&& rhs) = default;
+        pyoptional_array(const self_type& rhs) = default;
+
+        template <class ST = shape_type>
+        void resize(const ST& shape, layout_type l = DEFAULT_LAYOUT);
+
+        template <class ST = shape_type>
+        void reshape(const ST &shape);
+
+        using base_type::base_type;
+        using base_type::operator();
+        using base_type::operator[];
+        using base_type::begin;
+        using base_type::end;
+    };
+
+    template <class T>
+    pyoptional_array<T>::pyoptional_array()
+        : pybind11::object(pybind11::module::import("numpy.ma").attr("MaskedArray")(pybind11::list(), pybind11::list()), pybind11::object::borrowed_t()),
+          base_type(pydata_type(attr("_data"), pybind11::object::borrowed_t()),
+                    pymask_type(attr("_mask"), pybind11::object::borrowed_t()))
+    {
+    }
+
+    template <class T>
+    pyoptional_array<T>::pyoptional_array(pybind11::handle h, pybind11::object::borrowed_t b)
+        : pybind11::object(h, b),
+          base_type(pydata_type(attr("_data"), b),
+                    pymask_type(attr("_mask"), b))
+    {
+    }
+
+    template <class T>
+    template <class ST>
+    void pyoptional_array<T>::resize(const ST& shape, layout_type l)
+    {
+        base_type::value().resize(shape, l);
+        base_type::has_value().resize(shape, l);
+
+        pybind11::object tmp(pybind11::module::import("numpy.ma").attr("MaskedArray")(base_type::value(), base_type::has_value()));
+        *static_cast<pybind11::object *>(this) = std::move(tmp);
+    }
+
+    template <class T>
+    template <class ST>
+    void pyoptional_array<T>::reshape(const ST& shape)
+    {
+        base_type::value().reshape(shape);
+        base_type::has_value().reshape(shape);
     }
 }
 
