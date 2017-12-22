@@ -68,13 +68,13 @@ namespace xt
     template <class T>
     class pyoptional_array : public pybind11::object,
                              public xoptional_assembly<pyoptional_array_data_type<T>,
-                                                       pyoptional_array_mask_type>
+                                                       pyoptional_array_mask_type, false>
     {
     public:
 
         using self_type = pyoptional_array<T>;
         using base_type = xoptional_assembly<pyoptional_array_data_type<T>,
-                                             pyoptional_array_mask_type>;
+                                             pyoptional_array_mask_type, false>;
 
         using pydata_type = xt::pyoptional_array_data_type<T>;
         using pymask_type = xt::pyoptional_array_mask_type;
@@ -123,9 +123,10 @@ namespace xt
     void pyoptional_array<T>::resize(const ST& shape, layout_type l)
     {
         base_type::value().resize(shape, l);
-        base_type::has_value().resize(shape, l);
+        base_type::flag().resize(shape, l);
+        std::fill(base_type::flag().storage_begin(), base_type::flag().storage_end(), 0);
 
-        pybind11::object tmp(pybind11::module::import("numpy.ma").attr("MaskedArray")(base_type::value(), base_type::has_value()));
+        pybind11::object tmp(pybind11::module::import("numpy.ma").attr("MaskedArray")(base_type::value(), base_type::flag()));
         *static_cast<pybind11::object *>(this) = std::move(tmp);
     }
 
@@ -134,7 +135,7 @@ namespace xt
     void pyoptional_array<T>::reshape(const ST& shape)
     {
         base_type::value().reshape(shape);
-        base_type::has_value().reshape(shape);
+        base_type::flag().reshape(shape);
     }
 }
 
