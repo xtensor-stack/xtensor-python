@@ -107,11 +107,11 @@ void dump_numpy_constant()
     std::cout << "NPY_UINT64 = " << NPY_UINT64 << std::endl;
 }
 
-PYBIND11_PLUGIN(xtensor_python_test)
+PYBIND11_MODULE(xtensor_python_test, m)
 {
     xt::import_numpy();
 
-    py::module m("xtensor_python_test", "Test module for xtensor python bindings");
+    m.doc() = "Test module for xtensor python bindings";
 
     m.def("example1", example1);
     m.def("example2", example2);
@@ -142,6 +142,4 @@ PYBIND11_PLUGIN(xtensor_python_test)
     m.def("int_overload", int_overload<int64_t>);
 
     m.def("dump_numpy_constant", dump_numpy_constant);
-
-    return m.ptr();
 }

@@ -12,7 +12,7 @@ using complex_t = std::complex<double>;
 
 namespace py = pybind11;
 
-PYBIND11_PLUGIN(benchmark_xtensor_python)
+PYBIND11_MODULE(benchmark_xtensor_python, m)
 {
     if(_import_array() < 0)
     {
@@ -20,7 +20,7 @@ PYBIND11_PLUGIN(benchmark_xtensor_python)
         return nullptr;
     }
 
-    py::module m("benchmark_xtensor_python", "Benchmark module for xtensor python bindings");
+    m.doc() = "Benchmark module for xtensor python bindings";
 
     m.def("sum_array", [](xt::pyarray<double> const& x) {
         double sum = 0;
@@ -55,6 +55,4 @@ PYBIND11_PLUGIN(benchmark_xtensor_python)
         else
             throw py::type_error("rect_to_polar unhandled type");
     });
-
-    return m.ptr();
 }
