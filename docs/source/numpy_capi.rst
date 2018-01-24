@@ -27,12 +27,10 @@ Thus the basic skeleton of the module looks like:
     #define FORCE_IMPORT_ARRAY
     #include "xtensor-python/pyarray.hpp"
 
-    PYBIND11_PLUGIN(plugin_name)
+    PYBIND11_MODULE(plugin_name, m)
     {
         xt::import_numpy();
-        pybind11::module m(//...
         //...
-        return m.ptr();
     }
 
 

@@ -26,14 +26,12 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
         return std::accumulate(sines.cbegin(), sines.cend(), 0.0);
     }
 
-    PYBIND11_PLUGIN(xtensor_python_test)
+    PYBIND11_MODULE(xtensor_python_test, m)
     {
         xt::import_numpy();
-        pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
+        m.doc() = "Test module for xtensor python bindings";
 
         m.def("sum_of_sines", sum_of_sines, "Sum the sines of the input values");
-
-        return m.ptr();
     }
 
 **Python code:**
@@ -74,14 +72,12 @@ Example 2: Create a numpy-style universal function from a C++ scalar function
         return std::sin(i) - std::cos(j);
     }
 
-    PYBIND11_PLUGIN(xtensor_python_test)
+    PYBIND11_MODULE(xtensor_python_test, m)
     {
         xt::import_numpy();
-        py::module m("xtensor_python_test", "Test module for xtensor python bindings");
+        m.doc() = "Test module for xtensor python bindings";
 
         m.def("vectorized_func", xt::pyvectorize(scalar_func), "");
-
-        return m.ptr();
     }
 
 **Python code:**

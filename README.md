@@ -10,7 +10,7 @@ Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ mul
  - `xtensor` is a C++ library for multi-dimensional arrays enabling numpy-style broadcasting and lazy computing.
  - `xtensor-python` enables inplace use of numpy arrays in C++ with all the benefits from `xtensor`
 
-     - C++ universal function and broadcasting 
+     - C++ universal function and broadcasting
      - STL - compliant APIs.
      - A broad coverage of numpy APIs (see [the numpy to xtensor cheat sheet](http://xtensor.readthedocs.io/en/latest/numpy.html)).
 
@@ -54,14 +54,12 @@ double sum_of_sines(xt::pyarray<double>& m)
     return std::accumulate(sines.begin(), sines.end(), 0.0);
 }
 
-PYBIND11_PLUGIN(xtensor_python_test)
+PYBIND11_MODULE(xtensor_python_test, m)
 {
     xt::import_numpy();
-    pybind11::module m("xtensor_python_test", "Test module for xtensor python bindings");
+    m.doc() = "Test module for xtensor python bindings";
 
     m.def("sum_of_sines", sum_of_sines, "Sum the sines of the input values");
-
-    return m.ptr();
 }
 ```
 
@@ -80,7 +78,7 @@ s
 
 ```
 1.2853996391883833
-``` 
+```
 
 ### Example 2: Create a universal function from a C++ scalar function
 
@@ -99,13 +97,11 @@ double scalar_func(double i, double j)
     return std::sin(i) - std::cos(j);
 }
 
-PYBIND11_PLUGIN(xtensor_python_test)
+PYBIND11_MODULE(xtensor_python_test, m)
 {
-    py::module m("xtensor_python_test", "Test module for xtensor python bindings");
+    m.doc() = "Test module for xtensor python bindings";
 
     m.def("vectorized_func", xt::pyvectorize(scalar_func), "");
-
-    return m.ptr();
 }
 ```
 
@@ -127,7 +123,7 @@ z
 [[-0.540302,  1.257618,  1.89929 ,  0.794764, -1.040465],
  [-1.499227,  0.136731,  1.646979,  1.643002,  0.128456],
  [-1.084323, -0.583843,  0.45342 ,  1.073811,  0.706945]]
-``` 
+```
 
 ## Installation
 
@@ -155,7 +151,7 @@ Testing `xtensor-python` requires `pytest`
   py.test .
   ```
 
-To pick up changes in `xtensor-python` while rebuilding, delete the `build/` directory. 
+To pick up changes in `xtensor-python` while rebuilding, delete the `build/` directory.
 
 ## Building the HTML Documentation
 
@@ -169,7 +165,7 @@ While doxygen must be installed separately, you can install breathe by typing
 
 ```bash
 pip install breathe
-``` 
+```
 
 Breathe can also be installed with `conda`
 
