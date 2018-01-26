@@ -486,7 +486,7 @@ namespace xt
     inline pyarray<T>::pyarray(const value_type& t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -494,7 +494,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 1> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -502,7 +502,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 2> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -510,7 +510,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 3> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -518,7 +518,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 4> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
@@ -526,7 +526,7 @@ namespace xt
     inline pyarray<T>::pyarray(nested_initializer_list_t<T, 5> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 

@@ -157,13 +157,13 @@ namespace xt
         EXPECT_EQ(c(1, 1), a1(1, 1) + a2(1, 1));
     }
 
-    TEST(pyarray, reshape)
+    TEST(pyarray, resize)
     {
         pyarray<int> a;
-        test_reshape(a);
+        test_resize(a);
 
         pyarray<int> b = { {1, 2}, {3, 4} };
-        a.reshape(b.shape());
+        a.resize(b.shape());
         EXPECT_EQ(a.shape(), b.shape());
     }
 
@@ -213,5 +213,15 @@ namespace xt
     {
         pyarray<int> a;
         EXPECT_EQ(0, a());
+    }
+
+    TEST(pyarray, reshape)
+    {
+        pyarray<int> a = {{1,2,3}, {4,5,6}};
+        auto ptr = a.raw_data();
+        a.reshape({1, 6});
+        EXPECT_EQ(ptr, a.raw_data());
+        a.reshape({6});
+        EXPECT_EQ(ptr, a.raw_data());
     }
 }

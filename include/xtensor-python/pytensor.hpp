@@ -237,7 +237,7 @@ namespace xt
     inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
         : base_type()
     {
-        base_type::reshape(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_data.begin(), t);
     }
 
