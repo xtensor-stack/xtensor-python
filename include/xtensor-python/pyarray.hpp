@@ -387,6 +387,7 @@ namespace xt
         const container_type& data_impl() const noexcept;
 
         friend class xcontainer<pyarray<T>>;
+        friend class pycontainer<pyarray<T>>;
     };
 
     /**************************************

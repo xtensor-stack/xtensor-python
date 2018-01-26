@@ -120,6 +120,9 @@ namespace xt
         static bool check_(pybind11::handle h);
         static PyObject* raw_array_t(PyObject* ptr);
 
+        derived_type& derived_cast();
+        const derived_type& derived_cast() const;
+
         PyArrayObject* python_array() const;
         size_type get_min_stride() const;
     };
@@ -260,6 +263,19 @@ namespace xt
         return std::max(size_type(1), std::accumulate(this->strides().cbegin(), this->strides().cend(), std::numeric_limits<size_type>::max(), min));
     }
 
+    template <class D>
+    inline auto pycontainer<D>::derived_cast() -> derived_type&
+    {
+        return *static_cast<derived_type*>(this);
+    }
+
+    template <class D>
+    inline auto pycontainer<D>::derived_cast() const -> const derived_type&
+    {
+        return *static_cast<const derived_type*>(this);
+    }
+
+
     /**
      * resizes the container.
      * @param shape the new shape
@@ -330,7 +346,11 @@ namespace xt
         }
 
         PyArray_Dims dims({reinterpret_cast<npy_intp*>(shape.data()), static_cast<int>(shape.size())});
-        PyArray_Newshape((PyArrayObject*) this->ptr(), &dims, npy_layout);
+        auto new_ptr = PyArray_Newshape((PyArrayObject*) this->ptr(), &dims, npy_layout);
+        auto old_ptr = this->ptr();
+        this->ptr() = new_ptr;
+        Py_XDECREF(old_ptr);
+        this->derived_cast().init_from_python();
     }
 
     /**

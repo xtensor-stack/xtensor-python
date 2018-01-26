@@ -207,6 +207,7 @@ namespace xt
         const container_type& data_impl() const noexcept;
 
         friend class xcontainer<pytensor<T, N>>;
+        friend class pycontainer<pytensor<T, N>>;
     };
 
     /***************************

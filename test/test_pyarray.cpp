@@ -220,8 +220,12 @@ namespace xt
         pyarray<int> a = {{1,2,3}, {4,5,6}};
         auto ptr = a.raw_data();
         a.reshape({1, 6});
+        std::vector<std::size_t> sc1({1, 6});
+        EXPECT_TRUE(std::equal(sc1.begin(), sc1.end(), a.shape().begin()) && a.shape().size() == 2);
         EXPECT_EQ(ptr, a.raw_data());
         a.reshape({6});
+        std::vector<std::size_t> sc2 = {6};
+        EXPECT_TRUE(std::equal(sc2.begin(), sc2.end(), a.shape().begin()) && a.shape().size() == 1);
         EXPECT_EQ(ptr, a.raw_data());
     }
 }
