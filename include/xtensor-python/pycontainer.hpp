@@ -329,8 +329,7 @@ namespace xt
             throw std::runtime_error("Cannot reshape with unknown layout_type.");
         }
 
-        std::vector<npy_intp> int_shape(shape.begin(), shape.end());
-        PyArray_Dims dims({int_shape.data(), static_cast<int>(shape.size())});
+        PyArray_Dims dims({reinterpret_cast<npy_intp*>(shape.data()), static_cast<int>(shape.size())});
         PyArray_Newshape((PyArrayObject*) this->ptr(), &dims, npy_layout);
     }
 
