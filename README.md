@@ -187,11 +187,11 @@ from the `docs` subdirectory.
 
 | `xtensor-python` | `xtensor` |  `pybind11`      |
 |------------------|-----------|------------------|
-| master           |  ^0.15.0  | ~2.1.0 or ~2.2.1 |
+| master           |  ^0.15.1  | ~2.1.0 or ~2.2.1 |
+| 0.17.x           |  ^0.15.1  | ~2.1.0 or ~2.2.1 |
 | 0.16.x           |  ^0.14.0  | ~2.1.0 or ~2.2.1 |
 | 0.15.x           |  ^0.13.1  | ~2.1.0 or ~2.2.1 |
 | 0.14.x           |  ^0.12.0  | ~2.1.0 or ~2.2.1 |
-| 0.13.x           |  ^0.11.0  | ~2.1.0 or ~2.2.1 |
 
 These dependencies are automatically resolved when using the conda package manager.
 
