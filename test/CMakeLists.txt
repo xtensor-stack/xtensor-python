@@ -78,10 +78,7 @@ endif()
 
 find_package(Threads)
 
-include_directories(${XTENSOR_INCLUDE_DIR})
-include_directories(${XTENSOR_PYTHON_INCLUDE_DIR})
 include_directories(${GTEST_INCLUDE_DIRS})
-include_directories(${PYBIND11_INCLUDE_DIR})
 
 set(XTENSOR_PYTHON_TESTS
     main.cpp
@@ -91,8 +88,8 @@ set(XTENSOR_PYTHON_TESTS
 )
 
 set(XTENSOR_PYTHON_TARGET test_xtensor_python)
-add_executable(${XTENSOR_PYTHON_TARGET} ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON_HEADERS} ${XTENSOR_HEADERS})
-target_link_libraries(${XTENSOR_PYTHON_TARGET} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES})
+add_executable(${XTENSOR_PYTHON_TARGET} ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON_HEADERS})
+target_link_libraries(${XTENSOR_PYTHON_TARGET} xtensor-python ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES})
 
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_dependencies(${XTENSOR_PYTHON_TARGET} gtest_main)

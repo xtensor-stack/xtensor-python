@@ -53,6 +53,15 @@ set(XTENSOR_PYTHON_HEADERS
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/xtensor_type_caster_base.hpp
 )
 
+add_library(xtensor-python INTERFACE)
+target_include_directories(xtensor-python INTERFACE $<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR}>
+                                                    $<BUILD_INTERFACE:${pybind11_INCLUDE_DIRS}>
+                                                    $<BUILD_INTERFACE:${NUMPY_INCLUDE_DIRS}>
+                                                    $<INSTALL_INTERFACE:include>)
+target_link_libraries(xtensor-python INTERFACE xtensor)
+get_target_property(inc_dir xtensor-python INTERFACE_INCLUDE_DIRECTORIES)
+message(STATUS "${inc_dir}")
+
 OPTION(BUILD_TESTS "xtensor test suite" OFF)
 OPTION(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
 
@@ -61,12 +70,6 @@ if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
 endif()
 
 if(BUILD_TESTS)
-    include_directories(${XTENSOR_PYTHON_INCLUDE_DIR})
-    include_directories(${xtl_INCLUDE_DIRS})
-    include_directories(${xtensor_INCLUDE_DIRS})
-    include_directories(${NUMPY_INCLUDE_DIRS})
-    include_directories(${pybind11_INCLUDE_DIRS})
-
     if(MSVC)
         set(PYTHON_MODULE_EXTENSION ".pyd")
     else()
@@ -82,6 +85,13 @@ endif()
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+
+install(TARGETS xtensor-python
+        EXPORT ${PROJECT_NAME}-targets)
+
+# Makes the project importable from the build directory
+export(EXPORT ${PROJECT_NAME}-targets
+       FILE "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Targets.cmake")
 
 install(FILES ${XTENSOR_PYTHON_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtensor-python)
@@ -104,5 +114,8 @@ write_basic_package_version_file(${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Conf
 set(CMAKE_SIZEOF_VOID_P ${_XTENSOR_CMAKE_SIZEOF_VOID_P})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
               ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+        DESTINATION ${XTENSOR_PYTHON_CMAKECONFIG_INSTALL_DIR})
+install(EXPORT ${PROJECT_NAME}-targets
+        FILE ${PROJECT_NAME}Targets.cmake
         DESTINATION ${XTENSOR_PYTHON_CMAKECONFIG_INSTALL_DIR})
 

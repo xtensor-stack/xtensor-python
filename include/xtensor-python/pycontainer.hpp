@@ -345,7 +345,7 @@ namespace xt
             throw std::runtime_error("Cannot reshape with unknown layout_type.");
         }
 
-        PyArray_Dims dims({reinterpret_cast<npy_intp*>(shape.data()), static_cast<int>(shape.size())});
+        PyArray_Dims dims = {reinterpret_cast<npy_intp*>(shape.data()), static_cast<int>(shape.size())};
         auto new_ptr = PyArray_Newshape((PyArrayObject*) this->ptr(), &dims, npy_layout);
         auto old_ptr = this->ptr();
         this->ptr() = new_ptr;
