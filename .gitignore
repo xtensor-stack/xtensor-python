@@ -56,3 +56,7 @@ build
 
 # py.test
 .cache/
+
+# Python packaging artefacts
+dist/
+*.egg-info/
