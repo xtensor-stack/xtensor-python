@@ -86,6 +86,7 @@ s
 
 ```cpp
 #include "pybind11/pybind11.h"
+#define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyvectorize.hpp"
 #include <numeric>
 #include <cmath>
@@ -99,6 +100,7 @@ double scalar_func(double i, double j)
 
 PYBIND11_MODULE(xtensor_python_test, m)
 {
+    xt::import_numpy();
     m.doc() = "Test module for xtensor python bindings";
 
     m.def("vectorized_func", xt::pyvectorize(scalar_func), "");
