@@ -326,10 +326,7 @@ namespace xt
             throw std::runtime_error("Cannot reshape with incorrect number of elements.");
         }
 
-        if (layout == layout_type::dynamic || layout == layout_type::any)
-        {
-            layout = DEFAULT_LAYOUT;
-        }
+        layout = default_assignable_layout(layout);
 
         NPY_ORDER npy_layout;
         if (layout == layout_type::row_major)
