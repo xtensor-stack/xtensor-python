@@ -24,6 +24,12 @@ The Python bindings for `xtensor` are based on the [pybind11](https://github.com
 conda install -c conda-forge xtensor-python
 ```
 
+## Documentation
+
+To get started with using `xtensor-python`, check out the full documentation
+
+http://xtensor-python.readthedocs.io/
+
 ## Usage
 
 xtensor-python offers two container types wrapping numpy arrays inplace to provide an xtensor semantics
