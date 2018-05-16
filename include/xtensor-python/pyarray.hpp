@@ -291,8 +291,8 @@ namespace xt
     template <class T>
     struct xcontainer_inner_types<pyarray<T>>
     {
-        using container_type = xbuffer_adaptor<T*>;
-        using shape_type = std::vector<typename container_type::size_type>;
+        using storage_type = xbuffer_adaptor<T*>;
+        using shape_type = std::vector<typename storage_type::size_type>;
         using strides_type = shape_type;
         using backstrides_type = pyarray_backstrides<pyarray<T>>;
         using inner_shape_type = xbuffer_adaptor<std::size_t*>;
@@ -321,7 +321,7 @@ namespace xt
         using self_type = pyarray<T>;
         using semantic_base = xcontainer_semantic<self_type>;
         using base_type = pycontainer<self_type>;
-        using container_type = typename base_type::container_type;
+        using storage_type = typename base_type::storage_type;
         using value_type = typename base_type::value_type;
         using reference = typename base_type::reference;
         using const_reference = typename base_type::const_reference;
@@ -374,7 +374,7 @@ namespace xt
         inner_shape_type m_shape;
         inner_strides_type m_strides;
         mutable inner_backstrides_type m_backstrides;
-        container_type m_data;
+        storage_type m_data;
 
         void init_array(const shape_type& shape, const strides_type& strides);
         void init_from_python();
@@ -383,8 +383,8 @@ namespace xt
         const inner_strides_type& strides_impl() const noexcept;
         const inner_backstrides_type& backstrides_impl() const noexcept;
 
-        container_type& data_impl() noexcept;
-        const container_type& data_impl() const noexcept;
+        storage_type& storage_impl() noexcept;
+        const storage_type& storage_impl() const noexcept;
 
         friend class xcontainer<pyarray<T>>;
         friend class pycontainer<pyarray<T>>;
@@ -633,7 +633,7 @@ namespace xt
 
         this->m_ptr = tmp.release().ptr();
         init_from_python();
-        std::copy(rhs.data().cbegin(), rhs.data().cend(), this->data().begin());
+        std::copy(rhs.storage().cbegin(), rhs.storage().cend(), this->storage().begin());
     }
 
     /**
@@ -730,8 +730,8 @@ namespace xt
         m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(this->python_array())),
                                        static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_backstrides = backstrides_type(*this);
-        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
+        m_data = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                              this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T>
@@ -757,13 +757,13 @@ namespace xt
     }
 
     template <class T>
-    inline auto pyarray<T>::data_impl() noexcept -> container_type&
+    inline auto pyarray<T>::storage_impl() noexcept -> storage_type&
     {
         return m_data;
     }
 
     template <class T>
-    inline auto pyarray<T>::data_impl() const noexcept -> const container_type&
+    inline auto pyarray<T>::storage_impl() const noexcept -> const storage_type&
     {
         return m_data;
     }

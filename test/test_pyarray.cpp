@@ -68,7 +68,7 @@ namespace xt
             pyarray<int> ra(rm.m_shape, value);
             compare_shape(ra, rm);
             std::vector<int> vec(ra.size(), value);
-            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ra.data().cbegin()));
+            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ra.storage().cbegin()));
         }
 
         {
@@ -78,7 +78,7 @@ namespace xt
             pyarray<int> ca(cm.m_shape, value, layout_type::column_major);
             compare_shape(ca, cm);
             std::vector<int> vec(ca.size(), value);
-            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ca.data().cbegin()));
+            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ca.storage().cbegin()));
         }
     }
 
@@ -89,7 +89,7 @@ namespace xt
         pyarray<int> cma(cmr.m_shape, cmr.m_strides, value);
         compare_shape(cma, cmr);
         std::vector<int> vec(cma.size(), value);
-        EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), cma.data().cbegin()));
+        EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), cma.storage().cbegin()));
     }
 
     TEST(pyarray, copy_semantic)
@@ -102,21 +102,21 @@ namespace xt
             SCOPED_TRACE("copy constructor");
             pyarray<int> b(a);
             compare_shape(a, b);
-            EXPECT_EQ(a.data(), b.data());
+            EXPECT_EQ(a.storage(), b.storage());
             a.data()[0] += 1;
-            EXPECT_NE(a.data()[0], b.data()[0]);
+            EXPECT_NE(a.storage()[0], b.storage()[0]);
         }
 
         {
             SCOPED_TRACE("assignment operator");
             row_major_result<> r;
             pyarray<int> c(r.m_shape, 0);
-            EXPECT_NE(a.data(), c.data());
+            EXPECT_NE(a.storage(), c.storage());
             c = a;
             compare_shape(a, c);
-            EXPECT_EQ(a.data(), c.data());
+            EXPECT_EQ(a.storage(), c.storage());
             a.data()[0] += 1;
-            EXPECT_NE(a.data()[0], c.data()[0]);
+            EXPECT_NE(a.storage()[0], c.storage()[0]);
         }
     }
 
@@ -131,18 +131,18 @@ namespace xt
             pyarray<int> tmp(a);
             pyarray<int> b(std::move(tmp));
             compare_shape(a, b);
-            EXPECT_EQ(a.data(), b.data());
+            EXPECT_EQ(a.storage(), b.storage());
         }
 
         {
             SCOPED_TRACE("move assignment");
             row_major_result<> r;
             pyarray<int> c(r.m_shape, 0);
-            EXPECT_NE(a.data(), c.data());
+            EXPECT_NE(a.storage(), c.storage());
             pyarray<int> tmp(a);
             c = std::move(tmp);
             compare_shape(a, c);
-            EXPECT_EQ(a.data(), c.data());
+            EXPECT_EQ(a.storage(), c.storage());
         }
     }
 
@@ -218,14 +218,14 @@ namespace xt
     TEST(pyarray, reshape)
     {
         pyarray<int> a = {{1,2,3}, {4,5,6}};
-        auto ptr = a.raw_data();
+        auto ptr = a.data();
         a.reshape({1, 6});
         std::vector<std::size_t> sc1({1, 6});
         EXPECT_TRUE(std::equal(sc1.begin(), sc1.end(), a.shape().begin()) && a.shape().size() == 2);
-        EXPECT_EQ(ptr, a.raw_data());
+        EXPECT_EQ(ptr, a.data());
         a.reshape({6});
         std::vector<std::size_t> sc2 = {6};
         EXPECT_TRUE(std::equal(sc2.begin(), sc2.end(), a.shape().begin()) && a.shape().size() == 1);
-        EXPECT_EQ(ptr, a.raw_data());
+        EXPECT_EQ(ptr, a.data());
     }
 }
