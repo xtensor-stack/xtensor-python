@@ -110,7 +110,7 @@ namespace xt
     template <class T, std::size_t N>
     struct xcontainer_inner_types<pytensor<T, N>>
     {
-        using container_type = xbuffer_adaptor<T*>;
+        using storage_type = xbuffer_adaptor<T*>;
         using shape_type = std::array<npy_intp, N>;
         using strides_type = shape_type;
         using backstrides_type = shape_type;
@@ -144,7 +144,7 @@ namespace xt
         using self_type = pytensor<T, N>;
         using semantic_base = xcontainer_semantic<self_type>;
         using base_type = pycontainer<self_type>;
-        using container_type = typename base_type::container_type;
+        using storage_type = typename base_type::storage_type;
         using value_type = typename base_type::value_type;
         using reference = typename base_type::reference;
         using const_reference = typename base_type::const_reference;
@@ -191,7 +191,7 @@ namespace xt
         inner_shape_type m_shape;
         inner_strides_type m_strides;
         inner_backstrides_type m_backstrides;
-        container_type m_data;
+        storage_type m_data;
 
         void init_tensor(const shape_type& shape, const strides_type& strides);
         void init_from_python();
@@ -203,8 +203,8 @@ namespace xt
         inner_backstrides_type& backstrides_impl() noexcept;
         const inner_backstrides_type& backstrides_impl() const noexcept;
 
-        container_type& data_impl() noexcept;
-        const container_type& data_impl() const noexcept;
+        storage_type& storage_impl() noexcept;
+        const storage_type& storage_impl() const noexcept;
 
         friend class xcontainer<pytensor<T, N>>;
         friend class pycontainer<pytensor<T, N>>;
@@ -334,7 +334,7 @@ namespace xt
         : base_type()
     {
         init_tensor(rhs.shape(), rhs.strides());
-        std::copy(rhs.data().cbegin(), rhs.data().cend(), this->data().begin());
+        std::copy(rhs.storage().cbegin(), rhs.storage().cend(), this->storage().begin());
     }
 
     /**
@@ -417,8 +417,8 @@ namespace xt
         m_shape = shape;
         m_strides = strides;
         adapt_strides(m_shape, m_strides, m_backstrides);
-        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                static_cast<size_type>(PyArray_SIZE(this->python_array())));
+        m_data = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                              static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>
@@ -433,8 +433,8 @@ namespace xt
         std::transform(PyArray_STRIDES(this->python_array()), PyArray_STRIDES(this->python_array()) + N, m_strides.begin(),
                        [](auto v) { return v / sizeof(T); });
         adapt_strides(m_shape, m_strides, m_backstrides);
-        m_data = container_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
+        m_data = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                              this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>
@@ -474,13 +474,13 @@ namespace xt
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::data_impl() noexcept -> container_type&
+    inline auto pytensor<T, N>::storage_impl() noexcept -> storage_type&
     {
         return m_data;
     }
 
     template <class T, std::size_t N>
-    inline auto pytensor<T, N>::data_impl() const noexcept -> const container_type&
+    inline auto pytensor<T, N>::storage_impl() const noexcept -> const storage_type&
     {
         return m_data;
     }

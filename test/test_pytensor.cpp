@@ -67,7 +67,7 @@ namespace xt
             pytensor<int, 3> ra(rm.m_shape, value);
             compare_shape(ra, rm);
             std::vector<int> vec(ra.size(), value);
-            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ra.data().cbegin()));
+            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ra.storage().cbegin()));
         }
 
         {
@@ -77,7 +77,7 @@ namespace xt
             pytensor<int, 3> ca(cm.m_shape, value, layout_type::column_major);
             compare_shape(ca, cm);
             std::vector<int> vec(ca.size(), value);
-            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ca.data().cbegin()));
+            EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), ca.storage().cbegin()));
         }
     }
 
@@ -88,7 +88,7 @@ namespace xt
         pytensor<int, 3> cma(cmr.m_shape, cmr.m_strides, value);
         compare_shape(cma, cmr);
         std::vector<int> vec(cma.size(), value);
-        EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), cma.data().cbegin()));
+        EXPECT_TRUE(std::equal(vec.cbegin(), vec.cend(), cma.storage().cbegin()));
     }
 
     TEST(pytensor, copy_semantic)
@@ -101,9 +101,9 @@ namespace xt
             SCOPED_TRACE("copy constructor");
             pytensor<int, 3> b(a);
             compare_shape(a, b);
-            EXPECT_EQ(a.data(), b.data());
+            EXPECT_EQ(a.storage(), b.storage());
             a.data()[0] += 1;
-            EXPECT_NE(a.data()[0], b.data()[0]);
+            EXPECT_NE(a.storage()[0], b.storage()[0]);
         }
 
         {
@@ -113,9 +113,9 @@ namespace xt
             EXPECT_NE(a.data(), c.data());
             c = a;
             compare_shape(a, c);
-            EXPECT_EQ(a.data(), c.data());
+            EXPECT_EQ(a.storage(), c.storage());
             a.data()[0] += 1;
-            EXPECT_NE(a.data()[0], c.data()[0]);
+            EXPECT_NE(a.storage()[0], c.storage()[0]);
         }
     }
 
@@ -130,18 +130,18 @@ namespace xt
             pytensor<int, 3> tmp(a);
             pytensor<int, 3> b(std::move(tmp));
             compare_shape(a, b);
-            EXPECT_EQ(a.data(), b.data());
+            EXPECT_EQ(a.storage(), b.storage());
         }
 
         {
             SCOPED_TRACE("move assignment");
             row_major_result<container_type> r;
             pytensor<int, 3> c(r.m_shape, 0);
-            EXPECT_NE(a.data(), c.data());
+            EXPECT_NE(a.storage(), c.storage());
             pytensor<int, 3> tmp(a);
             c = std::move(tmp);
             compare_shape(a, c);
-            EXPECT_EQ(a.data(), c.data());
+            EXPECT_EQ(a.storage(), c.storage());
         }
     }
 
@@ -206,9 +206,9 @@ namespace xt
     TEST(pytensor, reshape)
     {
         pytensor<int, 2> a = {{1,2,3}, {4,5,6}};
-        auto ptr = a.raw_data();
+        auto ptr = a.data();
         a.reshape({1, 6});
-        EXPECT_EQ(ptr, a.raw_data());
+        EXPECT_EQ(ptr, a.data());
         EXPECT_THROW(a.reshape({6}), std::runtime_error);
     }
 }
