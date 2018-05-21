@@ -374,7 +374,7 @@ namespace xt
         inner_shape_type m_shape;
         inner_strides_type m_strides;
         mutable inner_backstrides_type m_backstrides;
-        storage_type m_data;
+        storage_type m_storage;
 
         void init_array(const shape_type& shape, const strides_type& strides);
         void init_from_python();
@@ -477,7 +477,7 @@ namespace xt
         shape_type shape = xtl::make_sequence<shape_type>(0, size_type(1));
         strides_type strides = xtl::make_sequence<strides_type>(0, size_type(0));
         init_array(shape, strides);
-        m_data[0] = T();
+        m_storage[0] = T();
     }
 
     /**
@@ -488,7 +488,7 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(m_storage.begin(), t);
     }
 
     template <class T>
@@ -496,7 +496,7 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(m_storage.begin(), t);
     }
 
     template <class T>
@@ -504,7 +504,7 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(m_storage.begin(), t);
     }
 
     template <class T>
@@ -512,7 +512,7 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(m_storage.begin(), t);
     }
 
     template <class T>
@@ -520,7 +520,7 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(m_storage.begin(), t);
     }
 
     template <class T>
@@ -528,7 +528,7 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(m_storage.begin(), t);
     }
 
     template <class T>
@@ -581,7 +581,7 @@ namespace xt
         strides_type strides(shape.size());
         compute_strides(shape, l, strides);
         init_array(shape, strides);
-        std::fill(m_data.begin(), m_data.end(), value);
+        std::fill(m_storage.begin(), m_storage.end(), value);
     }
 
     /**
@@ -596,7 +596,7 @@ namespace xt
         : base_type()
     {
         init_array(shape, strides);
-        std::fill(m_data.begin(), m_data.end(), value);
+        std::fill(m_storage.begin(), m_storage.end(), value);
     }
 
     /**
@@ -730,8 +730,8 @@ namespace xt
         m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(this->python_array())),
                                        static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_backstrides = backstrides_type(*this);
-        m_data = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                              this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
+        m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                                 this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T>
@@ -759,13 +759,13 @@ namespace xt
     template <class T>
     inline auto pyarray<T>::storage_impl() noexcept -> storage_type&
     {
-        return m_data;
+        return m_storage;
     }
 
     template <class T>
     inline auto pyarray<T>::storage_impl() const noexcept -> const storage_type&
     {
-        return m_data;
+        return m_storage;
     }
 }
 
