@@ -191,7 +191,7 @@ namespace xt
         inner_shape_type m_shape;
         inner_strides_type m_strides;
         inner_backstrides_type m_backstrides;
-        storage_type m_data;
+        storage_type m_storage;
 
         void init_tensor(const shape_type& shape, const strides_type& strides);
         void init_from_python();
@@ -228,7 +228,7 @@ namespace xt
         m_shape = xtl::make_sequence<shape_type>(N, size_type(1));
         m_strides = xtl::make_sequence<strides_type>(N, size_type(0));
         init_tensor(m_shape, m_strides);
-        m_data[0] = T();
+        m_storage[0] = T();
     }
 
     /**
@@ -239,7 +239,7 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_data.begin(), t);
+        nested_copy(m_storage.begin(), t);
     }
 
     template <class T, std::size_t N>
@@ -290,7 +290,7 @@ namespace xt
     {
         compute_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
-        std::fill(m_data.begin(), m_data.end(), value);
+        std::fill(m_storage.begin(), m_storage.end(), value);
     }
 
     /**
@@ -306,7 +306,7 @@ namespace xt
                                     const_reference value)
     {
         init_tensor(shape, strides);
-        std::fill(m_data.begin(), m_data.end(), value);
+        std::fill(m_storage.begin(), m_storage.end(), value);
     }
 
     /**
@@ -417,8 +417,8 @@ namespace xt
         m_shape = shape;
         m_strides = strides;
         adapt_strides(m_shape, m_strides, m_backstrides);
-        m_data = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                              static_cast<size_type>(PyArray_SIZE(this->python_array())));
+        m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                                 static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>
@@ -433,8 +433,8 @@ namespace xt
         std::transform(PyArray_STRIDES(this->python_array()), PyArray_STRIDES(this->python_array()) + N, m_strides.begin(),
                        [](auto v) { return v / sizeof(T); });
         adapt_strides(m_shape, m_strides, m_backstrides);
-        m_data = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                              this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
+        m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+                                 this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
     template <class T, std::size_t N>
@@ -476,13 +476,13 @@ namespace xt
     template <class T, std::size_t N>
     inline auto pytensor<T, N>::storage_impl() noexcept -> storage_type&
     {
-        return m_data;
+        return m_storage;
     }
 
     template <class T, std::size_t N>
     inline auto pytensor<T, N>::storage_impl() const noexcept -> const storage_type&
     {
-        return m_data;
+        return m_storage;
     }
 }
 

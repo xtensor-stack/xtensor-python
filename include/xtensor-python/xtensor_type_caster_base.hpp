@@ -15,6 +15,10 @@
 #ifndef XTENSOR_TYPE_CASTER_HPP
 #define XTENSOR_TYPE_CASTER_HPP
 
+#include <cstddef>
+#include <algorithm>
+#include <vector>
+
 #include "xtensor/xtensor.hpp"
 
 #include <pybind11/numpy.h>
@@ -24,17 +28,20 @@ namespace pybind11
 {
     namespace detail
     {
-        // Casts an xtensor (or xarray) type to numpy array.  If given a base, the numpy array references the src data,
-        // otherwise it'll make a copy.  writeable lets you turn off the writeable flag for the array.
+        // Casts an xtensor (or xarray) type to numpy array.If given a base,
+        // the numpy array references the src data, otherwise it'll make a copy.
+        // The writeable attributes lets you specify writeable flag for the array.
         template <typename Type>
-        handle xtensor_array_cast(Type const& src, handle base = handle(), bool writeable = true)
+        handle xtensor_array_cast(const Type& src, handle base = handle(), bool writeable = true)
         {
             // TODO: make use of xt::pyarray instead of array.
-            std::vector<size_t> python_strides(src.strides().size());
-            std::transform(src.strides().begin(), src.strides().end(), python_strides.begin(),
-                           [](auto v) { return sizeof(typename Type::value_type) * v; });
+            std::vector<std::size_t> python_strides(src.strides().size());
+            std::transform(src.strides().begin(), src.strides().end(),
+                           python_strides.begin(), [](auto v) {
+                return sizeof(typename Type::value_type) * v;
+           });
 
-            std::vector<size_t> python_shape(src.shape().size());
+            std::vector<std::size_t> python_shape(src.shape().size());
             std::copy(src.shape().begin(), src.shape().end(), python_shape.begin());
 
             array a(python_shape, python_strides, src.begin(), base);

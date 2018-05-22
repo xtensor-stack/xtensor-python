@@ -358,11 +358,17 @@ namespace xt
     inline layout_type pycontainer<D>::layout() const
     {
         if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_C_CONTIGUOUS))
+        {
             return layout_type::row_major;
+        }
         else if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_F_CONTIGUOUS))
+        {
             return layout_type::column_major;
+        }
         else
+        {
             return layout_type::dynamic;
+        }
     }
 
     /**
