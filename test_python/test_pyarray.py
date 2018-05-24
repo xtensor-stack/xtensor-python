@@ -9,6 +9,7 @@
 import os
 import sys
 import subprocess
+import gc
 
 # Build the test extension
 
@@ -21,7 +22,7 @@ from unittest import TestCase
 import xtensor_python_test as xt
 import numpy as np
 
-class ExampleTest(TestCase):
+class XtensorTest(TestCase):
 
     def test_example1(self):
         self.assertEqual(4, xt.example1([4, 5, 6]))
@@ -87,3 +88,39 @@ class ExampleTest(TestCase):
             b = xt.int_overload(np.ones((10), dtype))
             self.assertEqual(str(dtype.__name__), b)
 
+    def test_dtype(self):
+        var = xt.dtype_to_python()
+        self.assertEqual(var.dtype.names, ('a', 'b', 'c', 'x'))
+
+        exp_dtype = {'a': (np.dtype('float64'), 0),
+                     'b': (np.dtype('int32'), 8),
+                     'c': (np.dtype('int8'), 12),
+                     'x': (np.dtype(('<f8', (3,))), 16)}
+
+        self.assertEqual(var.dtype.fields, exp_dtype)
+
+        self.assertEqual(var[0]['a'], 123)
+        self.assertEqual(var[0]['b'], 321)
+        self.assertEqual(var[0]['c'], ord('a'))
+        self.assertTrue(np.all(var[0]['x'] == [1, 2, 3]))
+
+        self.assertEqual(var[1]['a'], 111)
+        self.assertEqual(var[1]['b'], 222)
+        self.assertEqual(var[1]['c'], ord('x'))
+        self.assertTrue(np.all(var[1]['x'] == [5, 5, 5]))
+
+        d_dtype = np.dtype({'names':['a','b'], 'formats':['<f8','<i4'], 'offsets':[0,8], 'itemsize':16})
+
+        darr = np.array([(1, ord('p')), (123, ord('c'))], dtype=d_dtype)
+        self.assertEqual(darr[0]['a'], 1)
+        res = xt.dtype_from_python(darr)
+        self.assertEqual(res[0]['a'], 123.)
+        self.assertEqual(darr[0]['a'], 123.)
+
+    def test_char_array(self):
+        var = np.array(['hello', 'from', 'python'], dtype=np.dtype('|S20'));
+        self.assertEqual(var[0], b'hello')
+        xt.char_array(var)
+        self.assertEqual(var[0], b'hello')
+        self.assertEqual(var[1], b'from')
+        self.assertEqual(var[2], b'c++')

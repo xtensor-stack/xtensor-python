@@ -15,6 +15,7 @@
 
 #include "pybind11/complex.h"
 #include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
 
 #ifndef FORCE_IMPORT_ARRAY
 #define NO_IMPORT_ARRAY
@@ -129,8 +130,11 @@ namespace xt
 
     namespace detail
     {
+        template <class T, class E = void>
+        struct numpy_traits;
+
         template <class T>
-        struct numpy_traits
+        struct numpy_traits<T, std::enable_if_t<pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value>>
         {
         private:
 
@@ -184,6 +188,47 @@ namespace xt
         {
             return numpy_enum_adjuster<NPY_LONGLONG != NPY_INT64>::pyarray_type(obj);
         }
+
+        template <class T>
+        void default_initialize_impl(T& storage, std::false_type)
+        {
+        }
+
+        template <class T>
+        void default_initialize_impl(T& storage, std::true_type)
+        {
+            using value_type = typename T::value_type;
+            storage[0] = value_type{};
+        }
+
+        template <class T>
+        void default_initialize(T& storage)
+        {
+            using value_type = typename T::value_type;
+            default_initialize_impl(storage, std::is_copy_assignable<value_type>());
+        }
+
+        template <class T>
+        bool check_array_type(const pybind11::handle& src, std::true_type)
+        {
+            int type_num = xt::detail::numpy_traits<T>::type_num;
+            return xt::detail::pyarray_type(reinterpret_cast<PyArrayObject*>(src.ptr())) == type_num;
+        }
+
+        template <class T>
+        bool check_array_type(const pybind11::handle& src, std::false_type)
+        {
+            return PyArray_EquivTypes((PyArray_Descr*) pybind11::detail::array_proxy(src.ptr())->descr,
+                                      (PyArray_Descr*) pybind11::dtype::of<T>().ptr());
+        }
+
+        template <class T>
+        bool check_array(const pybind11::handle& src)
+        {
+            using is_arithmetic_type = std::integral_constant<bool, !!pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value>;
+            return PyArray_Check(src.ptr()) &&
+                   check_array_type<T>(src, is_arithmetic_type{});
+        }
     }
 
     /******************************
@@ -232,9 +277,9 @@ namespace xt
     template <class D>
     inline bool pycontainer<D>::check_(pybind11::handle h)
     {
-        int type_num = detail::numpy_traits<value_type>::type_num;
+        auto dtype = pybind11::detail::npy_format_descriptor<value_type>::dtype();
         return PyArray_Check(h.ptr()) &&
-            PyArray_EquivTypenums(PyArray_TYPE(reinterpret_cast<PyArrayObject*>(h.ptr())), type_num);
+            PyArray_EquivTypes_(PyArray_TYPE(reinterpret_cast<PyArrayObject*>(h.ptr())), dtype.ptr());
     }
 
     template <class D>
@@ -244,8 +289,9 @@ namespace xt
         {
             return nullptr;
         }
-        int type_num = detail::numpy_traits<value_type>::type_num;
-        auto res = PyArray_FromAny(ptr, PyArray_DescrFromType(type_num), 0, 0,
+
+        auto dtype = pybind11::detail::npy_format_descriptor<value_type>::dtype();
+        auto res = PyArray_FromAny(ptr, (PyArray_Descr *) dtype.release().ptr(), 0, 0,
                                    NPY_ARRAY_ENSUREARRAY | NPY_ARRAY_FORCECAST, nullptr);
         return res;
     }
