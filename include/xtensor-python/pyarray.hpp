@@ -36,7 +36,7 @@ namespace pybind11
         {
             static PYBIND11_DESCR name()
             {
-                return _("numpy.ndarray[") + make_caster<T>::name() + _("]");
+                return _("numpy.ndarray[") + npy_format_descriptor<T>::name() + _("]");
             }
         };
 
