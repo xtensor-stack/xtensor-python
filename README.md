@@ -1,4 +1,4 @@
-# ![xtensor-python](http://quantstack.net/assets/images/xtensor-python.svg)
+# ![xtensor-python](docs/source/xtensor-python.svg)
 
 [![Travis](https://travis-ci.org/QuantStack/xtensor-python.svg?branch=master)](https://travis-ci.org/QuantStack/xtensor-python)
 [![Appveyor](https://ci.appveyor.com/api/projects/status/qx61nsg4ebxnj8s9?svg=true)](https://ci.appveyor.com/project/QuantStack/xtensor-python)
