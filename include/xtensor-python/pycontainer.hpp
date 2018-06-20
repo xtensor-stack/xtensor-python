@@ -73,7 +73,7 @@ namespace xt
         using inner_shape_type = typename inner_types::inner_shape_type;
         using inner_strides_type = typename inner_types::inner_strides_type;
 
-        using iterable_base = xiterable<D>;
+        using iterable_base = xcontainer<D>;
 
         using iterator = typename iterable_base::iterator;
         using const_iterator = typename iterable_base::const_iterator;
