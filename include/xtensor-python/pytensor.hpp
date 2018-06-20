@@ -24,7 +24,7 @@
 
 namespace xt
 {
-    template <class T, std::size_t N>
+    template <class T, std::size_t N, layout_type L = layout_type::dynamic>
     class pytensor;
 }
 
@@ -32,8 +32,8 @@ namespace pybind11
 {
     namespace detail
     {
-        template <class T, std::size_t N>
-        struct handle_type_name<xt::pytensor<T, N>>
+        template <class T, std::size_t N, xt::layout_type L>
+        struct handle_type_name<xt::pytensor<T, N, L>>
         {
             static PYBIND11_DESCR name()
             {
@@ -41,10 +41,10 @@ namespace pybind11
             }
         };
 
-        template <class T, std::size_t N>
-        struct pyobject_caster<xt::pytensor<T, N>>
+        template <class T, std::size_t N, xt::layout_type L>
+        struct pyobject_caster<xt::pytensor<T, N, L>>
         {
-            using type = xt::pytensor<T, N>;
+            using type = xt::pytensor<T, N, L>;
 
             bool load(handle src, bool convert)
             {
@@ -74,10 +74,10 @@ namespace pybind11
         };
 
         // Type caster for casting ndarray to xexpression<pytensor>
-        template <class T, std::size_t N>
-        struct type_caster<xt::xexpression<xt::pytensor<T, N>>> : pyobject_caster<xt::pytensor<T, N>>
+        template <class T, std::size_t N, xt::layout_type L>
+        struct type_caster<xt::xexpression<xt::pytensor<T, N, L>>> : pyobject_caster<xt::pytensor<T, N, L>>
         {
-            using Type = xt::xexpression<xt::pytensor<T, N>>;
+            using Type = xt::xexpression<xt::pytensor<T, N, L>>;
 
             operator Type&()
             {
@@ -91,8 +91,8 @@ namespace pybind11
         };
 
         // Type caster for casting xt::xtensor to ndarray
-        template <class T, std::size_t N>
-        struct type_caster<xt::xtensor<T, N>> : xtensor_type_caster_base<xt::xtensor<T, N>>
+        template <class T, std::size_t N, xt::layout_type L>
+        struct type_caster<xt::xtensor<T, N, L>> : xtensor_type_caster_base<xt::xtensor<T, N, L>>
         {
         };
     }
@@ -101,14 +101,14 @@ namespace pybind11
 namespace xt
 {
 
-    template <class T, std::size_t N>
-    struct xiterable_inner_types<pytensor<T, N>>
-        : xcontainer_iterable_types<pytensor<T, N>>
+    template <class T, std::size_t N, layout_type L>
+    struct xiterable_inner_types<pytensor<T, N, L>>
+        : xcontainer_iterable_types<pytensor<T, N, L>>
     {
     };
 
-    template <class T, std::size_t N>
-    struct xcontainer_inner_types<pytensor<T, N>>
+    template <class T, std::size_t N, layout_type L>
+    struct xcontainer_inner_types<pytensor<T, N, L>>
     {
         using storage_type = xbuffer_adaptor<T*>;
         using shape_type = std::array<npy_intp, N>;
@@ -117,8 +117,8 @@ namespace xt
         using inner_shape_type = shape_type;
         using inner_strides_type = strides_type;
         using inner_backstrides_type = backstrides_type;
-        using temporary_type = pytensor<T, N>;
-        static constexpr layout_type layout = layout_type::dynamic;
+        using temporary_type = pytensor<T, N, L>;
+        static constexpr layout_type layout = L;
     };
 
     /**
@@ -135,13 +135,13 @@ namespace xt
      * @tparam T The type of the element stored in the pyarray.
      * @sa pyarray
      */
-    template <class T, std::size_t N>
-    class pytensor : public pycontainer<pytensor<T, N>>,
-                     public xcontainer_semantic<pytensor<T, N>>
+    template <class T, std::size_t N, layout_type L>
+    class pytensor : public pycontainer<pytensor<T, N, L>>,
+                     public xcontainer_semantic<pytensor<T, N, L>>
     {
     public:
 
-        using self_type = pytensor<T, N>;
+        using self_type = pytensor<T, N, L>;
         using semantic_base = xcontainer_semantic<self_type>;
         using base_type = pycontainer<self_type>;
         using storage_type = typename base_type::storage_type;
@@ -206,8 +206,8 @@ namespace xt
         storage_type& storage_impl() noexcept;
         const storage_type& storage_impl() const noexcept;
 
-        friend class xcontainer<pytensor<T, N>>;
-        friend class pycontainer<pytensor<T, N>>;
+        friend class xcontainer<pytensor<T, N, L>>;
+        friend class pycontainer<pytensor<T, N, L>>;
     };
 
     /***************************
@@ -221,8 +221,8 @@ namespace xt
     /**
      * Allocates an uninitialized pytensor that holds 1 element.
      */
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor()
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor()
         : base_type()
     {
         m_shape = xtl::make_sequence<shape_type>(N, size_type(1));
@@ -234,30 +234,30 @@ namespace xt
     /**
      * Allocates a pytensor with a nested initializer list.
      */
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(nested_initializer_list_t<T, N> t)
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(nested_initializer_list_t<T, N> t)
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_storage.begin(), t);
     }
 
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::borrowed_t b)
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(pybind11::handle h, pybind11::object::borrowed_t b)
         : base_type(h, b)
     {
         init_from_python();
     }
 
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(pybind11::handle h, pybind11::object::stolen_t s)
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(pybind11::handle h, pybind11::object::stolen_t s)
         : base_type(h, s)
     {
         init_from_python();
     }
 
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const pybind11::object& o)
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(const pybind11::object& o)
         : base_type(o)
     {
         init_from_python();
@@ -269,8 +269,8 @@ namespace xt
      * @param shape the shape of the pytensor
      * @param l the layout_type of the pytensor
      */
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const shape_type& shape, layout_type l)
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(const shape_type& shape, layout_type l)
     {
         compute_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
@@ -283,8 +283,8 @@ namespace xt
      * @param value the value of the elements
      * @param l the layout_type of the pytensor
      */
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const shape_type& shape,
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(const shape_type& shape,
                                     const_reference value,
                                     layout_type l)
     {
@@ -300,8 +300,8 @@ namespace xt
      * @param strides the strides of the pytensor
      * @param value the value of the elements
      */
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const shape_type& shape,
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(const shape_type& shape,
                                     const strides_type& strides,
                                     const_reference value)
     {
@@ -314,8 +314,8 @@ namespace xt
      * @param shape the shape of the pytensor
      * @param strides the strides of the pytensor
      */
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const shape_type& shape,
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(const shape_type& shape,
                                     const strides_type& strides)
     {
         init_tensor(shape, strides);
@@ -329,9 +329,9 @@ namespace xt
     /**
      * The copy constructor.
      */
-    template <class T, std::size_t N>
-    inline pytensor<T, N>::pytensor(const self_type& rhs)
-        : base_type()
+    template <class T, std::size_t N, layout_type L>
+    inline pytensor<T, N, L>::pytensor(const self_type& rhs)
+        : self_type()
     {
         init_tensor(rhs.shape(), rhs.strides());
         std::copy(rhs.storage().cbegin(), rhs.storage().cend(), this->storage().begin());
@@ -340,8 +340,8 @@ namespace xt
     /**
      * The assignment operator.
      */
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::operator=(const self_type& rhs) -> self_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::operator=(const self_type& rhs) -> self_type&
     {
         self_type tmp(rhs);
         *this = std::move(tmp);
@@ -356,9 +356,9 @@ namespace xt
     /**
      * The extended copy constructor.
      */
-    template <class T, std::size_t N>
+    template <class T, std::size_t N, layout_type L>
     template <class E>
-    inline pytensor<T, N>::pytensor(const xexpression<E>& e)
+    inline pytensor<T, N, L>::pytensor(const xexpression<E>& e)
         : base_type()
     {
         shape_type shape = xtl::forward_sequence<shape_type>(e.derived_cast().shape());
@@ -371,28 +371,28 @@ namespace xt
     /**
      * The extended assignment operator.
      */
-    template <class T, std::size_t N>
+    template <class T, std::size_t N, layout_type L>
     template <class E>
-    inline auto pytensor<T, N>::operator=(const xexpression<E>& e) -> self_type&
+    inline auto pytensor<T, N, L>::operator=(const xexpression<E>& e) -> self_type&
     {
         return semantic_base::operator=(e);
     }
     //@}
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::ensure(pybind11::handle h) -> self_type
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::ensure(pybind11::handle h) -> self_type
     {
         return base_type::ensure(h);
     }
 
-    template <class T, std::size_t N>
-    inline bool pytensor<T, N>::check_(pybind11::handle h)
+    template <class T, std::size_t N, layout_type L>
+    inline bool pytensor<T, N, L>::check_(pybind11::handle h)
     {
         return base_type::check_(h);
     }
 
-    template <class T, std::size_t N>
-    inline void pytensor<T, N>::init_tensor(const shape_type& shape, const strides_type& strides)
+    template <class T, std::size_t N, layout_type L>
+    inline void pytensor<T, N, L>::init_tensor(const shape_type& shape, const strides_type& strides)
     {
         npy_intp python_strides[N];
         std::transform(strides.begin(), strides.end(), python_strides,
@@ -421,8 +421,8 @@ namespace xt
                                  static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
-    template <class T, std::size_t N>
-    inline void pytensor<T, N>::init_from_python()
+    template <class T, std::size_t N, layout_type L>
+    inline void pytensor<T, N, L>::init_from_python()
     {
         if (PyArray_NDIM(this->python_array()) != N)
         {
@@ -437,50 +437,50 @@ namespace xt
                                  this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::shape_impl() noexcept -> inner_shape_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::shape_impl() noexcept -> inner_shape_type&
     {
         return m_shape;
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::shape_impl() const noexcept -> const inner_shape_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::shape_impl() const noexcept -> const inner_shape_type&
     {
         return m_shape;
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::strides_impl() noexcept -> inner_strides_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::strides_impl() noexcept -> inner_strides_type&
     {
         return m_strides;
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::strides_impl() const noexcept -> const inner_strides_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::strides_impl() const noexcept -> const inner_strides_type&
     {
         return m_strides;
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::backstrides_impl() noexcept -> inner_backstrides_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::backstrides_impl() noexcept -> inner_backstrides_type&
     {
         return m_backstrides;
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::backstrides_impl() const noexcept -> const inner_backstrides_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::backstrides_impl() const noexcept -> const inner_backstrides_type&
     {
         return m_backstrides;
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::storage_impl() noexcept -> storage_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::storage_impl() noexcept -> storage_type&
     {
         return m_storage;
     }
 
-    template <class T, std::size_t N>
-    inline auto pytensor<T, N>::storage_impl() const noexcept -> const storage_type&
+    template <class T, std::size_t N, layout_type L>
+    inline auto pytensor<T, N, L>::storage_impl() const noexcept -> const storage_type&
     {
         return m_storage;
     }

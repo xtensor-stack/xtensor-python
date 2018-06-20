@@ -197,6 +197,10 @@ namespace xt
         pyarray<int> a;
         pyarray<int> b;
         test_iterator(a, b);
+
+        pyarray<int, layout_type::row_major> c;
+        bool truthy = std::is_same<decltype(c.begin()), int*>::value;
+        EXPECT_TRUE(truthy);
     }
 
     TEST(pyarray, initializer_list)

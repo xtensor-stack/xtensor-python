@@ -195,6 +195,10 @@ namespace xt
         pytensor<int, 3> a;
         pytensor<int, 3> b;
         test_iterator<pytensor<int, 3>, pytensor<int, 3>, container_type>(a, b);
+
+        pytensor<int, 3, layout_type::row_major> c;
+        bool truthy = std::is_same<decltype(c.begin()), int*>::value;
+        EXPECT_TRUE(truthy);
     }
 
     TEST(pytensor, zerod)
