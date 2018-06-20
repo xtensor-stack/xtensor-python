@@ -7,7 +7,6 @@
 ****************************************************************************/
 
 #include <numeric>
-#include <limits>
 
 #include "xtensor/xmath.hpp"
 #include "xtensor/xarray.hpp"
@@ -133,7 +132,9 @@ xt::pyarray<A> dtype_to_python()
 xt::pyarray<B> dtype_from_python(xt::pyarray<B>& b)
 {
     if (b(0).a != 1 || b(0).b != 'p' || b(1).a != 123 || b(1).b != 'c')
+    {
         throw std::runtime_error("FAIL");
+    }
 
     b(0).a = 123.;
     b(0).b = 'w';

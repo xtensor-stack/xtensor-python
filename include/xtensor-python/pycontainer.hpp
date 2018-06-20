@@ -225,7 +225,7 @@ namespace xt
         template <class T>
         bool check_array(const pybind11::handle& src)
         {
-            using is_arithmetic_type = std::integral_constant<bool, !!pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value>;
+            using is_arithmetic_type = std::integral_constant<bool, bool(pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value)>;
             return PyArray_Check(src.ptr()) &&
                    check_array_type<T>(src, is_arithmetic_type{});
         }

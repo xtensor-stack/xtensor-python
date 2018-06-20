@@ -9,7 +9,6 @@
 import os
 import sys
 import subprocess
-import gc
 
 # Build the test extension
 
@@ -92,10 +91,12 @@ class XtensorTest(TestCase):
         var = xt.dtype_to_python()
         self.assertEqual(var.dtype.names, ('a', 'b', 'c', 'x'))
 
-        exp_dtype = {'a': (np.dtype('float64'), 0),
-                     'b': (np.dtype('int32'), 8),
-                     'c': (np.dtype('int8'), 12),
-                     'x': (np.dtype(('<f8', (3,))), 16)}
+        exp_dtype = {
+             'a': (np.dtype('float64'), 0),
+             'b': (np.dtype('int32'), 8),
+             'c': (np.dtype('int8'), 12),
+             'x': (np.dtype(('<f8', (3,))), 16)
+        }
 
         self.assertEqual(var.dtype.fields, exp_dtype)
 
