@@ -331,7 +331,7 @@ namespace xt
      */
     template <class T, std::size_t N, layout_type L>
     inline pytensor<T, N, L>::pytensor(const self_type& rhs)
-        : base_type()
+        : self_type()
     {
         init_tensor(rhs.shape(), rhs.strides());
         std::copy(rhs.storage().cbegin(), rhs.storage().cend(), this->storage().begin());
