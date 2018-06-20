@@ -50,12 +50,7 @@ namespace pybind11
             {
                 if (!convert)
                 {
-                    if (!PyArray_Check(src.ptr()))
-                    {
-                        return false;
-                    }
-                    int type_num = xt::detail::numpy_traits<T>::type_num;
-                    if(xt::detail::pyarray_type(reinterpret_cast<PyArrayObject*>(src.ptr())) != type_num)
+                    if (!xt::detail::check_array<T>(src))
                     {
                         return false;
                     }
@@ -228,7 +223,7 @@ namespace xt
         m_shape = xtl::make_sequence<shape_type>(N, size_type(1));
         m_strides = xtl::make_sequence<strides_type>(N, size_type(0));
         init_tensor(m_shape, m_strides);
-        m_storage[0] = T();
+        detail::default_initialize(m_storage);
     }
 
     /**
@@ -402,11 +397,12 @@ namespace xt
         {
             flags |= NPY_ARRAY_WRITEABLE;
         }
-        int type_num = detail::numpy_traits<T>::type_num;
+        auto dtype = pybind11::detail::npy_format_descriptor<T>::dtype();
 
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
-            PyArray_New(&PyArray_Type, N, const_cast<npy_intp*>(shape.data()),
-                        type_num, python_strides, nullptr, sizeof(T), flags, nullptr));
+            PyArray_NewFromDescr(&PyArray_Type, (PyArray_Descr*) dtype.ptr(), static_cast<int>(shape.size()),
+                        const_cast<npy_intp*>(shape.data()), python_strides,
+                        nullptr, flags, nullptr));
 
         if (!tmp)
         {
