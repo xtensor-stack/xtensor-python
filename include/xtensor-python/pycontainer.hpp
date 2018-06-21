@@ -226,8 +226,7 @@ namespace xt
         bool check_array(const pybind11::handle& src)
         {
             using is_arithmetic_type = std::integral_constant<bool, bool(pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value)>;
-            return PyArray_Check(src.ptr()) &&
-                   check_array_type<T>(src, is_arithmetic_type{});
+            return PyArray_Check(src.ptr()) && check_array_type<T>(src, is_arithmetic_type{});
         }
     }
 
@@ -277,9 +276,7 @@ namespace xt
     template <class D>
     inline bool pycontainer<D>::check_(pybind11::handle h)
     {
-        auto dtype = pybind11::detail::npy_format_descriptor<value_type>::dtype();
-        return PyArray_Check(h.ptr()) &&
-            PyArray_EquivTypes_(PyArray_TYPE(reinterpret_cast<PyArrayObject*>(h.ptr())), dtype.ptr());
+        return detail::check_array<typename D::value_type>(h);
     }
 
     template <class D>
@@ -326,7 +323,7 @@ namespace xt
         template <class S>
         struct check_dims
         {
-            bool operator()(std::size_t)
+            static bool run(std::size_t)
             {
                 return true;
             }
@@ -335,7 +332,7 @@ namespace xt
         template <class T, std::size_t N>
         struct check_dims<std::array<T, N>>
         {
-            bool operator()(std::size_t new_dim)
+            static bool run(std::size_t new_dim)
             {
                 if(new_dim != N)
                 {
@@ -383,7 +380,7 @@ namespace xt
     template <class S>
     inline void pycontainer<D>::resize(const S& shape, const strides_type& strides)
     {
-        detail::check_dims<shape_type>{}(shape.size());
+        detail::check_dims<shape_type>::run(shape.size());
         derived_type tmp(xtl::forward_sequence<shape_type>(shape), strides);
         *static_cast<derived_type*>(this) = std::move(tmp);
     }
@@ -396,7 +393,7 @@ namespace xt
         {
             throw std::runtime_error("Cannot reshape with incorrect number of elements (" + std::to_string(this->size()) + " vs " + std::to_string(compute_size(shape)) + ")");
         }
-        detail::check_dims<shape_type>{}(shape.size());
+        detail::check_dims<shape_type>::run(shape.size());
         layout = default_assignable_layout(layout);
 
         NPY_ORDER npy_layout;

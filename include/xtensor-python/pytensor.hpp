@@ -327,7 +327,7 @@ namespace xt
     template <class S>
     inline pytensor<T, N, L> pytensor<T, N, L>::from_shape(S&& shape)
     {
-        detail::check_dims<shape_type>{}(shape.size());
+        detail::check_dims<shape_type>::run(shape.size());
         auto shp = xtl::forward_sequence<shape_type>(shape);
         return self_type(shp);
     }
