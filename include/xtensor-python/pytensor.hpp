@@ -445,6 +445,12 @@ namespace xt
         std::transform(PyArray_STRIDES(this->python_array()), PyArray_STRIDES(this->python_array()) + N, m_strides.begin(),
                        [](auto v) { return v / sizeof(T); });
         adapt_strides(m_shape, m_strides, m_backstrides);
+
+        if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L))
+        {
+            throw std::runtime_error("NumPy: passing container with bad strides for layout (is it a view?).");
+        }
+
         m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
                                  this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
     }

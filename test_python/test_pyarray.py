@@ -125,3 +125,24 @@ class XtensorTest(TestCase):
         self.assertEqual(var[0], b'hello')
         self.assertEqual(var[1], b'from')
         self.assertEqual(var[2], b'c++')
+
+    def test_col_row_major(self):
+        var = np.arange(50, dtype=float).reshape(2, 5, 5)
+
+        with self.assertRaises(RuntimeError):
+            xt.col_major_array(var)
+
+        with self.assertRaises(RuntimeError):
+            xt.row_major_tensor(var.T)
+
+        with self.assertRaises(RuntimeError):
+            xt.row_major_tensor(var[:, ::2, ::2])
+
+        with self.assertRaises(RuntimeError):
+            # raise for wrong dimension
+            xt.row_major_tensor(var[0, 0, :])
+
+        xt.row_major_tensor(var)
+        varF = np.arange(50, dtype=float).reshape(2, 5, 5, order='F')
+        xt.col_major_array(varF)
+        xt.col_major_array(varF[:, :, 0]) # still col major!

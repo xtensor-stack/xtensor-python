@@ -741,6 +741,12 @@ namespace xt
                                    static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(this->python_array())),
                                        static_cast<size_type>(PyArray_NDIM(this->python_array())));
+
+        if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L))
+        {
+            throw std::runtime_error("NumPy: passing container with bad strides for layout (is it a view?).");
+        }
+
         m_backstrides = backstrides_type(*this);
         m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
                                  this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));

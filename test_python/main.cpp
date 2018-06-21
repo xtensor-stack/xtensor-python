@@ -12,6 +12,7 @@
 #include "xtensor/xarray.hpp"
 #define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyarray.hpp"
+#include "xtensor-python/pytensor.hpp"
 #include "xtensor-python/pyvectorize.hpp"
 
 namespace py = pybind11;
@@ -154,6 +155,22 @@ void char_array(xt::pyarray<char[20]>& carr)
     carr(2)[3] = '\0';
 }
 
+void row_major_tensor(xt::pytensor<double, 3, xt::layout_type::row_major>& arg)
+{
+    if (!std::is_same<decltype(arg.begin()), double*>::value)
+    {
+        throw std::runtime_error("TEST FAILED");
+    }
+}
+
+void col_major_array(xt::pyarray<double, xt::layout_type::column_major>& arg)
+{
+    if (!std::is_same<decltype(arg.template begin<xt::layout_type::column_major>()), double*>::value)
+    {
+        throw std::runtime_error("TEST FAILED");
+    }
+}
+
 PYBIND11_MODULE(xtensor_python_test, m)
 {
     xt::import_numpy();
@@ -197,4 +214,7 @@ PYBIND11_MODULE(xtensor_python_test, m)
     m.def("dtype_to_python", dtype_to_python);
     m.def("dtype_from_python", dtype_from_python);
     m.def("char_array", char_array);
+
+    m.def("col_major_array", col_major_array);
+    m.def("row_major_tensor", row_major_tensor);
 }
