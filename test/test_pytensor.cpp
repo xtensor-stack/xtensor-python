@@ -51,6 +51,18 @@ namespace xt
         }
     }
 
+    TEST(pytensor, from_shape)
+    {
+        auto arr = pytensor<double, 3>::from_shape({5, 2, 6});
+        auto exp_shape = std::vector<std::size_t>{5, 2, 6};
+        EXPECT_TRUE(std::equal(arr.shape().begin(), arr.shape().end(), exp_shape.begin()));
+        EXPECT_EQ(arr.shape().size(), 3);
+        EXPECT_EQ(arr.size(), 5 * 2 * 6);
+        using pyt3 = pytensor<double, 3>;
+        std::vector<std::size_t> shp = std::vector<std::size_t>{5, 2};
+        EXPECT_THROW(pyt3::from_shape(shp), std::runtime_error);
+    }
+
     TEST(pytensor, strided_constructor)
     {
         central_major_result<container_type> cmr;
@@ -211,8 +223,12 @@ namespace xt
     {
         pytensor<int, 2> a = {{1,2,3}, {4,5,6}};
         auto ptr = a.data();
+        a.reshape(a.shape()); // compilation check
         a.reshape({1, 6});
         EXPECT_EQ(ptr, a.data());
-        EXPECT_THROW(a.reshape({6}), std::runtime_error);
+        EXPECT_THROW(a.reshape(std::vector<std::size_t>{6}), std::runtime_error);
+        // note this throws because std array has only 1 element initialized
+        // and the second element is `0`.
+        EXPECT_THROW(a.reshape({6, 5}), std::runtime_error);
     }
 }

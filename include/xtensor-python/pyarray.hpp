@@ -346,6 +346,9 @@ namespace xt
         explicit pyarray(const shape_type& shape, const strides_type& strides, const_reference value);
         explicit pyarray(const shape_type& shape, const strides_type& strides);
 
+        template <class S = shape_type>
+        static pyarray from_shape(S&& s);
+
         pyarray(const self_type& rhs);
         self_type& operator=(const self_type& rhs);
 
@@ -605,6 +608,18 @@ namespace xt
     {
         init_array(shape, strides);
     }
+
+    /**
+     * Allocates and returns an pyarray with the specified shape.
+     * @param shape the shape of the pyarray
+     */
+    template <class T, layout_type L>
+    template <class S>
+    inline pyarray<T, L> pyarray<T, L>::from_shape(S&& shape)
+    {
+        auto shp = xtl::forward_sequence<shape_type>(shape);
+        return self_type(shp);
+    }
     //@}
 
     /**
@@ -726,6 +741,12 @@ namespace xt
                                    static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(this->python_array())),
                                        static_cast<size_type>(PyArray_NDIM(this->python_array())));
+
+        if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L))
+        {
+            throw std::runtime_error("NumPy: passing container with bad strides for layout (is it a view?).");
+        }
+
         m_backstrides = backstrides_type(*this);
         m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
                                  this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));

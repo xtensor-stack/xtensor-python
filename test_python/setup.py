@@ -46,6 +46,7 @@ ext_modules = [
         ['main.cpp'],
         include_dirs=[
             # Path to pybind11 headers
+            '../include/',
             get_pybind_include(),
             get_pybind_include(user=True),
             # Path to numpy headers

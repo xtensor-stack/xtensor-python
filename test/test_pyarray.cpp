@@ -52,6 +52,15 @@ namespace xt
         }
     }
 
+    TEST(pyarray, from_shape)
+    {
+        auto arr = pyarray<double>::from_shape({5, 2, 6});
+        auto exp_shape = std::vector<std::size_t>{5, 2, 6};
+        EXPECT_TRUE(std::equal(arr.shape().begin(), arr.shape().end(), exp_shape.begin()));
+        EXPECT_EQ(arr.shape().size(), 3);
+        EXPECT_EQ(arr.size(), 5 * 2 * 6);
+    }
+
     TEST(pyarray, strided_constructor)
     {
         central_major_result<> cmr;
