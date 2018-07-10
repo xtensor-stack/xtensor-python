@@ -82,9 +82,6 @@ namespace xt
         using stepper = typename iterable_base::stepper;
         using const_stepper = typename iterable_base::const_stepper;
 
-        static constexpr layout_type static_layout = layout_type::dynamic;
-        static constexpr bool contiguous_layout = false;
-
         template <class S = shape_type>
         void resize(const S& shape);
         template <class S = shape_type>
