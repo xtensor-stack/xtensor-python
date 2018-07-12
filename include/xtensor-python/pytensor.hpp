@@ -342,7 +342,7 @@ namespace xt
      */
     template <class T, std::size_t N, layout_type L>
     inline pytensor<T, N, L>::pytensor(const self_type& rhs)
-        : self_type()
+        : base_type(), semantic_base(rhs)
     {
         init_tensor(rhs.shape(), rhs.strides());
         std::copy(rhs.storage().cbegin(), rhs.storage().cend(), this->storage().begin());
@@ -416,7 +416,7 @@ namespace xt
         auto dtype = pybind11::detail::npy_format_descriptor<T>::dtype();
 
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
-            PyArray_NewFromDescr(&PyArray_Type, (PyArray_Descr*) dtype.ptr(), static_cast<int>(shape.size()),
+            PyArray_NewFromDescr(&PyArray_Type, (PyArray_Descr*) dtype.release().ptr(), static_cast<int>(shape.size()),
                         const_cast<npy_intp*>(shape.data()), python_strides,
                         nullptr, flags, nullptr));
 
