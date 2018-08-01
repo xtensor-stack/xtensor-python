@@ -34,7 +34,7 @@ namespace xt
         using vector_type = uvector<int>;
         using size_type = typename C::value_type;
         using shape_type = C;
-        using strides_type = C;
+        using strides_type = get_strides_t<shape_type>;
 
         using assigner_type = std::vector<std::vector<vector_type>>;
 
