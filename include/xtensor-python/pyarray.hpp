@@ -288,7 +288,7 @@ namespace xt
     {
         using storage_type = xbuffer_adaptor<T*>;
         using shape_type = std::vector<typename storage_type::size_type>;
-        using strides_type = shape_type;
+        using strides_type = std::vector<typename storage_type::difference_type>;
         using backstrides_type = pyarray_backstrides<pyarray<T, L>>;
         using inner_shape_type = xbuffer_adaptor<std::size_t*>;
         using inner_strides_type = pystrides_adaptor<sizeof(T)>;
