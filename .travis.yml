@@ -1,5 +1,5 @@
 language: cpp
-dist: precise
+dist: trusty
 matrix:
   include:
     - os: linux
@@ -31,8 +31,16 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.6
           packages:
+            - g++-6
+      env: COMPILER=gcc GCC=6 PY=3
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.9
             - clang-3.6
       env: COMPILER=clang CLANG=3.6 PY=3
     - os: linux
@@ -40,19 +48,40 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.7
+            - llvm-toolchain-trusty-3.9
           packages:
-            - clang-3.7
-      env: COMPILER=clang CLANG=3.7 PY=3
+            - g++-4.9
+            - clang-3.9
+      env: COMPILER=clang CLANG=3.9 PY=3
     - os: linux
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
+            - llvm-toolchain-trusty-4.0
           packages:
-            - clang-3.8
-      env: COMPILER=clang CLANG=3.8 PY=3
+            - g++-4.9
+            - clang-4.0
+      env: COMPILER=clang CLANG=4.0 PY=3
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - g++-4.9
+            - clang-5.0
+      env: COMPILER=clang CLANG=5.0 PY=3
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-trusty-6.0
+          packages:
+            - clang-6.0
+      env: COMPILER=clang CLANG=6.0 PY=3
     - os: osx
       osx_image: xcode8
       compiler: clang
@@ -85,8 +114,10 @@ install:
       fi
     - if [[ "$PY" == "3" ]]; then
           wget "http://repo.continuum.io/miniconda/Miniconda3-$MINCONDA_VERSION-$MINCONDA_OS.sh" -O miniconda.sh;
+          PY_EXE=$HOME/miniconda/bin/python3.6;
       else
           wget "http://repo.continuum.io/miniconda/Miniconda2-$MINCONDA_VERSION-$MINCONDA_OS.sh" -O miniconda.sh;
+          PY_EXE=$HOME/miniconda/bin/python2.7;
       fi
     - bash miniconda.sh -b -p $HOME/miniconda
     - export PATH="$HOME/miniconda/bin:$PATH"
@@ -97,8 +128,8 @@ install:
     - conda info -a
     - conda install pytest numpy pybind11==2.2.1 -c conda-forge
     - conda install cmake gtest -c conda-forge
-    - conda install xtensor==0.17.0 -c QuantStack
-    - cmake -D BUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda .
+    - conda install xtensor==0.17.3 -c QuantStack
+    - cmake -D BUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
     - make -j2 test_xtensor_python
     - make install
 
