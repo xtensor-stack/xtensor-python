@@ -31,6 +31,7 @@ namespace pybind11
 {
     namespace detail
     {
+#ifdef PYBIND11_DESCR // The macro is removed from pybind11 since 2.3
         template <class T, xt::layout_type L>
         struct handle_type_name<xt::pyarray<T, L>>
         {
@@ -39,6 +40,7 @@ namespace pybind11
                 return _("numpy.ndarray[") + npy_format_descriptor<T>::name() + _("]");
             }
         };
+#endif
 
         template <typename T, xt::layout_type L>
         struct pyobject_caster<xt::pyarray<T, L>>
@@ -63,7 +65,11 @@ namespace pybind11
                 return src.inc_ref();
             }
 
+#ifdef PYBIND11_DESCR // The macro is removed from pybind11 since 2.3
             PYBIND11_TYPE_CASTER(type, handle_type_name<type>::name());
+#else
+            PYBIND11_TYPE_CASTER(type, _("numpy.ndarray[") + npy_format_descriptor<T>::name + _("]"));
+#endif
         };
 
         // Type caster for casting ndarray to xexpression<pyarray>
