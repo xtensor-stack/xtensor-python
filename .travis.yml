@@ -104,6 +104,7 @@ before_install:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         export CXX=clang++ CC=clang PYTHONHOME=$HOME/miniconda;
       fi
+    - PYBIND11_VERSION=${PYBIND11_VERSION:-2.2.1}
 
 install:
     # Define the version of miniconda to download
@@ -126,8 +127,26 @@ install:
     - conda update -q conda
     # Useful for debugging any issues with conda
     - conda info -a
-    - conda install pytest numpy pybind11==2.2.1 -c conda-forge
+    - conda install pytest numpy -c conda-forge
     - conda install cmake gtest -c conda-forge
+    - |
+      if [[ "$PYBIND11_VERSION" == "master" ]]; then
+        conda_root=$(cd $(dirname $(which conda))/.. && pwd)
+        mkdir -p $conda_root/tmp
+        cd $conda_root/tmp
+        curl -sSL -o pybind11.tar.gz https://github.com/pybind/pybind11/archive/master.tar.gz
+        rm -rf pybind11-master
+        tar xf pybind11.tar.gz
+        cd pybind11-master
+        python setup.py install
+        mkdir -p build
+        cd build
+        cmake -DPYBIND11_TEST=OFF -DPYTHON_EXECUTABLE:FILEPATH=`which python` -DCMAKE_INSTALL_PREFIX=${conda_root} ..
+        make install
+        cd $TRAVIS_BUILD_DIR
+      else
+        conda install pybind11==${PYBIND11_VERSION} -c conda-forge
+      fi
     - conda install xtensor==0.17.3 -c QuantStack
     - cmake -D BUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
     - make -j2 test_xtensor_python
