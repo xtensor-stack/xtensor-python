@@ -157,10 +157,12 @@ namespace pybind11
                 return cast_impl(src, policy, parent);
             }
 
+#ifdef PYBIND11_DESCR // The macro is removed from pybind11 since 2.3
             static PYBIND11_DESCR name()
             {
                 return _("xt::xtensor");
             }
+#endif
 
             template <typename T>
             using cast_op_type = cast_op_type<T>;
