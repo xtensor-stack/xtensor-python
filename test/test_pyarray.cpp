@@ -11,6 +11,7 @@
 #include "xtensor-python/pyarray.hpp"
 
 #include "xtensor/xarray.hpp"
+#include "xtensor/xview.hpp"
 
 #include "test_common.hpp"
 
@@ -240,5 +241,12 @@ namespace xt
         std::vector<std::size_t> sc2 = {6};
         EXPECT_TRUE(std::equal(sc2.begin(), sc2.end(), a.shape().begin()) && a.shape().size() == 1);
         EXPECT_EQ(ptr, a.data());
+    }
+
+    TEST(pyarray, view)
+    {
+        xt::pyarray<int> arr = xt::zeros<int>({ 10 });
+        auto v = xt::view(arr, xt::all());
+        EXPECT_EQ(v(0), 0.);
     }
 }

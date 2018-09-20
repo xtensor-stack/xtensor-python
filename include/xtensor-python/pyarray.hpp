@@ -328,6 +328,7 @@ namespace xt
         using const_reference = typename base_type::const_reference;
         using pointer = typename base_type::pointer;
         using size_type = typename base_type::size_type;
+        using difference_type = typename base_type::difference_type;
         using shape_type = typename base_type::shape_type;
         using strides_type = typename base_type::strides_type;
         using backstrides_type = typename base_type::backstrides_type;
@@ -745,7 +746,7 @@ namespace xt
     {
         m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
                                    static_cast<size_type>(PyArray_NDIM(this->python_array())));
-        m_strides = inner_strides_type(reinterpret_cast<size_type*>(PyArray_STRIDES(this->python_array())),
+        m_strides = inner_strides_type(reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
                                        static_cast<size_type>(PyArray_NDIM(this->python_array())));
 
         if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L))

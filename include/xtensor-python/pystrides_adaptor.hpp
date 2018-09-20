@@ -27,7 +27,7 @@ namespace xt
     {
     public:
 
-        using value_type = std::size_t;
+        using value_type = std::ptrdiff_t;
         using const_reference = value_type;
         using const_pointer = const value_type*;
         using size_type = std::size_t;
