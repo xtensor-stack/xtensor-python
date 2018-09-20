@@ -11,6 +11,7 @@
 #include "xtensor-python/pytensor.hpp"
 
 #include "xtensor/xtensor.hpp"
+#include "xtensor/xview.hpp"
 
 #include "test_common.hpp"
 
@@ -230,5 +231,12 @@ namespace xt
         // note this throws because std array has only 1 element initialized
         // and the second element is `0`.
         EXPECT_THROW(a.reshape({6, 5}), std::runtime_error);
+    }
+
+    TEST(pytensor, view)
+    {
+        xt::pytensor<int, 1> arr = xt::zeros<int>({ 10 });
+        auto v = xt::view(arr, xt::all());
+        EXPECT_EQ(v(0), 0.);
     }
 }
