@@ -29,9 +29,6 @@
 // Required because pyconfig.hpp defines copysign to _copysign
 #undef copysign
 
-// TODO: remove this workaround when xtensor 0.18 is released
-#include "xtl/xmeta_utils.hpp"
-
 #include <cmath>
 #include "xtensor/xcontainer.hpp"
 
