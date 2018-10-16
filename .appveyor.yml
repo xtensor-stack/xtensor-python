@@ -24,7 +24,7 @@ install:
   - conda info -a
   - conda install gtest cmake -c conda-forge
   - conda install pytest numpy pybind11==2.2.1 -c conda-forge
-  - conda install xtensor==0.17.3 -c QuantStack
+  - conda install xtensor==0.18.0 -c QuantStack
   - "set PYTHONHOME=%MINICONDA%"
   - cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\Library -D BUILD_TESTS=ON -D PYTHON_EXECUTABLE=%MINICONDA%\\python.exe .
   - nmake test_xtensor_python
