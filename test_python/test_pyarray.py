@@ -146,3 +146,18 @@ class XtensorTest(TestCase):
         varF = np.arange(50, dtype=float).reshape(2, 5, 5, order='F')
         xt.col_major_array(varF)
         xt.col_major_array(varF[:, :, 0]) # still col major!
+
+class AttributeTest(TestCase):
+
+    def setUp(self):
+        self.c = xt.C()
+
+    def test_copy(self):
+        arr = self.c.copy
+        arr[0] = 1
+        self.assertEqual([0.]*4, self.c.copy.tolist())
+
+    def test_reference(self):
+        arr = self.c.ref
+        arr[0] = 1
+        self.assertEqual([1.] + [0.]*3, self.c.ref.tolist())
