@@ -12,6 +12,7 @@
 
 #include "pybind11/numpy.h"
 
+#include "xtensor/xarray.hpp"
 #define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyarray.hpp"
 

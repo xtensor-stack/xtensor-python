@@ -8,10 +8,10 @@
 
 #include "gtest/gtest.h"
 
-#include "xtensor-python/pytensor.hpp"
-
 #include "xtensor/xtensor.hpp"
 #include "xtensor/xview.hpp"
+
+#include "xtensor-python/pytensor.hpp"
 
 #include "test_common.hpp"
 
