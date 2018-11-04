@@ -744,6 +744,11 @@ namespace xt
     template <class T, layout_type L>
     inline void pyarray<T, L>::init_from_python()
     {
+        if (!static_cast<bool>(*this))
+        {
+            return;
+        }
+        
         m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
                                    static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_strides = inner_strides_type(reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
