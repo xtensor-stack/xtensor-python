@@ -442,6 +442,11 @@ namespace xt
     template <class T, std::size_t N, layout_type L>
     inline void pytensor<T, N, L>::init_from_python()
     {
+        if (!static_cast<bool>(*this))
+        {
+            return;
+        }
+        
         if (PyArray_NDIM(this->python_array()) != N)
         {
             throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");
