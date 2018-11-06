@@ -8,10 +8,10 @@
 
 #include "gtest/gtest.h"
 
+#include "xtensor-python/pyarray.hpp"
+
 #include "xtensor/xarray.hpp"
 #include "xtensor/xview.hpp"
-
-#include "xtensor-python/pyarray.hpp"
 
 #include "test_common.hpp"
 
