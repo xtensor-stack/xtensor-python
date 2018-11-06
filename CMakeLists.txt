@@ -12,8 +12,8 @@ project(xtensor-python)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 set(XTENSOR_PYTHON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Versionning
-# ===========
+# Versioning
+# ==========
 
 set(XTENSOR_PYTHON_CONFIG_FILE
     "${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/xtensor_python_config.hpp")

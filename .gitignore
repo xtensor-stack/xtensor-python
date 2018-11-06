@@ -39,6 +39,7 @@ test/CMakeCache.txt
 test/Makefile
 test/CMakeFiles/
 test/cmake_install.cmake
+.pytest_cache/
 
 # Documentation build artefacts
 docs/CMakeCache.txt

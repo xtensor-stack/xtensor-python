@@ -122,6 +122,16 @@ struct B
     int b;
 };
 
+class C
+{
+public:
+    using array_type = xt::xarray<double, xt::layout_type::row_major>;
+    C() : m_array{0, 0, 0, 0} {}
+    array_type & array() { return m_array; }
+private:
+    array_type m_array;
+};
+
 xt::pyarray<A> dtype_to_python()
 {
     A a1{123, 321, 'a', {1, 2, 3}};
@@ -217,4 +227,16 @@ PYBIND11_MODULE(xtensor_python_test, m)
 
     m.def("col_major_array", col_major_array);
     m.def("row_major_tensor", row_major_tensor);
+
+    py::class_<C>(m, "C")
+        .def(py::init<>())
+        .def_property_readonly(
+            "copy",
+            [](C & self) { return self.array(); }
+        )
+        .def_property_readonly(
+            "ref",
+            [](C & self) -> C::array_type & { return self.array(); }
+        )
+    ;
 }

@@ -39,7 +39,7 @@ namespace pybind11
             std::transform(src.strides().begin(), src.strides().end(),
                            python_strides.begin(), [](auto v) {
                 return sizeof(typename Type::value_type) * v;
-           });
+            });
 
             std::vector<std::size_t> python_shape(src.shape().size());
             std::copy(src.shape().begin(), src.shape().end(), python_shape.begin());
@@ -162,6 +162,8 @@ namespace pybind11
             {
                 return _("xt::xtensor");
             }
+#else
+            static constexpr auto name = _("xt::xtensor");
 #endif
 
             template <typename T>
