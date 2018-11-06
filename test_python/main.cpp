@@ -239,4 +239,7 @@ PYBIND11_MODULE(xtensor_python_test, m)
             [](C & self) -> C::array_type & { return self.array(); }
         )
     ;
+
+    m.def("simple_array", [](xt::pyarray<int>) { return 1; } );
+    m.def("simple_tensor", [](xt::pytensor<int, 1>) { return 2; } );
 }

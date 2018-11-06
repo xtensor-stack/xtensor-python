@@ -147,6 +147,13 @@ class XtensorTest(TestCase):
         xt.col_major_array(varF)
         xt.col_major_array(varF[:, :, 0]) # still col major!
 
+    def test_bad_argument_call(self):
+        with self.assertRaises(TypeError):
+            xt.simple_array("foo")
+
+        with self.assertRaises(TypeError):
+            xt.simple_tensor("foo")
+
 class AttributeTest(TestCase):
 
     def setUp(self):
