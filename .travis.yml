@@ -147,7 +147,7 @@ install:
       else
         conda install pybind11==${PYBIND11_VERSION} -c conda-forge
       fi
-    - conda install xtensor==0.18.3 -c QuantStack
+    - conda install xtensor==0.18.3 -c conda-forge
     - cmake -D BUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
     - make -j2 test_xtensor_python
     - make install
