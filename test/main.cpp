@@ -6,30 +6,29 @@
 * The full license is in the file LICENSE, distributed with this software. *
 ****************************************************************************/
 
-// Required to avoid the error "std does not have memeber copysign"
+// Required to avoid the error "std does not have member copysign"
 #include <cmath>
-#include <Python.h>
 
-#include "pybind11/numpy.h"
+#include "gtest/gtest.h"
+
+#include <pybind11/embed.h>
 
 #define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyarray.hpp"
 
-#include "gtest/gtest.h"
-#include <iostream>
+namespace py = pybind11;
 
 int main(int argc, char* argv[])
 {
-    // Initialize all the things (google-test and Python interpreter)
-    Py_Initialize();
+    // Initialize all the things (Python, numpy, gtest)
+    py::scoped_interpreter guard{};
     xt::import_numpy();
     ::testing::InitGoogleTest(&argc, argv);
 
     // Run test suite
     int ret = RUN_ALL_TESTS();
 
-    // Closure of the Python interpreter
-    Py_Finalize();
+    // Return test results
     return ret;
 }
 
