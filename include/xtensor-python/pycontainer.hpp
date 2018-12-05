@@ -378,7 +378,7 @@ namespace xt
     inline void pycontainer<D>::resize(const S& shape, const strides_type& strides)
     {
         detail::check_dims<shape_type>::run(shape.size());
-        derived_type tmp(xtl::forward_sequence<shape_type>(shape), strides);
+        derived_type tmp(xtl::forward_sequence<shape_type, decltype(shape)>(shape), strides);
         *static_cast<derived_type*>(this) = std::move(tmp);
     }
 

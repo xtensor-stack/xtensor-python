@@ -334,7 +334,7 @@ namespace xt
     inline pytensor<T, N, L> pytensor<T, N, L>::from_shape(S&& shape)
     {
         detail::check_dims<shape_type>::run(shape.size());
-        auto shp = xtl::forward_sequence<shape_type>(shape);
+        auto shp = xtl::forward_sequence<shape_type, S>(shape);
         return self_type(shp);
     }
     //@}
@@ -378,7 +378,7 @@ namespace xt
     inline pytensor<T, N, L>::pytensor(const xexpression<E>& e)
         : base_type()
     {
-        shape_type shape = xtl::forward_sequence<shape_type>(e.derived_cast().shape());
+        shape_type shape = xtl::forward_sequence<shape_type, decltype(e.derived_cast().shape())>(e.derived_cast().shape());
         strides_type strides = xtl::make_sequence<strides_type>(N, size_type(0));
         compute_strides(shape, layout_type::row_major, strides);
         init_tensor(shape, strides);
