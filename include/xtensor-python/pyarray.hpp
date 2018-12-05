@@ -624,7 +624,7 @@ namespace xt
     template <class S>
     inline pyarray<T, L> pyarray<T, L>::from_shape(S&& shape)
     {
-        auto shp = xtl::forward_sequence<shape_type>(shape);
+        auto shp = xtl::forward_sequence<shape_type, S>(shape);
         return self_type(shp);
     }
     //@}
@@ -679,7 +679,7 @@ namespace xt
         : base_type()
     {
         // TODO: prevent intermediary shape allocation
-        shape_type shape = xtl::forward_sequence<shape_type>(e.derived_cast().shape());
+        shape_type shape = xtl::forward_sequence<shape_type, decltype(e.derived_cast().shape())>(e.derived_cast().shape());
         strides_type strides = xtl::make_sequence<strides_type>(shape.size(), size_type(0));
         compute_strides(shape, layout_type::row_major, strides);
         init_array(shape, strides);
