@@ -463,7 +463,7 @@ namespace xt
         }
 
         m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                 this->get_min_stride() * static_cast<size_type>(PyArray_SIZE(this->python_array())));
+                                 this->get_buffer_size());
     }
 
     template <class T, std::size_t N, layout_type L>

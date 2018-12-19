@@ -249,4 +249,11 @@ namespace xt
         auto v = xt::view(arr, xt::all());
         EXPECT_EQ(v(0), 0.);
     }
+
+    TEST(pyarray, zerod_copy)
+    {
+        xt::pyarray<int> arr = 2;
+        xt::pyarray<int> arr2(arr);
+        EXPECT_EQ(arr(), arr2());
+    }
 }
