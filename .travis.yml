@@ -128,7 +128,7 @@ install:
     # Useful for debugging any issues with conda
     - conda info -a
     - conda install pytest numpy -c conda-forge
-    - conda install cmake gtest -c conda-forge
+    - conda install cmake -c conda-forge
     - |
       if [[ "$PYBIND11_VERSION" == "master" ]]; then
         conda_root=$(cd $(dirname $(which conda))/.. && pwd)
@@ -147,8 +147,8 @@ install:
       else
         conda install pybind11==${PYBIND11_VERSION} -c conda-forge
       fi
-    - conda install xtensor==0.19.0 -c conda-forge
-    - cmake -D BUILD_TESTS=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
+    - conda install xtensor==0.19.2 -c conda-forge
+    - cmake -D DOWNLOAD_GTEST=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
     - make -j2 test_xtensor_python
     - make install
 
