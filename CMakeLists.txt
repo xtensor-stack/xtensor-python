@@ -54,13 +54,11 @@ set(XTENSOR_PYTHON_HEADERS
 )
 
 add_library(xtensor-python INTERFACE)
-target_include_directories(xtensor-python INTERFACE $<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR}>
-                                                    $<BUILD_INTERFACE:${pybind11_INCLUDE_DIRS}>
-                                                    $<BUILD_INTERFACE:${NUMPY_INCLUDE_DIRS}>
-                                                    $<INSTALL_INTERFACE:include>)
+target_include_directories(xtensor-python INTERFACE
+    "$<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR};${pybind11_INCLUDE_DIRS};${NUMPY_INCLUDE_DIRS}>"
+    $<INSTALL_INTERFACE:include>)
 target_link_libraries(xtensor-python INTERFACE xtensor)
 get_target_property(inc_dir xtensor-python INTERFACE_INCLUDE_DIRECTORIES)
-message(STATUS "${inc_dir}")
 
 OPTION(BUILD_TESTS "xtensor test suite" OFF)
 OPTION(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
