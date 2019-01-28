@@ -151,6 +151,7 @@ install:
     - cmake -D DOWNLOAD_GTEST=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
     - make -j2 test_xtensor_python
     - make install
+    - rm -rf test/googletest-src
 
 script:
     - py.test -s
