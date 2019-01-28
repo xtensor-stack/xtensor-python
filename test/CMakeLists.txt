@@ -68,7 +68,7 @@ if (DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     # Add googletest directly to our build. This defines
     # the gtest and gtest_main targets.
     add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
-                     ${CMAKE_CURRENT_BINARY_DIR}/googletest-build)
+                     ${CMAKE_CURRENT_BINARY_DIR}/googletest-build EXCLUDE_FROM_ALL)
 
     set(GTEST_INCLUDE_DIRS "${gtest_SOURCE_DIR}/include")
     set(GTEST_BOTH_LIBRARIES gtest_main gtest)
@@ -87,13 +87,12 @@ set(XTENSOR_PYTHON_TESTS
     test_pyvectorize.cpp
 )
 
-set(XTENSOR_PYTHON_TARGET test_xtensor_python)
-add_executable(${XTENSOR_PYTHON_TARGET} ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON_HEADERS})
-target_link_libraries(${XTENSOR_PYTHON_TARGET} xtensor-python ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES})
+add_executable(test_xtensor_python ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON_HEADERS})
+target_link_libraries(test_xtensor_python xtensor-python ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES})
 
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
-    add_dependencies(${XTENSOR_PYTHON_TARGET} gtest_main)
+    add_dependencies(test_xtensor_python gtest_main)
 endif()
 
-add_custom_target(xtest COMMAND ./test_xtensor_python DEPENDS ${XTENSOR_PYTHON_TARGET})
+add_custom_target(xtest COMMAND ./test_xtensor_python DEPENDS test_xtensor_python)
 
