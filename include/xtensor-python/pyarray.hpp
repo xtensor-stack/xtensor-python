@@ -293,6 +293,9 @@ namespace xt
     struct xcontainer_inner_types<pyarray<T, L>>
     {
         using storage_type = xbuffer_adaptor<T*>;
+        using reference = typename storage_type::reference;
+        using const_reference = typename storage_type::const_reference;
+        using size_type = typename storage_type::size_type;
         using shape_type = std::vector<typename storage_type::size_type>;
         using strides_type = std::vector<typename storage_type::difference_type>;
         using backstrides_type = pyarray_backstrides<pyarray<T, L>>;
