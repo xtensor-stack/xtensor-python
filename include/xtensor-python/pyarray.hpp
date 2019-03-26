@@ -256,11 +256,14 @@ namespace xt
         using array_type = A;
         using value_type = typename array_type::size_type;
         using const_reference = value_type;
+        using reference = const_reference;
         using const_pointer = const value_type*;
+        using pointer = const_pointer;
         using size_type = typename array_type::size_type;
         using difference_type = typename array_type::difference_type;
 
         using const_iterator = pybackstrides_iterator<self_type>;
+        using iterator = const_iterator;
 
         pyarray_backstrides() = default;
         pyarray_backstrides(const array_type& a);
