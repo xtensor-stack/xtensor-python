@@ -264,6 +264,8 @@ namespace xt
 
         using const_iterator = pybackstrides_iterator<self_type>;
         using iterator = const_iterator;
+        using reverse_iterator = std::reverse_iterator<iterator>;
+        using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
         pyarray_backstrides() = default;
         pyarray_backstrides(const array_type& a);
@@ -280,6 +282,11 @@ namespace xt
         const_iterator end() const;
         const_iterator cbegin() const;
         const_iterator cend() const;
+
+        const_reverse_iterator rbegin() const;
+        const_reverse_iterator rend() const;
+        const_reverse_iterator crbegin() const;
+        const_reverse_iterator crend() const;
 
     private:
 
@@ -470,6 +477,30 @@ namespace xt
     inline auto pyarray_backstrides<A>::cend() const -> const_iterator
     {
         return const_iterator(this, size());
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::rbegin() const -> const_reverse_iterator
+    {
+        return crbegin();
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::rend() const -> const_reverse_iterator
+    {
+        return crend();
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::crbegin() const -> const_reverse_iterator
+    {
+        return const_reverse_iterator(end());
+    }
+
+    template <class A>
+    inline auto pyarray_backstrides<A>::crend() const -> const_reverse_iterator
+    {
+        return const_reverse_iterator(begin());
     }
 
     /**************************
@@ -760,7 +791,7 @@ namespace xt
         m_strides = inner_strides_type(reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
                                        static_cast<size_type>(PyArray_NDIM(this->python_array())));
 
-        if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L))
+        if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L, 1))
         {
             throw std::runtime_error("NumPy: passing container with bad strides for layout (is it a view?).");
         }
