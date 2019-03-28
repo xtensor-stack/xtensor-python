@@ -181,6 +181,15 @@ void col_major_array(xt::pyarray<double, xt::layout_type::column_major>& arg)
     }
 }
 
+template <class T>
+using ndarray = xt::pyarray<T, xt::layout_type::row_major>;
+
+void test_rm(ndarray<int>const& x)
+{
+    ndarray<int> y = x;
+    ndarray<int> z = xt::zeros<int>({10});
+}
+
 PYBIND11_MODULE(xtensor_python_test, m)
 {
     xt::import_numpy();
@@ -205,6 +214,8 @@ PYBIND11_MODULE(xtensor_python_test, m)
     m.def("compare_shapes", [](const xt::pyarray<double>& a, const xt::pyarray<double>& b) {
         return a.shape() == b.shape();
     });
+
+    m.def("test_rm", test_rm);
 
     m.def("int_overload", int_overload<uint8_t>);
     m.def("int_overload", int_overload<int8_t>);

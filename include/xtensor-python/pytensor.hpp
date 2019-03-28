@@ -460,7 +460,7 @@ namespace xt
                        [](auto v) { return v / sizeof(T); });
         adapt_strides(m_shape, m_strides, m_backstrides);
 
-        if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L))
+        if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L, 1))
         {
             throw std::runtime_error("NumPy: passing container with bad strides for layout (is it a view?).");
         }

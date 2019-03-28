@@ -19,6 +19,21 @@ namespace xt
 {
     using container_type = std::vector<npy_intp>;
 
+    template <class T>
+    using ndarray = pyarray<T, xt::layout_type::row_major>;
+
+    void test1 (ndarray<int>const& x)
+    {
+        ndarray<int> y = x;
+        ndarray<int> z = xt::zeros<int>({10});
+    }
+
+    double compute(ndarray<double> const& xs)
+    {
+        auto v = xt::view (xs, 0, xt::all());
+        return v(0);
+    }
+
     TEST(pyarray, initializer_constructor)
     {
         pyarray<int> t 

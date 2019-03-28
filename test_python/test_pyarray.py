@@ -23,6 +23,9 @@ import numpy as np
 
 class XtensorTest(TestCase):
 
+    def test_rm(self):
+        xt.test_rm(np.array([10], dtype=int))
+
     def test_example1(self):
         self.assertEqual(4, xt.example1([4, 5, 6]))
 
