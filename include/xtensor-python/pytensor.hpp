@@ -24,7 +24,7 @@
 
 namespace xt
 {
-    template <class T, std::size_t N, layout_type L = layout_type::dynamic>
+    template <class T, std::size_t N, layout_type L = layout_type::row_major>
     class pytensor;
 }
 
@@ -431,7 +431,7 @@ namespace xt
 
         if (!tmp)
         {
-            throw std::runtime_error("NumPy: unable to create ndarray");
+            throw std::runtime_error("pytensor: unable to create ndarray");
         }
 
         this->m_ptr = tmp.release().ptr();
@@ -452,7 +452,7 @@ namespace xt
         
         if (PyArray_NDIM(this->python_array()) != N)
         {
-            throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");
+            throw std::runtime_error("pytensor: ndarray has incorrect number of dimensions");
         }
 
         std::copy(PyArray_DIMS(this->python_array()), PyArray_DIMS(this->python_array()) + N, m_shape.begin());
@@ -462,7 +462,7 @@ namespace xt
 
         if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L, 1))
         {
-            throw std::runtime_error("NumPy: passing container with bad strides for layout (is it a view?).");
+            throw std::runtime_error("pytensor: passing container with wrong strides for static layout. If you are trying to pass a view, set the pytensor layout template parameter to `layout_type::dynamic`, or `layout_type::column_major` for col major.");
         }
 
         m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
