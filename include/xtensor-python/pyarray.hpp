@@ -320,10 +320,12 @@ namespace xt
      * @class pyarray
      * @brief Multidimensional container providing the xtensor container semantics to a numpy array.
      *
-     * pyarray is similar to the xarray container in that it has a dynamic dimensionality. Reshapes of
-     * a pyarray container are reflected in the underlying numpy array.
+     * pyarray is similar to the xarray container in that it has a dynamic dimensionality.
+     * Reshapes of a pyarray container are reflected in the underlying numpy array.
      *
      * @tparam T The type of the element stored in the pyarray.
+     * @tparam L Static layout of the pyarray
+     *
      * @sa pytensor
      */
     template <class T, layout_type L>
