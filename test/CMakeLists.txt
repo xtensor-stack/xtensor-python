@@ -21,8 +21,6 @@ endif ()
 message(STATUS "Forcing tests build type to Release")
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 
-include(CheckCXXCompilerFlag)
-
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
 include(set_compiler_flag.cmake)

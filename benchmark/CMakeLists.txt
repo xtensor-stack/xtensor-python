@@ -9,44 +9,53 @@
 message(STATUS "Forcing tests build type to Release")
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 
-include(CheckCXXCompilerFlag)
-
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -Wunused-parameter -Wextra -Wreorder -Wconversion")
-    CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
+include(${CMAKE_CURRENT_LIST_DIR}/test/set_compiler_flag.cmake)
+if(CPP17)
+  # User requested C++17, but compiler might not oblige.
+  set_compiler_flag(
+    _cxx_std_flag CXX
+    "-std=c++17"  # this should work with GNU, Intel, PGI
+    "/std:c++17"  # this should work with MSVC
+  )
+  if(_cxx_std_flag)
+    message(STATUS "Building with C++17")
+  endif()
+else()
+  set_compiler_flag(
+    _cxx_std_flag CXX REQUIRED
+    "-std=c++14"  # this should work with GNU, Intel, PGI
+    "/std:c++14"  # this should work with MSVC
+  )
+  message(STATUS "Building with C++14")
+endif()
 
-    if (HAS_CPP14_FLAG)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-    else()
-        message(FATAL_ERROR "Unsupported compiler -- xtensor requires C++14 support!")
-    endif()
+if(NOT _cxx_std_flag)
+  message(FATAL_ERROR "xtensor-python needs a C++14-compliant compiler.")
+endif()
+
+# Check for Link Time Optimization support
+set_compiler_flag(
+  _lto_flag CXX
+  "-flto"  # this works with GNU and Clang
+  "-ipo"  # this works with Intel
+)
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Intel" AND NOT WIN32))
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx_std_flag} -march=native -Wunused-parameter -Wextra -Wreorder -Wconversion")
 
     # Enable link time optimization and set the default symbol
     # visibility to hidden (very important to obtain small binaries)
-    if (NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+    if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
         # Default symbol visibility
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
-
         # Check for Link Time Optimization support
-        # (GCC/Clang)
-        CHECK_CXX_COMPILER_FLAG("-flto" HAS_LTO_FLAG)
-        if (HAS_LTO_FLAG)
-            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
-        endif()
-
-        # Intel equivalent to LTO is called IPO
-        if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-            CHECK_CXX_COMPILER_FLAG("-ipo" HAS_IPO_FLAG)
-            if (HAS_IPO_FLAG)
-                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ipo")
-            endif()
+        if(_lto_flag)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_lto_flag}")
         endif()
     endif()
-endif()
-
-if(MSVC)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /MP /bigobj")
     set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
     foreach(flag_var
@@ -54,6 +63,28 @@ if(MSVC)
             CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
         string(REPLACE "/MD" "-MT" ${flag_var} "${${flag_var}}")
     endforeach()
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  if(NOT WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx_std_flag} -march=native -Wunused-parameter -Wextra -Wreorder -Wconversion")
+    if(NOT ${U_CMAKE_BUILD_TYPE} MATCHES DEBUG)
+        # Default symbol visibility
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden")
+        # Check for Link Time Optimization support
+        if(_lto_flag)
+            set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_lto_flag}")
+        endif()
+    endif()
+  else() # We are using clang-cl
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx_std_flag} /EHsc /MP /bigobj")
+    set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
+    foreach(flag_var
+            CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        string(REPLACE "/MD" "-MT" ${flag_var} "${${flag_var}}")
+    endforeach()
+  endif()
+else()
+  message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 set(XTENSOR_PYTHON_BENCHMARK
