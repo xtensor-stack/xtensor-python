@@ -11,7 +11,7 @@ set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
-include(${CMAKE_CURRENT_LIST_DIR}/test/set_compiler_flag.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../test/set_compiler_flag.cmake)
 if(CPP17)
   # User requested C++17, but compiler might not oblige.
   set_compiler_flag(
