@@ -12,13 +12,10 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     project(xtensor-python-test)
 
     find_package(pybind11 REQUIRED)
-    set(PYBIND11_INCLUDE_DIR ${pybind11_INCLUDE_DIRS})
 
     find_package(xtensor REQUIRED CONFIG)
-    set(XTENSOR_INCLUDE_DIR ${xtensor_INCLUDE_DIRS})
 
     find_package(xtensor-python REQUIRED CONFIG)
-    set(XTENSOR_PYTHON_INCLUDE_DIR ${xtensor-python_INCLUDE_DIRS})
 endif ()
 
 message(STATUS "Forcing tests build type to Release")
@@ -28,20 +25,45 @@ include(CheckCXXCompilerFlag)
 
 string(TOUPPER "${CMAKE_BUILD_TYPE}" U_CMAKE_BUILD_TYPE)
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -Wunused-parameter -Wextra -Wreorder -Wconversion -fvisibility=hidden")
-    CHECK_CXX_COMPILER_FLAG("-std=c++14" HAS_CPP14_FLAG)
+include(set_compiler_flag.cmake)
 
-    if (HAS_CPP14_FLAG)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-    else()
-        message(FATAL_ERROR "Unsupported compiler -- xtensor requires C++14 support!")
-    endif()
+if(CPP17)
+  # User requested C++17, but compiler might not oblige.
+  set_compiler_flag(
+    _cxx_std_flag CXX
+    "-std=c++17"  # this should work with GNU, Intel, PGI
+    "/std:c++17"  # this should work with MSVC
+  )
+  if(_cxx_std_flag)
+    message(STATUS "Building with C++17")
+  endif()
+else()
+  set_compiler_flag(
+    _cxx_std_flag CXX REQUIRED
+    "-std=c++14"  # this should work with GNU, Intel, PGI
+    "/std:c++14"  # this should work with MSVC
+  )
+  message(STATUS "Building with C++14")
 endif()
 
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /MP /bigobj")
+if(NOT _cxx_std_flag)
+  message(FATAL_ERROR "xtensor-blas needs a C++14-compliant compiler.")
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR (CMAKE_CXX_COMPILER_ID MATCHES "Intel" AND NOT WIN32))
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx_std_flag} -march=native -Wunused-parameter -Wextra -Wreorder -Wconversion -fvisibility=hidden")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx_std_flag} /EHsc /MP /bigobj")
+  set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  if(NOT WIN32)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx_std_flag} -march=native -Wunused-parameter -Wextra -Wreorder -Wconversion -fvisibility-hidden")
+  else() # We are using clang-cl
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_cxx_std_flag} /EHsc /MP /bigobj")
     set(CMAKE_EXE_LINKER_FLAGS /MANIFEST:NO)
+  endif()
+else()
+  message(FATAL_ERROR "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 if (DOWNLOAD_GTEST OR GTEST_SRC_DIR)
