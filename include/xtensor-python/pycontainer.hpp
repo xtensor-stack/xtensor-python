@@ -464,6 +464,8 @@ namespace xt
         {
             std::allocator<long long> a;
             std::allocator<unsigned long long> b;
+            std::allocator<double> c;
+            std::allocator<std::complex<double>> d;
         }
     }
 #endif
