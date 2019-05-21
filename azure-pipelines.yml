@@ -93,11 +93,17 @@ jobs:
         displayName: "Install xtensor-python"
         workingDirectory: $(Build.BinariesDirectory)/build
 
-      # Test
+      # Test (Google test)
       - script: |
           setlocal EnableDelayedExpansion
-          py.test -s
-          cd test
           .\test_xtensor_python
-        displayName: "Test xtensor-python"
+        displayName: "Test xtensor-python (Google test)"
         workingDirectory: $(Build.BinariesDirectory)/build/test
+
+      # Test (pytest)
+      - script: |
+          setlocal EnableDelayedExpansion
+          set PYTHONPATH=%PYTHONPATH%
+          py.test -s
+        displayName: "Test xtensor-python (pytest)"
+        workingDirectory: $(Build.BinariesDirectory)
