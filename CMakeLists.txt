@@ -54,6 +54,10 @@ set(XTENSOR_PYTHON_HEADERS
 )
 
 add_library(xtensor-python INTERFACE)
+target_compile_definitions(xtensor-python
+  INTERFACE
+    "$<$<AND:$<C_COMPILER_ID:Clang>,$<BOOL:${WIN32}>>:HAVE_SNPRINTF>"
+  )
 target_include_directories(xtensor-python INTERFACE
     "$<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR};${pybind11_INCLUDE_DIRS};${NUMPY_INCLUDE_DIRS}>"
     $<INSTALL_INTERFACE:include>)
