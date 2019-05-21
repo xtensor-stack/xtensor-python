@@ -44,7 +44,7 @@ jobs:
                         pybind11 ^
                         pytest ^
                         numpy ^
-                        xtensor==0.20.4 ^
+                        xtensor ^
                         python=3.6
           conda list
         displayName: "Install conda packages"
