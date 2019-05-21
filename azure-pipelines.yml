@@ -96,6 +96,7 @@ jobs:
       # Test (Google test)
       - script: |
           setlocal EnableDelayedExpansion
+          set PATH=%MINICONDA%;%MINICONDA%\Scripts;%MINICONDA%\Library\bin;%PATH%
           .\test_xtensor_python
         displayName: "Test xtensor-python (Google test)"
         workingDirectory: $(Build.BinariesDirectory)/build/test
@@ -103,7 +104,7 @@ jobs:
       # Test (pytest)
       - script: |
           setlocal EnableDelayedExpansion
-          set PYTHONPATH=%PYTHONPATH%
+          set PATH=%MINICONDA%;%MINICONDA%\Scripts;%MINICONDA%\Library\bin;%PATH%
           py.test -s
         displayName: "Test xtensor-python (pytest)"
         workingDirectory: $(Build.BinariesDirectory)
