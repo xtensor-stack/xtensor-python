@@ -18,8 +18,10 @@ jobs:
           choco --version
         displayName: "Install Chocolatey"
 
-      # Install Miniconda
+      # Install Miniconda and remove Python 2.7 from path
       - script: |
+          set PATH=%PATH:C:\Python27;=%
+          set PATH=%PATH:C:\Python27\Scripts;=%
           choco install miniconda3 --yes
           set PATH=C:\tools\miniconda3\Scripts;C:\tools\miniconda3;C:\tools\miniconda3\Library\bin;%PATH%
           echo '##vso[task.setvariable variable=PATH]%PATH%'
@@ -96,10 +98,6 @@ jobs:
       # Test (Google test)
       - script: |
           setlocal EnableDelayedExpansion
-          set PATH=C:\tools\miniconda3\Scripts;C:\tools\miniconda3;C:\tools\miniconda3\Library\bin;%PATH%
-          echo '##vso[task.setvariable variable=PATH]%PATH%'
-          set LIB=C:\tools\miniconda3\Library\lib;%LIB%
-          echo '##vso[task.setvariable variable=LIB]%LIB%'
           .\test_xtensor_python
         displayName: "Test xtensor-python (Google test)"
         workingDirectory: $(Build.BinariesDirectory)/build/test
@@ -107,10 +105,6 @@ jobs:
       # Test (pytest)
       - script: |
           setlocal EnableDelayedExpansion
-          set PATH=C:\tools\miniconda3\Scripts;C:\tools\miniconda3;C:\tools\miniconda3\Library\bin;%PATH%
-          echo '##vso[task.setvariable variable=PATH]%PATH%'
-          set LIB=C:\tools\miniconda3\Library\lib;%LIB%
-          echo '##vso[task.setvariable variable=LIB]%LIB%'
           py.test -s
         displayName: "Test xtensor-python (pytest)"
         workingDirectory: $(Build.BinariesDirectory)
