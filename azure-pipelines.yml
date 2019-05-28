@@ -20,6 +20,12 @@ jobs:
 
       # Install Miniconda and remove Python 2.7 from path
       - script: |
+          echo '%PATH%'
+          echo '%PYTHONPATH%'
+          set PATH=%PATH:C:\Python27;=%
+          set PATH=%PATH:C:\Python27\Scripts;=%
+          echo '%PATH%'
+          echo '%PYTHONPATH%'
           choco install miniconda3 --yes
           set PATH=C:\tools\miniconda3\Scripts;C:\tools\miniconda3;C:\tools\miniconda3\Library\bin;%PATH%
           echo '##vso[task.setvariable variable=PATH]%PATH%'
@@ -30,6 +36,8 @@ jobs:
 
       # Configure Miniconda
       - script: |
+          echo '%PATH%'
+          echo '%PYTHONPATH%'
           conda config --set always_yes yes
           conda config --append channels conda-forge
           conda info
@@ -96,8 +104,6 @@ jobs:
       # Test (Google test)
       - script: |
           setlocal EnableDelayedExpansion
-          set PATH=%PATH:C:\Python27;=%
-          set PATH=%PATH:C:\Python27\Scripts;=%
           .\test_xtensor_python
         displayName: "Test xtensor-python (Google test)"
         workingDirectory: $(Build.BinariesDirectory)/build/test
@@ -105,8 +111,6 @@ jobs:
       # Test (pytest)
       - script: |
           setlocal EnableDelayedExpansion
-          set PATH=%PATH:C:\Python27;=%
-          set PATH=%PATH:C:\Python27\Scripts;=%
           py.test -s
         displayName: "Test xtensor-python (pytest)"
         workingDirectory: $(Build.BinariesDirectory)
