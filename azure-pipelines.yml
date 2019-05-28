@@ -22,6 +22,7 @@ jobs:
       - script: |
           echo 'PATH before %PATH%'
           echo 'PYTHONPATH before %PYTHONPATH%'
+          set PATH=%PATH:C:\Python27;=%
           choco install miniconda3 --yes
           echo 'PATH after %PATH%'
           echo 'PYTHONPATH after %PYTHONPATH%'
