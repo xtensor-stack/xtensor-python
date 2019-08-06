@@ -253,4 +253,7 @@ PYBIND11_MODULE(xtensor_python_test, m)
 
     m.def("simple_array", [](xt::pyarray<int>) { return 1; } );
     m.def("simple_tensor", [](xt::pytensor<int, 1>) { return 2; } );
+
+    m.def("diff_shape_overload", [](xt::pytensor<int, 1> a) { return 1; });
+    m.def("diff_shape_overload", [](xt::pytensor<int, 2> a) { return 2; });
 }

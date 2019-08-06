@@ -135,13 +135,13 @@ class XtensorTest(TestCase):
         with self.assertRaises(RuntimeError):
             xt.col_major_array(var)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(TypeError):
             xt.row_major_tensor(var.T)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(TypeError):
             xt.row_major_tensor(var[:, ::2, ::2])
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(TypeError):
             # raise for wrong dimension
             xt.row_major_tensor(var[0, 0, :])
 
@@ -156,6 +156,15 @@ class XtensorTest(TestCase):
 
         with self.assertRaises(TypeError):
             xt.simple_tensor("foo")
+
+    def test_diff_shape_overload(self):
+        self.assertEqual(1, xt.diff_shape_overload(np.ones(2)))
+        self.assertEqual(2, xt.diff_shape_overload(np.ones((2, 2))))
+
+        with self.assertRaises(TypeError):
+            # FIXME: the TypeError information is not informative
+            xt.diff_shape_overload(np.ones((2, 2, 2)))
+
 
 class AttributeTest(TestCase):
 
