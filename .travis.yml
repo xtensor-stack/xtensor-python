@@ -88,7 +88,7 @@ matrix:
       env: PY=3
 env:
   global:
-    - MINCONDA_VERSION="4.3.21"
+    - MINCONDA_VERSION="latest"
     - MINCONDA_LINUX="Linux-x86_64"
     - MINCONDA_OSX="MacOSX-x86_64"
 before_install:
@@ -104,7 +104,7 @@ before_install:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         export CXX=clang++ CC=clang PYTHONHOME=$HOME/miniconda;
       fi
-    - PYBIND11_VERSION=${PYBIND11_VERSION:-2.2.1}
+    - PYBIND11_VERSION=${PYBIND11_VERSION:-2.2.4}
 
 install:
     # Define the version of miniconda to download
@@ -115,7 +115,7 @@ install:
       fi
     - if [[ "$PY" == "3" ]]; then
           wget "http://repo.continuum.io/miniconda/Miniconda3-$MINCONDA_VERSION-$MINCONDA_OS.sh" -O miniconda.sh;
-          PY_EXE=$HOME/miniconda/bin/python3.6;
+          PY_EXE=$HOME/miniconda/bin/python3.7;
       else
           wget "http://repo.continuum.io/miniconda/Miniconda2-$MINCONDA_VERSION-$MINCONDA_OS.sh" -O miniconda.sh;
           PY_EXE=$HOME/miniconda/bin/python2.7;
