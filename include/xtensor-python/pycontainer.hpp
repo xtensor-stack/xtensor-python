@@ -12,6 +12,7 @@
 #include <cmath>
 #include <functional>
 #include <numeric>
+#include <sstream>
 
 #include "pybind11/complex.h"
 #include "pybind11/pybind11.h"
@@ -338,7 +339,10 @@ namespace xt
             {
                 if(new_dim != N)
                 {
-                    throw std::runtime_error("Dims not matching.");
+                    std::ostringstream err_msg;
+                    err_msg << "Invalid conversion to pycontainer, expecting a container of dimension "
+                            << N << ", got a container of dimension " << new_dim << ".";
+                    throw std::runtime_error(err_msg.str());
                 }
                 return new_dim == N;
             }
