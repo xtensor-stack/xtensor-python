@@ -93,6 +93,7 @@ namespace xt
         void reshape(S&& shape, layout_type layout = base_type::static_layout);
 
         layout_type layout() const;
+        bool is_contiguous() const noexcept;
 
         using base_type::operator();
         using base_type::operator[];
@@ -440,6 +441,16 @@ namespace xt
         {
             return layout_type::dynamic;
         }
+    }
+
+    /**
+     * Return whether or not the container uses contiguous buffer
+     * @return Boolean for contiguous buffer
+     */
+    template <class D>
+    inline bool pycontainer<D>::is_contiguous() const noexcept
+    {
+        return layout_type::dynamic != layout();
     }
 
     /**
