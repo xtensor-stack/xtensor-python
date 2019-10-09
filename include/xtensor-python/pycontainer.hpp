@@ -450,7 +450,18 @@ namespace xt
     template <class D>
     inline bool pycontainer<D>::is_contiguous() const noexcept
     {
-        return layout_type::dynamic != layout();
+        if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_C_CONTIGUOUS))
+        {
+            return 1 == this->strides().back();
+        }
+        else if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_F_CONTIGUOUS))
+        {
+            return 1 == this->strides().front();
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /**
