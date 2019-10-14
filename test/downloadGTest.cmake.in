@@ -1,5 +1,6 @@
 ############################################################################
-# Copyright (c) 2016, Johan Mabille and Sylvain Corlay                     #
+# Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          #
+# Copyright (c) QuantStack                                                 #
 #                                                                          #
 # Distributed under the terms of the BSD 3-Clause License.                 #
 #                                                                          #
