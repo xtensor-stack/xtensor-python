@@ -112,7 +112,7 @@ before_install:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         export CXX=clang++ CC=clang PYTHONHOME=$HOME/miniconda;
       fi
-    - PYBIND11_VERSION=${PYBIND11_VERSION:-2.2.4}
+    - PYBIND11_VERSION=${PYBIND11_VERSION:-2.3.0}
 
 install:
     # Define the version of miniconda to download
