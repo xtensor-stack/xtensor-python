@@ -6,6 +6,13 @@
 # The full license is in the file LICENSE, distributed with this software. #
 ############################################################################
 
+if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    project(xtensor-python-benchmark)
+
+    find_package(xtensor-python REQUIRED CONFIG)
+    set(XTENSOR_PYTHON_INCLUDE_DIR ${xtensor-python_INCLUDE_DIRS})
+endif ()
+
 message(STATUS "Forcing tests build type to Release")
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 
@@ -72,7 +79,7 @@ if (APPLE)
 elseif (MSVC)
     target_link_libraries(${XTENSOR_PYTHON_BENCHMARK_TARGET} ${PYTHON_LIBRARIES})
 else ()
-    target_link_libraries(${XTENSOR_PYTHON_BENCHMARK_TARGET} "-shared")
+    target_link_libraries(${XTENSOR_PYTHON_BENCHMARK_TARGET} PRIVATE xtensor-python)
 endif()
 
 configure_file(benchmark_pyarray.py benchmark_pyarray.py COPYONLY)
@@ -81,5 +88,11 @@ configure_file(benchmark_pybind_array.py benchmark_pybind_array.py COPYONLY)
 configure_file(benchmark_pyvectorize.py benchmark_pyvectorize.py COPYONLY)
 configure_file(benchmark_pybind_vectorize.py benchmark_pybind_vectorize.py COPYONLY)
 
-add_custom_target(xbenchmark DEPENDS ${XTENSOR_PYTHON_BENCHMARK_TARGET})
+add_custom_target(xbenchmark
+        COMMAND "${PYTHON_EXECUTABLE}" "benchmark_pyarray.py"
+        COMMAND "${PYTHON_EXECUTABLE}" "benchmark_pytensor.py"
+        COMMAND "${PYTHON_EXECUTABLE}" "benchmark_pybind_array.py"
+        COMMAND "${PYTHON_EXECUTABLE}" "benchmark_pyvectorize.py"
+        COMMAND "${PYTHON_EXECUTABLE}" "benchmark_pybind_vectorize.py"
+        DEPENDS ${XTENSOR_PYTHON_BENCHMARK_TARGET})
 

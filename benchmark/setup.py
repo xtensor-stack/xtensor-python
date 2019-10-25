@@ -107,7 +107,7 @@ setup(
     description='An example project using xtensor-python',
     long_description='',
     ext_modules=ext_modules,
-    install_requires=['pybind11==2.0.1'],
+    install_requires=['pybind11>=2.0.1'],
     cmdclass={'build_ext': BuildExt},
     zip_safe=False,
 )
