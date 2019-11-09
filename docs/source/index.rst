@@ -16,7 +16,7 @@ What are ``xtensor`` and ``xtensor-python``?
  - ``xtensor`` is a C++ library for multi-dimensional arrays enabling numpy-style broadcasting and lazy computing.
  - ``xtensor-python`` enables inplace use of numpy arrays with all the benefits from ``xtensor``
 
-     - C++ universal functions and broadcasting 
+     - C++ universal functions and broadcasting
      - STL - compliant APIs.
 
 
@@ -54,7 +54,6 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 
    installation
 
-
 .. toctree::
    :caption: USAGE
    :maxdepth: 2
@@ -63,6 +62,7 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
    array_tensor
    numpy_capi
    cookiecutter
+   examples
 
 .. toctree::
    :caption: API REFERENCE
@@ -78,7 +78,7 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 
 .. _NumPy: http://www.numpy.org
 .. _`Buffer Protocol`: https://docs.python.org/3/c-api/buffer.html
-.. _`numpy to xtensor cheat sheet`: http://xtensor.readthedocs.io/en/latest/numpy.html 
+.. _`numpy to xtensor cheat sheet`: http://xtensor.readthedocs.io/en/latest/numpy.html
 .. _xtensor: https://github.com/QuantStack/xtensor
-.. _pybind11: https://github.com/pybind/pybind11 
-.. _xtensor-python-cookiecutter: https://github.com/QuantStack/xtensor-python-cookiecutter 
+.. _pybind11: https://github.com/pybind/pybind11
+.. _xtensor-python-cookiecutter: https://github.com/QuantStack/xtensor-python-cookiecutter
