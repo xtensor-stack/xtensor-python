@@ -140,18 +140,6 @@ namespace xt
         using pybind11::object::operator^;
         using pybind11::object::operator<<;
         using pybind11::object::operator>>;
-
-        // Prevent ambiguous overload resolution for operators defined for
-        // both xt::xcontainer_semantic and pybind11::object.
-        using pybind11::object::operator+=;
-        using pybind11::object::operator-=;
-        using pybind11::object::operator*=;
-        using pybind11::object::operator/=;
-        using pybind11::object::operator|=;
-        using pybind11::object::operator&=;
-        using pybind11::object::operator^=;
-        using pybind11::object::operator<<=;
-        using pybind11::object::operator>>=;
 #endif
     };
 
