@@ -124,6 +124,23 @@ namespace xt
 
         PyArrayObject* python_array() const;
         size_type get_buffer_size() const;
+
+    private:
+
+#if PYBIND11_VERSION_MAJOR == 2 && PYBIND11_VERSION_MINOR >= 3
+        // Prevent ambiguous overload resolution for operators defined for
+        // both xt::xcontainer and pybind11::object.
+        using pybind11::object::operator~;
+        using pybind11::object::operator+;
+        using pybind11::object::operator-;
+        using pybind11::object::operator*;
+        using pybind11::object::operator/;
+        using pybind11::object::operator|;
+        using pybind11::object::operator&;
+        using pybind11::object::operator^;
+        using pybind11::object::operator<<;
+        using pybind11::object::operator>>;
+#endif
     };
 
     namespace detail

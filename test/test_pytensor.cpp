@@ -240,4 +240,26 @@ namespace xt
         auto v = xt::view(arr, xt::all());
         EXPECT_EQ(v(0), 0.);
     }
+
+    TEST(pytensor, unary)
+    {
+        pytensor<int, 1> a = { 1, 2, 3 };
+        pytensor<int, 1> res = -a;
+        pytensor<int, 1> ref = { -1, -2, -3 };
+        EXPECT_EQ(ref(0), res(0));
+        EXPECT_EQ(ref(1), res(1));
+        EXPECT_EQ(ref(1), res(1));
+    }
+
+    TEST(pytensor, inplace_pybind11_overload)
+    {
+        // pybind11 overrrides a number of operators in pybind11::object.
+        // This is testing that the right overload is picked up.
+        pytensor<double, 1> a = { 1.0, 2.0, 3.0 };
+        a /= 2;
+        pytensor<double, 1> ref = { 0.5, 1.0, 1.5 };
+        EXPECT_EQ(ref(0), a(0));
+        EXPECT_EQ(ref(1), a(1));
+        EXPECT_EQ(ref(1), a(1));
+    }
 }
