@@ -59,7 +59,14 @@ namespace pybind11
                     }
                 }
 
-                value = type::ensure(src);
+                try
+                {
+                    value = type::ensure(src);
+                }
+                catch (const std::runtime_error&)
+                {
+                    return false;
+                }
                 return static_cast<bool>(value);
             }
 
