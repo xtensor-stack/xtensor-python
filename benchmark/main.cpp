@@ -17,7 +17,6 @@ PYBIND11_MODULE(benchmark_xtensor_python, m)
     if(_import_array() < 0)
     {
         PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
-        return nullptr;
     }
 
     m.doc() = "Benchmark module for xtensor python bindings";
