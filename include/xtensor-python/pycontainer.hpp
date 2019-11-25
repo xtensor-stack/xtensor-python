@@ -91,7 +91,7 @@ namespace xt
         void resize(const S& shape, const strides_type& strides);
 
         template <class S = shape_type>
-        void reshape(S&& shape, layout_type layout = base_type::static_layout);
+        auto& reshape(S&& shape, layout_type layout = base_type::static_layout) &;
 
         layout_type layout() const;
 
@@ -205,7 +205,7 @@ namespace xt
         }
 
         template <class T>
-        void default_initialize_impl(T& storage, std::false_type)
+        void default_initialize_impl(T& /*storage*/, std::false_type)
         {
         }
 
@@ -407,7 +407,7 @@ namespace xt
 
     template <class D>
     template <class S>
-    inline void pycontainer<D>::reshape(S&& shape, layout_type layout)
+    inline auto& pycontainer<D>::reshape(S&& shape, layout_type layout) &
     {
         if (compute_size(shape) != this->size())
         {
@@ -437,6 +437,7 @@ namespace xt
         this->ptr() = new_ptr;
         Py_XDECREF(old_ptr);
         this->derived_cast().init_from_python();
+        return *this;
     }
 
     /**
