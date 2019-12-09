@@ -95,6 +95,7 @@ namespace xt
         auto& reshape(S&& shape, layout_type layout = base_type::static_layout) &;
 
         layout_type layout() const;
+        bool is_contiguous() const noexcept;
 
         using base_type::operator();
         using base_type::operator[];
@@ -462,6 +463,27 @@ namespace xt
         else
         {
             return layout_type::dynamic;
+        }
+    }
+
+    /**
+     * Return whether or not the container uses contiguous buffer
+     * @return Boolean for contiguous buffer
+     */
+    template <class D>
+    inline bool pycontainer<D>::is_contiguous() const noexcept
+    {
+        if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_C_CONTIGUOUS))
+        {
+            return 1 == this->strides().back();
+        }
+        else if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_F_CONTIGUOUS))
+        {
+            return 1 == this->strides().front();
+        }
+        else
+        {
+            return false;
         }
     }
 
