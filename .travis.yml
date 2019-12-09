@@ -112,7 +112,7 @@ before_install:
       elif [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
         export CXX=clang++ CC=clang PYTHONHOME=$HOME/miniconda;
       fi
-    - PYBIND11_VERSION=${PYBIND11_VERSION:-2.4.2}
+    - PYBIND11_VERSION=${PYBIND11_VERSION:-2.4.3}
 
 install:
     # Define the version of miniconda to download
@@ -155,7 +155,7 @@ install:
       else
         conda install pybind11==${PYBIND11_VERSION} -c conda-forge
       fi
-    - conda install xtensor==0.20.10 -c conda-forge
+    - conda install xtensor==0.21.1 -c conda-forge
     - cmake -D DOWNLOAD_GTEST=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
     - make -j2 test_xtensor_python
     - make install
