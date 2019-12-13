@@ -46,6 +46,7 @@ message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
 
 set(XTENSOR_PYTHON_HEADERS
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pyarray.hpp
+    ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pyarray_backstrides.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pycontainer.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pystrides_adaptor.hpp
     ${XTENSOR_PYTHON_INCLUDE_DIR}/xtensor-python/pytensor.hpp
