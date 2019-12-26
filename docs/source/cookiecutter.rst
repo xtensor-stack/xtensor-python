@@ -32,7 +32,7 @@ After installing cookiecutter, use the `xtensor-python-cookiecutter`_:
 
 .. code::
 
-    cookiecutter https://github.com/QuantStack/xtensor-python-cookiecutter.git
+    cookiecutter https://github.com/xtensor-stack/xtensor-python-cookiecutter.git
 
 As xtensor-python-cookiecutter runs, you will be asked for basic information about
 your custom extension project. You will be prompted for the following
@@ -50,6 +50,6 @@ This will produce a directory containing all the required content for a minimal 
 project making use of xtensor with all the required boilerplate for package management,
 together with a few basic examples.
 
-.. _xtensor-python-cookiecutter: https://github.com/QuantStack/xtensor-python-cookiecutter
+.. _xtensor-python-cookiecutter: https://github.com/xtensor-stack/xtensor-python-cookiecutter
 
 .. _cookiecutter: https://github.com/audreyr/cookiecutter
