@@ -80,6 +80,6 @@ This software is licensed under the BSD-3-Clause license. See the LICENSE file f
 .. _NumPy: http://www.numpy.org
 .. _`Buffer Protocol`: https://docs.python.org/3/c-api/buffer.html
 .. _`numpy to xtensor cheat sheet`: http://xtensor.readthedocs.io/en/latest/numpy.html 
-.. _xtensor: https://github.com/QuantStack/xtensor
+.. _xtensor: https://github.com/xtensor-stack/xtensor
 .. _pybind11: https://github.com/pybind/pybind11 
-.. _xtensor-python-cookiecutter: https://github.com/QuantStack/xtensor-python-cookiecutter 
+.. _xtensor-python-cookiecutter: https://github.com/xtensor-stack/xtensor-python-cookiecutter 

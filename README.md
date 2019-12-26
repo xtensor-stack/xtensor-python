@@ -5,7 +5,7 @@
 [![Documentation](http://readthedocs.org/projects/xtensor-python/badge/?version=latest)](https://xtensor-python.readthedocs.io/en/latest/?badge=latest)
 [![Join the Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QuantStack/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Python bindings for the [xtensor](https://github.com/QuantStack/xtensor) C++ multi-dimensional array library.
+Python bindings for the [xtensor](https://github.com/xtensor-stack/xtensor) C++ multi-dimensional array library.
 
  - `xtensor` is a C++ library for multi-dimensional arrays enabling numpy-style broadcasting and lazy computing.
  - `xtensor-python` enables inplace use of numpy arrays in C++ with all the benefits from `xtensor`
@@ -145,7 +145,7 @@ This will pull the dependencies to xtensor-python, that is `pybind11` and `xtens
 
 ## Project cookiecutter
 
-A template for a project making use of `xtensor-python` is available in the form of a cookiecutter [here](https://github.com/QuantStack/xtensor-python-cookiecutter).
+A template for a project making use of `xtensor-python` is available in the form of a cookiecutter [here](https://github.com/xtensor-stack/xtensor-python-cookiecutter).
 
 This project is meant to help library authors get started with the xtensor python bindings.
 
