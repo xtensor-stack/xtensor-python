@@ -32,10 +32,20 @@ message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 # Dependencies
 # ============
 
-find_package(xtl REQUIRED)
-message(STATUS "Found xtl: ${xtl_INCLUDE_DIRS}/xtl")
-find_package(xtensor REQUIRED)
-message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
+set(xtensor_REQUIRED_VERSION 0.21.2)
+if(TARGET xtensor)
+    set(xtensor_VERSION ${XTENSOR_VERSION_MAJOR}.${XTENSOR_VERSION_MINOR}.${XTENSOR_VERSION_PATCH})
+    # Note: This is not SEMVER compatible comparison
+    if( NOT ${xtensor_VERSION} VERSION_GREATER_EQUAL ${xtensor_REQUIRED_VERSION})
+        message(ERROR "Mismatch xtensor versions. Found '${xtensor_VERSION}' but requires: '${xtensor_REQUIRED_VERSION}'")
+    else()
+        message(STATUS "Found xtensor v${xtensor_VERSION}")
+    endif()
+else()
+    find_package(xtensor ${xtensor_REQUIRED_VERSION} REQUIRED)
+    message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
+endif()
+
 find_package(pybind11 REQUIRED)
 message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
 find_package(NumPy REQUIRED)
