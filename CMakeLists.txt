@@ -45,9 +45,16 @@ else()
     find_package(xtensor ${xtensor_REQUIRED_VERSION} REQUIRED)
     message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
 endif()
+    
+# Currently no required version for pybind11
+if(TARGET pybind11)
+    # pybind11 has a variable that indicates its version already, so use that
+    message(STATUS "Found pybind11 v${pybind11_VERSION}")
+else()
+    find_package(pybind11 REQUIRED)
+    message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
+endif()
 
-find_package(pybind11 REQUIRED)
-message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
 find_package(NumPy REQUIRED)
 message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
 
