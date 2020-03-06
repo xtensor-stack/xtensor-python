@@ -47,25 +47,6 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.9
-            - clang-3.6
-      env: COMPILER=clang CLANG=3.6 PY=3
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-xenial-3.9
-          packages:
-            - g++-4.9
-            - clang-3.9
-      env: COMPILER=clang CLANG=3.9 PY=3
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
             - llvm-toolchain-xenial-4.0
           packages:
             - g++-4.9
@@ -156,7 +137,7 @@ install:
       else
         conda install pybind11==${PYBIND11_VERSION} -c conda-forge
       fi
-    - conda install xtensor==0.21.2 -c conda-forge
+    - conda install xtensor==0.21.4 -c conda-forge
     - cmake -D DOWNLOAD_GTEST=ON -D CMAKE_INSTALL_PREFIX=$HOME/miniconda -D PYTHON_EXECUTABLE=$PY_EXE .
     - make -j2 test_xtensor_python
     - make install
