@@ -14,7 +14,7 @@ Python bindings for the [xtensor](https://github.com/xtensor-stack/xtensor) C++ 
      - STL - compliant APIs.
      - A broad coverage of numpy APIs (see [the numpy to xtensor cheat sheet](http://xtensor.readthedocs.io/en/latest/numpy.html)).
 
-The Python bindings for `xtensor` are based on the [pybind11](https://github.com/pybind/pybind11/) C++ library, which enables seemless interoperability between C++ and Python.
+The Python bindings for `xtensor` are based on the [pybind11](https://github.com/pybind/pybind11/) C++ library, which enables seamless interoperability between C++ and Python.
 
 ## Installation
 
