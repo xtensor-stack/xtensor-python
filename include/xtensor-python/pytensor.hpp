@@ -168,6 +168,7 @@ namespace xt
         using inner_shape_type = typename base_type::inner_shape_type;
         using inner_strides_type = typename base_type::inner_strides_type;
         using inner_backstrides_type = typename base_type::inner_backstrides_type;
+        constexpr static std::size_t rank = N;
 
         pytensor();
         pytensor(nested_initializer_list_t<T, N> t);
@@ -471,7 +472,7 @@ namespace xt
         {
             return;
         }
-        
+
         if (PyArray_NDIM(this->python_array()) != N)
         {
             throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");

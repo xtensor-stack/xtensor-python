@@ -158,6 +158,7 @@ namespace xt
         using inner_shape_type = typename base_type::inner_shape_type;
         using inner_strides_type = typename base_type::inner_strides_type;
         using inner_backstrides_type = typename base_type::inner_backstrides_type;
+        constexpr static std::size_t rank = SIZE_MAX;
 
         pyarray();
         pyarray(const value_type& t);
@@ -514,7 +515,7 @@ namespace xt
         {
             return;
         }
-        
+
         m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
                                    static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_strides = inner_strides_type(reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
