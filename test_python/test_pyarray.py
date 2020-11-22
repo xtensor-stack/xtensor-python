@@ -166,6 +166,73 @@ class XtensorTest(TestCase):
             # FIXME: the TypeError information is not informative
             xt.diff_shape_overload(np.ones((2, 2, 2)))
 
+    def test_native_casters(self):
+        import gc
+
+        # check keep alive policy for get_strided_view()
+        gc.collect()
+        obj = xt.test_native_casters()
+        a = obj.get_strided_view()
+        obj = None
+        gc.collect()
+        _ = np.zeros((100, 100))
+        self.assertEqual(a.sum(), a.size)
+
+        # check keep alive policy for get_array_adapter()
+        gc.collect()
+        obj = xt.test_native_casters()
+        a = obj.get_array_adapter()
+        obj = None
+        gc.collect()
+        _ = np.zeros((100, 100))
+        self.assertEqual(a.sum(), a.size)
+
+        # check keep alive policy for get_array_adapter()
+        gc.collect()
+        obj = xt.test_native_casters()
+        a = obj.get_tensor_adapter()
+        obj = None
+        gc.collect()
+        _ = np.zeros((100, 100))
+        self.assertEqual(a.sum(), a.size)
+
+        # check keep alive policy for get_owning_array_adapter()
+        gc.collect()
+        obj = xt.test_native_casters()
+        a = obj.get_owning_array_adapter()
+        gc.collect()
+        _ = np.zeros((100, 100))
+        self.assertEqual(a.sum(), a.size)
+
+        # check keep alive policy for view_keep_alive_member_function()
+        gc.collect()
+        a = np.ones((100, 100))
+        b = obj.view_keep_alive_member_function(a)
+        obj = None
+        a = None
+        gc.collect()
+        _ = np.zeros((100, 100))
+        self.assertEqual(b.sum(), b.size)
+
+        # check shared buffer (insure that no copy is done)
+        obj = xt.test_native_casters()
+        arr = obj.get_array()
+
+        strided_view = obj.get_strided_view()
+        strided_view[0, 1] = -1
+        self.assertEqual(strided_view.shape, (1, 2))
+        self.assertEqual(arr[0, 2], -1)
+
+        adapter = obj.get_array_adapter()
+        self.assertEqual(adapter.shape, (2, 2))
+        adapter[1, 1] = -2
+        self.assertEqual(arr[0, 5], -2)
+
+        adapter = obj.get_tensor_adapter()
+        self.assertEqual(adapter.shape, (2, 2))
+        adapter[1, 1] = -3
+        self.assertEqual(arr[0, 5], -3)
+
 
 class AttributeTest(TestCase):
 
