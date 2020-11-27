@@ -31,4 +31,4 @@ steps:
       source activate xtensor-python
       py.test -s
     displayName: Test xtensor-python (Python)
-    workingDirectory: $(Build.BinariesDirectory)/build
+    workingDirectory: $(Build.SourcesDirectory)
