@@ -21,6 +21,7 @@
 #include "pyarray_backstrides.hpp"
 #include "pycontainer.hpp"
 #include "pystrides_adaptor.hpp"
+#include "pynative_casters.hpp"
 #include "xtensor_type_caster_base.hpp"
 
 namespace xt
@@ -91,11 +92,6 @@ namespace pybind11
             }
         };
 
-        // Type caster for casting xarray to ndarray
-        template <class T, xt::layout_type L>
-        struct type_caster<xt::xarray<T, L>> : xtensor_type_caster_base<xt::xarray<T, L>>
-        {
-        };
     }
 }
 

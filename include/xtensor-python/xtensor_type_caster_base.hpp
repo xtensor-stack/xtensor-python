@@ -23,7 +23,7 @@ namespace pybind11
 {
     namespace detail
     {
-        // Casts an xtensor (or xarray) type to numpy array.If given a base,
+        // Casts a strided expression type to numpy array.If given a base,
         // the numpy array references the src data, otherwise it'll make a copy.
         // The writeable attributes lets you specify writeable flag for the array.
         template <typename Type>
@@ -39,7 +39,7 @@ namespace pybind11
             std::vector<std::size_t> python_shape(src.shape().size());
             std::copy(src.shape().begin(), src.shape().end(), python_shape.begin());
 
-            array a(python_shape, python_strides, src.begin(), base);
+            array a(python_shape, python_strides, &*(src.begin()), base);
 
             if (!writeable)
             {
@@ -49,8 +49,8 @@ namespace pybind11
             return a.release();
         }
 
-        // Takes an lvalue ref to some xtensor (or xarray) type and a (python) base object, creating a numpy array that
-        // reference the xtensor object's data with `base` as the python-registered base class (if omitted,
+        // Takes an lvalue ref to some strided expression type and a (python) base object, creating a numpy array that
+        // reference the expression object's data with `base` as the python-registered base class (if omitted,
         // the base will be set to None, and lifetime management is up to the caller).  The numpy array is
         // non-writeable if the given type is const.
         template <typename Type, typename CType>
@@ -59,7 +59,7 @@ namespace pybind11
             return xtensor_array_cast<Type>(src, parent, !std::is_const<CType>::value);
         }
 
-        // Takes a pointer to xtensor (or xarray), builds a capsule around it, then returns a numpy
+        // Takes a pointer to a strided expression, builds a capsule around it, then returns a numpy
         // array that references the encapsulated data with a python-side reference to the capsule to tie
         // its destruction to that of any dependent python objects.  Const-ness is determined by whether or
         // not the CType of the pointer given is const.
@@ -70,7 +70,7 @@ namespace pybind11
             return xtensor_ref_array<Type>(*src, base);
         }
 
-        // Base class of type_caster for xtensor and xarray
+        // Base class of type_caster for strided expressions
         template <class Type>
         struct xtensor_type_caster_base
         {
