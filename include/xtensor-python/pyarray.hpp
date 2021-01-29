@@ -443,7 +443,7 @@ namespace xt
         // TODO: prevent intermediary shape allocation
         shape_type shape = xtl::forward_sequence<shape_type, decltype(e.derived_cast().shape())>(e.derived_cast().shape());
         strides_type strides = xtl::make_sequence<strides_type>(shape.size(), size_type(0));
-        compute_strides(shape, layout_type::row_major, strides);
+        compute_strides(shape, L, strides);
         init_array(shape, strides);
         semantic_base::assign(e);
     }
