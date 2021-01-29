@@ -181,6 +181,18 @@ namespace xt
         EXPECT_EQ(c(0, 1), a1(0, 1) + a2(0, 1));
         EXPECT_EQ(c(1, 0), a1(1, 0) + a2(1, 0));
         EXPECT_EQ(c(1, 1), a1(1, 1) + a2(1, 1));
+
+        pyarray<int, xt::layout_type::row_major> d = a1 + a2;
+        EXPECT_EQ(d(0, 0), a1(0, 0) + a2(0, 0));
+        EXPECT_EQ(d(0, 1), a1(0, 1) + a2(0, 1));
+        EXPECT_EQ(d(1, 0), a1(1, 0) + a2(1, 0));
+        EXPECT_EQ(d(1, 1), a1(1, 1) + a2(1, 1));
+
+        pyarray<int, xt::layout_type::column_major> e = a1 + a2;
+        EXPECT_EQ(e(0, 0), a1(0, 0) + a2(0, 0));
+        EXPECT_EQ(e(0, 1), a1(0, 1) + a2(0, 1));
+        EXPECT_EQ(e(1, 0), a1(1, 0) + a2(1, 0));
+        EXPECT_EQ(e(1, 1), a1(1, 1) + a2(1, 1));
     }
 
     TEST(pyarray, resize)
