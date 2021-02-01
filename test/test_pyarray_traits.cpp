@@ -58,11 +58,19 @@ namespace xt
             }
 
             template <class T>
-            bool test_simd_linear_assign(T const& a1, T const& a2)
+            bool test_static_simd_linear_assign(T const& a1, T const& a2)
             {
                 auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
                 auto tmp2 = cos(a1);
                 return xt::xassign_traits<T, decltype(tmp2)>::simd_linear_assign();
+            }
+
+            template <class T>
+            bool test_dynamic_simd_linear_assign(T const& a1, T const& a2)
+            {
+                auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
+                auto tmp2 = cos(a1);
+                return xt::xassign_traits<T, decltype(tmp2)>::simd_linear_assign(a1, tmp2);
             }
 
             template <class T>
@@ -115,16 +123,29 @@ namespace xt
             EXPECT_TRUE(test_linear_assign(c1, c2));
         }
 
-        TEST_F(pyarray_traits, simd_linear_assign)
+        TEST_F(pyarray_traits, static_simd_linear_assign)
         {
 #ifdef XTENSOR_USE_XSIMD
-            EXPECT_FALSE(test_simd_linear_assign(d1, d2));
-            EXPECT_TRUE(test_simd_linear_assign(r1, r2));
-            EXPECT_TRUE(test_simd_linear_assign(c1, c2));
+            EXPECT_FALSE(test_static_simd_linear_assign(d1, d2));
+            EXPECT_TRUE(test_static_simd_linear_assign(r1, r2));
+            EXPECT_TRUE(test_static_simd_linear_assign(c1, c2));
 #else
-            EXPECT_FALSE(test_simd_linear_assign(d1, d2));
-            EXPECT_FALSE(test_simd_linear_assign(r1, r2));
-            EXPECT_FALSE(test_simd_linear_assign(c1, c2));
+            EXPECT_FALSE(test_static_simd_linear_assign(d1, d2));
+            EXPECT_FALSE(test_static_simd_linear_assign(r1, r2));
+            EXPECT_FALSE(test_static_simd_linear_assign(c1, c2));
+#endif
+        }
+
+        TEST_F(pyarray_traits, dynamic_simd_linear_assign)
+        {
+#ifdef XTENSOR_USE_XSIMD
+            EXPECT_TRUE(test_dynamic_simd_linear_assign(d1, d2));
+            EXPECT_TRUE(test_dynamic_simd_linear_assign(r1, r2));
+            EXPECT_TRUE(test_dynamic_simd_linear_assign(c1, c2));
+#else
+            EXPECT_FALSE(test_dynamic_simd_linear_assign(d1, d2));
+            EXPECT_FALSE(test_dynamic_simd_linear_assign(r1, r2));
+            EXPECT_FALSE(test_dynamic_simd_linear_assign(c1, c2));
 #endif
         }
 
