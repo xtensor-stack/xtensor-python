@@ -224,6 +224,8 @@ namespace xt
         storage_type& storage_impl() noexcept;
         const storage_type& storage_impl() const noexcept;
 
+        layout_type default_dynamic_layout();
+
         friend class xcontainer<pyarray<T, L>>;
         friend class pycontainer<pyarray<T, L>>;
     };
@@ -254,7 +256,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(const value_type& t)
         : base_type()
     {
-        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
+        base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
         nested_copy(m_storage.begin(), t);
     }
 
@@ -262,40 +264,40 @@ namespace xt
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 1> t)
         : base_type()
     {
-        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_storage.begin(), t);
+        base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 2> t)
         : base_type()
     {
-        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_storage.begin(), t);
+        base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 3> t)
         : base_type()
     {
-        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_storage.begin(), t);
+        base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 4> t)
         : base_type()
     {
-        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_storage.begin(), t);
+        base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 5> t)
         : base_type()
     {
-        base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
-        nested_copy(m_storage.begin(), t);
+        base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
@@ -443,7 +445,9 @@ namespace xt
         // TODO: prevent intermediary shape allocation
         shape_type shape = xtl::forward_sequence<shape_type, decltype(e.derived_cast().shape())>(e.derived_cast().shape());
         strides_type strides = xtl::make_sequence<strides_type>(shape.size(), size_type(0));
-        compute_strides(shape, L, strides);
+        layout_type layout = default_dynamic_layout();
+
+        compute_strides(shape, layout, strides);
         init_array(shape, strides);
         semantic_base::assign(e);
     }
@@ -558,6 +562,12 @@ namespace xt
     inline auto pyarray<T, L>::storage_impl() const noexcept -> const storage_type&
     {
         return m_storage;
+    }
+
+    template <class T, layout_type L>
+    layout_type pyarray<T, L>::default_dynamic_layout()
+    {
+        return L == layout_type::dynamic ? layout_type::row_major : L;
     }
 }
 

@@ -37,7 +37,7 @@ namespace xt
 
     TEST(pyarray, initializer_constructor)
     {
-        pyarray<int> t 
+        pyarray<int> r
           {{{ 0,  1,  2}, 
             { 3,  4,  5}, 
             { 6,  7,  8}}, 
@@ -45,9 +45,36 @@ namespace xt
             {12, 13, 14}, 
             {15, 16, 17}}}; 
 
-        EXPECT_EQ(t.dimension(), 3);
-        EXPECT_EQ(t(0, 0, 1), 1);
-        EXPECT_EQ(t.shape()[0], 2);
+        EXPECT_EQ(r.layout(), xt::layout_type::row_major);
+        EXPECT_EQ(r.dimension(), 3);
+        EXPECT_EQ(r(0, 0, 1), 1);
+        EXPECT_EQ(r.shape()[0], 2);
+
+        pyarray<int, xt::layout_type::column_major> c
+          {{{ 0,  1,  2}, 
+            { 3,  4,  5}, 
+            { 6,  7,  8}}, 
+           {{ 9, 10, 11}, 
+            {12, 13, 14}, 
+            {15, 16, 17}}}; 
+
+        EXPECT_EQ(c.layout(), xt::layout_type::column_major);
+        EXPECT_EQ(c.dimension(), 3);
+        EXPECT_EQ(c(0, 0, 1), 1);
+        EXPECT_EQ(c.shape()[0], 2);
+
+        pyarray<int, xt::layout_type::dynamic> d
+          {{{ 0,  1,  2}, 
+            { 3,  4,  5}, 
+            { 6,  7,  8}}, 
+           {{ 9, 10, 11}, 
+            {12, 13, 14}, 
+            {15, 16, 17}}}; 
+
+        EXPECT_EQ(d.layout(), xt::layout_type::row_major);
+        EXPECT_EQ(d.dimension(), 3);
+        EXPECT_EQ(d(0, 0, 1), 1);
+        EXPECT_EQ(d.shape()[0], 2);
     }
 
     TEST(pyarray, shaped_constructor)
