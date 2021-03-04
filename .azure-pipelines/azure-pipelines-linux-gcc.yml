@@ -10,6 +10,9 @@ jobs:
           gcc_version: '6'
         gcc_7:
           gcc_version: '7'
+        gcc_7_tbb:
+          gcc_version: '7'
+          enable_tbb: 1
         gcc_8:
           gcc_version: '8'
         gcc_9:
