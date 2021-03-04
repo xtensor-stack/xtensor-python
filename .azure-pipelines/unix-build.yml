@@ -4,13 +4,19 @@ steps:
       conda update -q conda
       conda env create --file environment-dev.yml
       source activate xtensor-python
+      if [[ $(enable_tbb) == 1 ]]; then
+        conda install tbb-devel -c conda-forge
+      fi
     displayName: Install dependencies
 
   - script: |
       source activate xtensor-python
       mkdir build
       cd build
-      cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON $(Build.SourcesDirectory)
+      if [[ $(enable_tbb) == 1 ]]; then
+        CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS -DXTENSOR_USE_TBB=ON -DTBB_INCLUDE_DIR=$CONDA_PREFIX/include -DTBB_LIBRARY=$CONDA_PREFIX/lib ..";
+      fi
+      cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON $CMAKE_EXTRA_ARGS $(Build.SourcesDirectory)
     displayName: Configure xtensor-python
     workingDirectory: $(Build.BinariesDirectory)
       
