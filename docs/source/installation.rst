@@ -27,14 +27,14 @@ Besides the xtendor-python headers, all these methods place the `cmake` project 
 
 .. image:: conda.svg
 
-Using the conda package
------------------------
+Using the conda-fore package
+----------------------------
 
-A package for xtensor-python is available on the conda package manager.
+A package for xtensor-python is available on the mamba (or conda) package manager.
 
 .. code::
 
-    conda install -c conda-forge xtensor-python
+    mamba install -c conda-forge xtensor-python
 
 .. image:: debian.svg
 

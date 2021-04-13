@@ -18,10 +18,10 @@ The Python bindings for `xtensor` are based on the [pybind11](https://github.com
 
 ## Installation
 
-`xtensor-python` is a header-only library. We provide a package for the conda package manager.
+`xtensor-python` is a header-only library. We provide a package for the mamba (or conda) package manager.
 
 ```bash
-conda install -c conda-forge xtensor-python
+mamba install -c conda-forge xtensor-python
 ```
 
 ## Documentation
