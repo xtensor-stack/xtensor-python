@@ -49,10 +49,10 @@ Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtenso
 
 ```cpp
 #include <numeric>                        // Standard library import for std::accumulate
-#include "pybind11/pybind11.h"            // Pybind11 import to define Python bindings
-#include "xtensor/xmath.hpp"              // xtensor import for the C++ universal functions
+#include <pybind11/pybind11.h>            // Pybind11 import to define Python bindings
+#include <xtensor/xmath.hpp>              // xtensor import for the C++ universal functions
 #define FORCE_IMPORT_ARRAY
-#include "xtensor-python/pyarray.hpp"     // Numpy bindings
+#include <xtensor-python/pyarray.hpp>     // Numpy bindings
 
 double sum_of_sines(xt::pyarray<double>& m)
 {
@@ -91,9 +91,9 @@ s
 **C++ code**
 
 ```cpp
-#include "pybind11/pybind11.h"
+#include <pybind11/pybind11.h>
 #define FORCE_IMPORT_ARRAY
-#include "xtensor-python/pyvectorize.hpp"
+#include <xtensor-python/pyvectorize.hpp>
 #include <numeric>
 #include <cmath>
 
