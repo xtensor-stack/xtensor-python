@@ -11,15 +11,16 @@ steps:
       mkdir build
       cd build
       cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON $(Build.SourcesDirectory)
+      make install
     displayName: Configure xtensor-python
     workingDirectory: $(Build.BinariesDirectory)
-      
+
   - script: |
       source activate xtensor-python
       make -j2 test_xtensor_python
     displayName: Build xtensor-python
     workingDirectory: $(Build.BinariesDirectory)/build
-          
+
   - script: |
       source activate xtensor-python
       cd test
@@ -32,3 +33,19 @@ steps:
       py.test -s
     displayName: Test xtensor-python (Python)
     workingDirectory: $(Build.SourcesDirectory)
+
+  - script: |
+      source activate xtensor-python
+      cmake . -DPYTHON_EXECUTABLE=`which python`
+      cmake --build .
+      python example.py
+    displayName: Example - readme 1
+    workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/readme_example_1
+
+  - script: |
+      source activate xtensor-python
+      cmake . -DPYTHON_EXECUTABLE=`which python`
+      cmake --build .
+      python example.py
+    displayName: Example - SFINAE
+    workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/sfinae

@@ -77,7 +77,7 @@ import xtensor_python_test as xt
 
 v = np.arange(15).reshape(3, 5)
 s = xt.sum_of_sines(v)
-s
+print(s)
 ```
 
 **Outputs**
@@ -85,6 +85,14 @@ s
 ```
 1.2853996391883833
 ```
+
+**Working example**
+
+Get the working example here:
+
+*   [`CMakeLists.txt`](docs/source/examples/readme_example_1/CMakeLists.txt)
+*   [`main.cpp`](docs/source/examples/readme_example_1/main.cpp)
+*   [`example.py`](docs/source/examples/readme_example_1/example.py)
 
 ### Example 2: Create a universal function from a C++ scalar function
 
@@ -122,7 +130,7 @@ import xtensor_python_test as xt
 x = np.arange(15).reshape(3, 5)
 y = [1, 2, 3, 4, 5]
 z = xt.vectorized_func(x, y)
-z
+print(z)
 ```
 
 **Outputs**
