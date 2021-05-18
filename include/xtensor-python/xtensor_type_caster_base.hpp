@@ -74,7 +74,7 @@ namespace pybind11
         template <class Type>
         struct xtensor_type_caster_base
         {
-            bool load(handle src, bool)
+            bool load(handle /*src*/, bool)
             {
                 return false;
             }
