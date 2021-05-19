@@ -47,7 +47,7 @@ else()
 endif()
     
 # Currently no required version for pybind11
-if(TARGET pybind11)
+if(TARGET pybind11 OR TARGET pybind11::headers)
     # pybind11 has a variable that indicates its version already, so use that
     message(STATUS "Found pybind11 v${pybind11_VERSION}")
 else()
