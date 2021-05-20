@@ -49,10 +49,10 @@ Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtenso
 
 ```cpp
 #include <numeric>                        // Standard library import for std::accumulate
-#include "pybind11/pybind11.h"            // Pybind11 import to define Python bindings
-#include "xtensor/xmath.hpp"              // xtensor import for the C++ universal functions
+#include <pybind11/pybind11.h>            // Pybind11 import to define Python bindings
+#include <xtensor/xmath.hpp>              // xtensor import for the C++ universal functions
 #define FORCE_IMPORT_ARRAY
-#include "xtensor-python/pyarray.hpp"     // Numpy bindings
+#include <xtensor-python/pyarray.hpp>     // Numpy bindings
 
 double sum_of_sines(xt::pyarray<double>& m)
 {
@@ -77,7 +77,7 @@ import xtensor_python_test as xt
 
 v = np.arange(15).reshape(3, 5)
 s = xt.sum_of_sines(v)
-s
+print(s)
 ```
 
 **Outputs**
@@ -86,14 +86,22 @@ s
 1.2853996391883833
 ```
 
+**Working example**
+
+Get the working example here:
+
+*   [`CMakeLists.txt`](docs/source/examples/readme_example_1/CMakeLists.txt)
+*   [`main.cpp`](docs/source/examples/readme_example_1/main.cpp)
+*   [`example.py`](docs/source/examples/readme_example_1/example.py)
+
 ### Example 2: Create a universal function from a C++ scalar function
 
 **C++ code**
 
 ```cpp
-#include "pybind11/pybind11.h"
+#include <pybind11/pybind11.h>
 #define FORCE_IMPORT_ARRAY
-#include "xtensor-python/pyvectorize.hpp"
+#include <xtensor-python/pyvectorize.hpp>
 #include <numeric>
 #include <cmath>
 
@@ -122,7 +130,7 @@ import xtensor_python_test as xt
 x = np.arange(15).reshape(3, 5)
 y = [1, 2, 3, 4, 5]
 z = xt.vectorized_func(x, y)
-z
+print(z)
 ```
 
 **Outputs**
