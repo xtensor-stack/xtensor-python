@@ -89,6 +89,7 @@ set(XTENSOR_PYTHON_TESTS
     test_pyarray_traits.cpp
     test_pytensor.cpp
     test_pyvectorize.cpp
+    test_sfinae.cpp
 )
 
 add_executable(test_xtensor_python ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON_HEADERS})
