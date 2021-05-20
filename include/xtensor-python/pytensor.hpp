@@ -23,6 +23,7 @@
 #include "pystrides_adaptor.hpp"
 #include "pynative_casters.hpp"
 #include "xtensor_type_caster_base.hpp"
+#include "xtensor_python_config.hpp"
 
 namespace xt
 {
@@ -263,6 +264,7 @@ namespace xt
     inline pytensor<T, N, L>::pytensor(nested_initializer_list_t<T, N> t)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         base_type::resize(xt::shape<shape_type>(t), layout_type::row_major);
         nested_copy(m_storage.begin(), t);
     }
@@ -271,6 +273,7 @@ namespace xt
     inline pytensor<T, N, L>::pytensor(pybind11::handle h, pybind11::object::borrowed_t b)
         : base_type(h, b)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_from_python();
     }
 
@@ -278,6 +281,7 @@ namespace xt
     inline pytensor<T, N, L>::pytensor(pybind11::handle h, pybind11::object::stolen_t s)
         : base_type(h, s)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_from_python();
     }
 
@@ -285,6 +289,7 @@ namespace xt
     inline pytensor<T, N, L>::pytensor(const pybind11::object& o)
         : base_type(o)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_from_python();
     }
 
@@ -297,6 +302,7 @@ namespace xt
     template <class T, std::size_t N, layout_type L>
     inline pytensor<T, N, L>::pytensor(const shape_type& shape, layout_type l)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         compute_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
     }
@@ -313,6 +319,7 @@ namespace xt
                                     const_reference value,
                                     layout_type l)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         compute_strides(shape, l, m_strides);
         init_tensor(shape, m_strides);
         std::fill(m_storage.begin(), m_storage.end(), value);
@@ -330,6 +337,7 @@ namespace xt
                                     const strides_type& strides,
                                     const_reference value)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_tensor(shape, strides);
         std::fill(m_storage.begin(), m_storage.end(), value);
     }
@@ -343,6 +351,7 @@ namespace xt
     inline pytensor<T, N, L>::pytensor(const shape_type& shape,
                                     const strides_type& strides)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_tensor(shape, strides);
     }
 
@@ -354,6 +363,7 @@ namespace xt
     template <class S>
     inline pytensor<T, N, L> pytensor<T, N, L>::from_shape(S&& shape)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         detail::check_dims<shape_type>::run(shape.size());
         auto shp = xtl::forward_sequence<shape_type, S>(shape);
         return self_type(shp);
@@ -467,7 +477,7 @@ namespace xt
         {
             return;
         }
-        
+
         if (PyArray_NDIM(this->python_array()) != N)
         {
             throw std::runtime_error("NumPy: ndarray has incorrect number of dimensions");

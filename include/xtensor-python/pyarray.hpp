@@ -23,6 +23,7 @@
 #include "pystrides_adaptor.hpp"
 #include "pynative_casters.hpp"
 #include "xtensor_type_caster_base.hpp"
+#include "xtensor_python_config.hpp"
 
 namespace xt
 {
@@ -242,6 +243,7 @@ namespace xt
     inline pyarray<T, L>::pyarray()
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         // TODO: avoid allocation
         shape_type shape = xtl::make_sequence<shape_type>(0, size_type(1));
         strides_type strides = xtl::make_sequence<strides_type>(0, size_type(0));
@@ -256,6 +258,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(const value_type& t)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
         nested_copy(m_storage.begin(), t);
     }
@@ -264,6 +267,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 1> t)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
         L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
@@ -272,6 +276,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 2> t)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
         L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
@@ -280,6 +285,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 3> t)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
         L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
@@ -288,6 +294,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 4> t)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
         L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
@@ -296,6 +303,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(nested_initializer_list_t<T, 5> t)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
         L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
@@ -304,6 +312,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(pybind11::handle h, pybind11::object::borrowed_t b)
         : base_type(h, b)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_from_python();
     }
 
@@ -311,6 +320,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(pybind11::handle h, pybind11::object::stolen_t s)
         : base_type(h, s)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_from_python();
     }
 
@@ -318,6 +328,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(const pybind11::object& o)
         : base_type(o)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_from_python();
     }
 
@@ -331,6 +342,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(const shape_type& shape, layout_type l)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         strides_type strides(shape.size());
         compute_strides(shape, l, strides);
         init_array(shape, strides);
@@ -347,6 +359,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(const shape_type& shape, const_reference value, layout_type l)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         strides_type strides(shape.size());
         compute_strides(shape, l, strides);
         init_array(shape, strides);
@@ -364,6 +377,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(const shape_type& shape, const strides_type& strides, const_reference value)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_array(shape, strides);
         std::fill(m_storage.begin(), m_storage.end(), value);
     }
@@ -377,6 +391,7 @@ namespace xt
     inline pyarray<T, L>::pyarray(const shape_type& shape, const strides_type& strides)
         : base_type()
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         init_array(shape, strides);
     }
 
@@ -388,6 +403,7 @@ namespace xt
     template <class S>
     inline pyarray<T, L> pyarray<T, L>::from_shape(S&& shape)
     {
+        XTENSOR_PYTHON_DEBUG(xt::numpy_imported());
         auto shp = xtl::forward_sequence<shape_type, S>(shape);
         return self_type(shp);
     }
@@ -514,7 +530,7 @@ namespace xt
         {
             return;
         }
-        
+
         m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
                                    static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_strides = inner_strides_type(reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
