@@ -506,6 +506,7 @@ namespace xt
      */
     inline bool numpy_imported()
     {
+        std::cout << "xt::numpy_imported = " << PyRun_SimpleString("__import__('sys').modules['numpy.core']") << std::endl;
         return PyRun_SimpleString("__import__('sys').modules['numpy.core']") == 0;
     }
 
