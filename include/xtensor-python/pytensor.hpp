@@ -100,11 +100,26 @@ namespace pybind11
             }
         };
 
-    }
+    } // namespace detail
 }
 
 namespace xt
 {
+    namespace detail {
+
+        template <std::size_t N, typename = void>
+        struct numpy_strides
+        {
+            npy_intp value[N];
+        };
+
+        template <std::size_t N>
+        struct numpy_strides<N, typename std::enable_if_t<(N == 0)>::type>
+        {
+            npy_intp* value = nullptr;
+        };
+
+    } // namespace detail
 
     template <class T, std::size_t N, layout_type L>
     struct xiterable_inner_types<pytensor<T, N, L>>
@@ -433,8 +448,8 @@ namespace xt
     template <class T, std::size_t N, layout_type L>
     inline void pytensor<T, N, L>::init_tensor(const shape_type& shape, const strides_type& strides)
     {
-        npy_intp python_strides[N];
-        std::transform(strides.begin(), strides.end(), python_strides,
+        detail::numpy_strides<N> python_strides;
+        std::transform(strides.begin(), strides.end(), python_strides.value,
                        [](auto v) { return sizeof(T) * v; });
         int flags = NPY_ARRAY_ALIGNED;
         if (!std::is_const<T>::value)
@@ -445,7 +460,7 @@ namespace xt
 
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
             PyArray_NewFromDescr(&PyArray_Type, (PyArray_Descr*) dtype.release().ptr(), static_cast<int>(shape.size()),
-                        const_cast<npy_intp*>(shape.data()), python_strides,
+                        const_cast<npy_intp*>(shape.data()), python_strides.value,
                         nullptr, flags, nullptr));
 
         if (!tmp)

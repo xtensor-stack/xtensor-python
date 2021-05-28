@@ -227,6 +227,11 @@ void col_major_array(xt::pyarray<double, xt::layout_type::column_major>& arg)
     }
 }
 
+xt::pytensor<int, 0> xscalar(const xt::pytensor<int, 1>& arg)
+{
+    return xt::sum(arg);
+}
+
 template <class T>
 using ndarray = xt::pyarray<T, xt::layout_type::row_major>;
 
@@ -284,6 +289,8 @@ PYBIND11_MODULE(xtensor_python_test, m)
 
     m.def("col_major_array", col_major_array);
     m.def("row_major_tensor", row_major_tensor);
+
+    m.def("xscalar", xscalar);
 
     py::class_<C>(m, "C")
         .def(py::init<>())
