@@ -107,14 +107,14 @@ namespace xt
 {
     namespace detail {
 
-        template <std::size_t N, typename = void>
+        template <std::size_t N>
         struct numpy_strides
         {
             npy_intp value[N];
         };
 
-        template <std::size_t N>
-        struct numpy_strides<N, typename std::enable_if_t<(N == 0)>::type>
+        template <>
+        struct numpy_strides<0>
         {
             npy_intp* value = nullptr;
         };
