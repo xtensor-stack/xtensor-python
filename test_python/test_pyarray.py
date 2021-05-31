@@ -151,6 +151,10 @@ class XtensorTest(TestCase):
         xt.col_major_array(varF)
         xt.col_major_array(varF[:, :, 0]) # still col major!
 
+    def test_xscalar(self):
+        var = np.arange(50, dtype=int)
+        self.assertTrue(np.sum(var) == xt.xscalar(var))
+
     def test_bad_argument_call(self):
         with self.assertRaises(TypeError):
             xt.simple_array("foo")

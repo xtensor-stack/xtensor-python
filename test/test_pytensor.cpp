@@ -65,6 +65,15 @@ namespace xt
         EXPECT_THROW(pyt3::from_shape(shp), std::runtime_error);
     }
 
+    TEST(pytensor, scalar_from_shape)
+    {
+        std::array<size_t, 0> shape;
+        auto a = pytensor<double, 0>::from_shape(shape);
+        pytensor<double, 0> b(1.2);
+        EXPECT_TRUE(a.size() == b.size());
+        EXPECT_TRUE(xt::has_shape(a, b.shape()));
+    }
+
     TEST(pytensor, strided_constructor)
     {
         central_major_result<container_type> cmr;
