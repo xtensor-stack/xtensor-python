@@ -74,10 +74,6 @@ namespace pybind11
         template <class Type>
         struct xtensor_type_caster_base
         {
-            bool load(handle /*src*/, bool)
-            {
-                return false;
-            }
 
         private:
 
@@ -105,6 +101,26 @@ namespace pybind11
             }
 
         public:
+
+            bool load(handle src, bool convert)
+            {
+                using T = typename Type::value_type;
+
+                if (!convert && !array_t<T>::check_(src)) {
+                    return false;
+                }
+
+                auto buf = array_t<T, array::c_style | array::forcecast>::ensure(src);
+
+                if (!buf) {
+                    return false;
+                }
+
+                type_caster<Type>::value = Type::from_shape(buf.shape());
+                std::copy(buf.data(), buf.data() + buf.size(), type_caster<Type>::value.begin());
+
+                return true;
+            }
 
             // Normal returned non-reference, non-const value:
             static handle cast(Type&& src, return_value_policy /* policy */, handle parent)
