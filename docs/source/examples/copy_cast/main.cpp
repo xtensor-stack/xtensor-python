@@ -6,12 +6,14 @@
 
 double sum_of_sines(xt::pyarray<double>& m)
 {
-    auto xt::sum(xt::sin(m))();
+    auto sines = xt::sin(m);  // sines does not actually hold values.
+    return std::accumulate(sines.begin(), sines.end(), 0.0);
 }
 
-double sum_of_cosines(const xt::xtensor<double>& m)
+double sum_of_cosines(const xt::xarray<double>& m)
 {
-    auto xt::sum(xt::cos(m))();
+    auto cosines = xt::cos(m);  // cosines does not actually hold values.
+    return std::accumulate(cosines.begin(), cosines.end(), 0.0);
 }
 
 PYBIND11_MODULE(mymodule, m)
