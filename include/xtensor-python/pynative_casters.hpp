@@ -12,7 +12,6 @@
 
 #include "xtensor_type_caster_base.hpp"
 
-
 namespace pybind11
 {
     namespace detail
