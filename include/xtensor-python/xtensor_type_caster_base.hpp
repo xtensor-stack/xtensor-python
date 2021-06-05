@@ -37,7 +37,7 @@ namespace pybind11
         {
             static auto get(handle src)
             {
-                return array_t<T, array::f_style>::ensure(src);
+                return array_t<T, array::f_style | array::forcecast>::ensure(src);
             }
         };
 
@@ -51,8 +51,7 @@ namespace pybind11
         {
             static auto get(handle src)
             {
-                auto buf = xtensor_get_buffer<T, L>::get(src);
-                return buf;
+                return xtensor_get_buffer<T, L>::get(src);
             }
         };
 
@@ -61,11 +60,7 @@ namespace pybind11
         {
             static auto get(handle src)
             {
-                auto buf = xtensor_get_buffer<T, L>::get(src);
-                if (buf.ndim() != N) {
-                    return false;
-                }
-                return buf;
+                return xtensor_get_buffer<T, L>::get(src);
             }
         };
 
@@ -94,6 +89,27 @@ namespace pybind11
             static auto get(handle /*src*/)
             {
                 return false;
+            }
+        };
+
+
+        template <class T>
+        struct xtensor_verify
+        {
+            template <class B>
+            static bool get(const B& buf)
+            {
+                return true;
+            }
+        };
+
+        template <class T, std::size_t N, xt::layout_type L>
+        struct xtensor_verify<xt::xtensor<T, N, L>>
+        {
+            template <class B>
+            static bool get(const B& buf)
+            {
+                return buf.ndim() == N;
             }
         };
 
@@ -192,11 +208,14 @@ namespace pybind11
                 if (!buf) {
                     return false;
                 }
+                if (!xtensor_verify<Type>::get(buf)) {
+                    return false;
+                }
 
                 std::vector<size_t> shape(buf.ndim());
                 std::copy(buf.shape(), buf.shape() + buf.ndim(), shape.begin());
-                value = Type(shape);
-                std::copy(buf.data(), buf.data() + buf.size(), value.begin());
+                value = Type::from_shape(shape);
+                std::copy(buf.data(), buf.data() + buf.size(), value.data());
 
                 return true;
             }
