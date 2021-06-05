@@ -26,8 +26,7 @@ namespace pybind11
         template <typename T, xt::layout_type L>
         struct xtensor_get_buffer
         {
-            template <typename H>
-            static auto get(H src)
+            static auto get(handle src)
             {
                 return array_t<T, array::c_style | array::forcecast>::ensure(src);
             }
@@ -36,8 +35,7 @@ namespace pybind11
         template <typename T>
         struct xtensor_get_buffer<T, xt::layout_type::column_major>
         {
-            template <typename H>
-            static auto get(H src)
+            static auto get(handle src)
             {
                 return array_t<T, array::f_style>::ensure(src);
             }
@@ -51,8 +49,7 @@ namespace pybind11
         template <class T, xt::layout_type L>
         struct xtensor_check_buffer<xt::xarray<T, L>>
         {
-            template <typename H>
-            static auto get(H src)
+            static auto get(handle src)
             {
                 auto buf = xtensor_get_buffer<T, L>::get(src);
                 return buf;
@@ -62,8 +59,7 @@ namespace pybind11
         template <class T, std::size_t N, xt::layout_type L>
         struct xtensor_check_buffer<xt::xtensor<T, N, L>>
         {
-            template <typename H>
-            static auto get(H src)
+            static auto get(handle src)
             {
                 auto buf = xtensor_get_buffer<T, L>::get(src);
                 if (buf.ndim() != N) {
@@ -76,8 +72,7 @@ namespace pybind11
         template <class CT, class S, xt::layout_type L, class FST>
         struct xtensor_check_buffer<xt::xstrided_view<CT, S, L, FST>>
         {
-            template <typename H>
-            static auto get(H /*src*/)
+            static auto get(handle /*src*/)
             {
                 return false;
             }
@@ -86,18 +81,17 @@ namespace pybind11
         template <class EC, xt::layout_type L, class SC, class Tag>
         struct xtensor_check_buffer<xt::xarray_adaptor<EC, L, SC, Tag>>
         {
-            template <typename H>
-            static auto get(H /*src*/)
+            static auto get(handle src)
             {
-                return false;
+                auto buf = xtensor_get_buffer<EC, L>::get(src);
+                return buf;
             }
         };
 
         template <class EC, std::size_t N, xt::layout_type L, class Tag>
         struct xtensor_check_buffer<xt::xtensor_adaptor<EC, N, L, Tag>>
         {
-            template <typename H>
-            static auto get(H /*src*/)
+            static auto get(handle /*src*/)
             {
                 return false;
             }
