@@ -14,12 +14,56 @@ Consider the following C++ code:
    :language: cpp
 
 There are several options to build the module,
-whereby we will CMake here with the following ``CMakeLists.txt``:
+whereby we will use *CMake* here with the following ``CMakeLists.txt``:
 
 :download:`CMakeLists.txt <examples/readme_example_1/CMakeLists.txt>`
 
 .. literalinclude:: examples/readme_example_1/CMakeLists.txt
    :language: cmake
+
+.. tip::
+
+    There is a potential pitfall here, centered around the fact that *CMake*
+    has a 'new' *FindPython* and a 'classic' *FindPythonLibs*.
+    We here use *FindPython* because of its ability to find the NumPy headers,
+    that we need for *xtensor-python*.
+
+    This has the consequence that when we want to force *CMake*
+    to use a specific *Python* executable, we have to use something like
+
+    .. code-block:: none
+
+        cmake -Bbuild -DPython_EXECUTABLE=`which python`
+
+    whereby it is crucial that one uses the correct case ``Python_EXECUTABLE``, as:
+
+    .. code-block:: none
+
+        Python_EXECUTABLE   <->   FindPython
+        PYTHON_EXECUTABLE   <->   FindPythonLibs
+
+    (remember that *CMake* is **case-sensitive**!).
+
+    Now, since we use *FindPython* because of *xtensor-python* we also want *pybind11*
+    to use *FindPython*
+    (and not the classic *FindPythonLibs*,
+    since we want to specify the *Python* executable only once).
+    To this end we have to make sure to do things in the correct order, which is
+
+    .. code-block:: cmake
+
+        find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+        find_package(pybind11 REQUIRED CONFIG)
+
+    (i.e. one finds *Python* **before** *pybind11*).
+    See the `pybind11 documentation <https://pybind11.readthedocs.io/en/latest/cmake/index.html#new-findpython-mode>`_.
+
+    In addition, be sure to use a quite recent *CMake* version,
+    by starting your ``CMakeLists.txt`` for example with
+
+    .. code-block:: cmake
+
+        cmake_minimum_required(VERSION 3.18..3.20)
 
 Then we can test the module:
 
@@ -33,7 +77,7 @@ Then we can test the module:
     Since we did not install the module,
     we should compile and run the example from the same folder.
     To install, please consult
-    `this pybind11 / CMake example <https://github.com/pybind/cmake_example>`_.
+    `this *pybind11* / *CMake* example <https://github.com/pybind/cmake_example>`_.
 
 
 Type restriction with SFINAE
@@ -78,12 +122,14 @@ For the Python module we just have to specify the template to be
 .. literalinclude:: examples/sfinae/python.cpp
    :language: cpp
 
-We will again use CMake to compile, with the following ``CMakeLists.txt``:
+We will again use *CMake* to compile, with the following ``CMakeLists.txt``:
 
 :download:`CMakeLists.txt <examples/sfinae/CMakeLists.txt>`
 
 .. literalinclude:: examples/sfinae/CMakeLists.txt
    :language: cmake
+
+(see *CMake* tip above).
 
 Then we can test the module:
 
@@ -98,7 +144,7 @@ Then we can test the module:
     we should compile and run the example from the same folder.
     To install, please consult
     `this pybind11 / CMake example <https://github.com/pybind/cmake_example>`_.
-
+    **Tip**: take care to modify that example with the correct *CMake* case ``Python_EXECUTABLE``.
 
 Fall-back cast
 ==============

@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.1..3.19)
+cmake_minimum_required(VERSION 3.18..3.20)
 
 project(mymodule)
 
-find_package(pybind11 CONFIG REQUIRED)
+find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
+find_package(pybind11 REQUIRED CONFIG)
 find_package(xtensor REQUIRED)
 find_package(xtensor-python REQUIRED)
-find_package(Python REQUIRED COMPONENTS NumPy)
 
 pybind11_add_module(mymodule main.cpp)
 target_link_libraries(mymodule PUBLIC pybind11::module xtensor-python Python::NumPy)

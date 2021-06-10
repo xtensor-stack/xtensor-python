@@ -36,16 +36,21 @@ steps:
 
   - script: |
       source activate xtensor-python
-      cmake . -DPYTHON_EXECUTABLE=`which python`
+      cmake -Bbuild -DPython_EXECUTABLE=`which python`
+      cd build
       cmake --build .
+      cp ../example.py .
       python example.py
+      cd ..
     displayName: Example - readme 1
     workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/readme_example_1
 
   - script: |
       source activate xtensor-python
-      cmake . -DPYTHON_EXECUTABLE=`which python`
+      cmake -Bbuild -DPython_EXECUTABLE=`which python`
+      cd build
       cmake --build .
+      cp ../example.py .
       python example.py
     displayName: Example - Copy 'cast'
     workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/copy_cast
@@ -55,5 +60,6 @@ steps:
       cmake . -DPYTHON_EXECUTABLE=`which python`
       cmake --build .
       python example.py
+      cd ..
     displayName: Example - SFINAE
     workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/sfinae
