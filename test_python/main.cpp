@@ -33,6 +33,33 @@ xt::pyarray<double> example2(xt::pyarray<double>& m)
     return m + 2;
 }
 
+xt::xarray<int> example3_xarray(const xt::xarray<int>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
+xt::xarray<int, xt::layout_type::column_major> example3_xarray_colmajor(
+    const xt::xarray<int, xt::layout_type::column_major>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
+xt::xtensor<int, 3> example3_xtensor3(const xt::xtensor<int, 3>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
+xt::xtensor<int, 2> example3_xtensor2(const xt::xtensor<int, 2>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
+xt::xtensor<int, 2, xt::layout_type::column_major> example3_xtensor2_colmajor(
+    const xt::xtensor<int, 2, xt::layout_type::column_major>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
 // Readme Examples
 
 double readme_example1(xt::pyarray<double>& m)
@@ -249,6 +276,11 @@ PYBIND11_MODULE(xtensor_python_test, m)
 
     m.def("example1", example1);
     m.def("example2", example2);
+    m.def("example3_xarray", example3_xarray);
+    m.def("example3_xarray_colmajor", example3_xarray_colmajor);
+    m.def("example3_xtensor3", example3_xtensor3);
+    m.def("example3_xtensor2", example3_xtensor2);
+    m.def("example3_xtensor2_colmajor", example3_xtensor2_colmajor);
 
     m.def("complex_overload", no_complex_overload);
     m.def("complex_overload", complex_overload);

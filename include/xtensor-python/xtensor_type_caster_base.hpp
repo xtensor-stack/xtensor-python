@@ -23,6 +23,97 @@ namespace pybind11
 {
     namespace detail
     {
+        template <typename T, xt::layout_type L>
+        struct pybind_array_getter_impl
+        {
+            static auto run(handle src)
+            {
+                return array_t<T, array::c_style | array::forcecast>::ensure(src);
+            }
+        };
+
+        template <typename T>
+        struct pybind_array_getter_impl<T, xt::layout_type::column_major>
+        {
+            static auto run(handle src)
+            {
+                return array_t<T, array::f_style | array::forcecast>::ensure(src);
+            }
+        };
+
+        template <class T>
+        struct pybind_array_getter
+        {
+        };
+
+        template <class T, xt::layout_type L>
+        struct pybind_array_getter<xt::xarray<T, L>>
+        {
+            static auto run(handle src)
+            {
+                return pybind_array_getter_impl<T, L>::run(src);
+            }
+        };
+
+        template <class T, std::size_t N, xt::layout_type L>
+        struct pybind_array_getter<xt::xtensor<T, N, L>>
+        {
+            static auto run(handle src)
+            {
+                return pybind_array_getter_impl<T, L>::run(src);
+            }
+        };
+
+        template <class CT, class S, xt::layout_type L, class FST>
+        struct pybind_array_getter<xt::xstrided_view<CT, S, L, FST>>
+        {
+            static auto run(handle /*src*/)
+            {
+                return false;
+            }
+        };
+
+        template <class EC, xt::layout_type L, class SC, class Tag>
+        struct pybind_array_getter<xt::xarray_adaptor<EC, L, SC, Tag>>
+        {
+            static auto run(handle src)
+            {
+                auto buf = pybind_array_getter_impl<EC, L>::run(src);
+                return buf;
+            }
+        };
+
+        template <class EC, std::size_t N, xt::layout_type L, class Tag>
+        struct pybind_array_getter<xt::xtensor_adaptor<EC, N, L, Tag>>
+        {
+            static auto run(handle /*src*/)
+            {
+                return false;
+            }
+        };
+
+
+        template <class T>
+        struct pybind_array_dim_checker
+        {
+            template <class B>
+            static bool run(const B& buf)
+            {
+                return true;
+            }
+        };
+
+        template <class T, std::size_t N, xt::layout_type L>
+        struct pybind_array_dim_checker<xt::xtensor<T, N, L>>
+        {
+            template <class B>
+            static bool run(const B& buf)
+            {
+                return buf.ndim() == N;
+            }
+        };
+
+
         // Casts a strided expression type to numpy array.If given a base,
         // the numpy array references the src data, otherwise it'll make a copy.
         // The writeable attributes lets you specify writeable flag for the array.
@@ -74,10 +165,6 @@ namespace pybind11
         template <class Type>
         struct xtensor_type_caster_base
         {
-            bool load(handle /*src*/, bool)
-            {
-                return false;
-            }
 
         private:
 
@@ -105,6 +192,36 @@ namespace pybind11
             }
 
         public:
+
+            PYBIND11_TYPE_CASTER(Type, _("numpy.ndarray[") + npy_format_descriptor<typename Type::value_type>::name + _("]"));
+
+            bool load(handle src, bool convert)
+            {
+                using T = typename Type::value_type;
+
+                if (!convert && !array_t<T>::check_(src))
+                {
+                    return false;
+                }
+
+                auto buf = pybind_array_getter<Type>::run(src);
+
+                if (!buf)
+                {
+                    return false;
+                }
+                if (!pybind_array_dim_checker<Type>::run(buf))
+                {
+                    return false;
+                }
+
+                std::vector<size_t> shape(buf.ndim());
+                std::copy(buf.shape(), buf.shape() + buf.ndim(), shape.begin());
+                value = Type::from_shape(shape);
+                std::copy(buf.data(), buf.data() + buf.size(), value.data());
+
+                return true;
+            }
 
             // Normal returned non-reference, non-const value:
             static handle cast(Type&& src, return_value_policy /* policy */, handle parent)
@@ -151,18 +268,6 @@ namespace pybind11
             {
                 return cast_impl(src, policy, parent);
             }
-
-#ifdef PYBIND11_DESCR // The macro is removed from pybind11 since 2.3
-            static PYBIND11_DESCR name()
-            {
-                return _("xt::xtensor");
-            }
-#else
-            static constexpr auto name = _("xt::xtensor");
-#endif
-
-            template <typename T>
-            using cast_op_type = cast_op_type<T>;
         };
     }
 }

@@ -53,5 +53,16 @@ steps:
       cp ../example.py .
       python example.py
       cd ..
+    displayName: Example - Copy 'cast'
+    workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/copy_cast
+
+  - script: |
+      source activate xtensor-python
+      cmake -Bbuild -DPython_EXECUTABLE=`which python`
+      cd build
+      cmake --build .
+      cp ../example.py .
+      python example.py
+      cd ..
     displayName: Example - SFINAE
     workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/sfinae
