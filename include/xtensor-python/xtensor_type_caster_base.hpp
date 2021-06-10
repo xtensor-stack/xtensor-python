@@ -24,69 +24,69 @@ namespace pybind11
     namespace detail
     {
         template <typename T, xt::layout_type L>
-        struct xtensor_get_buffer
+        struct pybind_array_getter_impl
         {
-            static auto get(handle src)
+            static auto run(handle src)
             {
                 return array_t<T, array::c_style | array::forcecast>::ensure(src);
             }
         };
 
         template <typename T>
-        struct xtensor_get_buffer<T, xt::layout_type::column_major>
+        struct pybind_array_getter_impl<T, xt::layout_type::column_major>
         {
-            static auto get(handle src)
+            static auto run(handle src)
             {
                 return array_t<T, array::f_style | array::forcecast>::ensure(src);
             }
         };
 
         template <class T>
-        struct xtensor_check_buffer
+        struct pybind_array_getter
         {
         };
 
         template <class T, xt::layout_type L>
-        struct xtensor_check_buffer<xt::xarray<T, L>>
+        struct pybind_array_getter<xt::xarray<T, L>>
         {
-            static auto get(handle src)
+            static auto run(handle src)
             {
-                return xtensor_get_buffer<T, L>::get(src);
+                return pybind_array_getter_impl<T, L>::run(src);
             }
         };
 
         template <class T, std::size_t N, xt::layout_type L>
-        struct xtensor_check_buffer<xt::xtensor<T, N, L>>
+        struct pybind_array_getter<xt::xtensor<T, N, L>>
         {
-            static auto get(handle src)
+            static auto run(handle src)
             {
-                return xtensor_get_buffer<T, L>::get(src);
+                return pybind_array_getter_impl<T, L>::run(src);
             }
         };
 
         template <class CT, class S, xt::layout_type L, class FST>
-        struct xtensor_check_buffer<xt::xstrided_view<CT, S, L, FST>>
+        struct pybind_array_getter<xt::xstrided_view<CT, S, L, FST>>
         {
-            static auto get(handle /*src*/)
+            static auto run(handle /*src*/)
             {
                 return false;
             }
         };
 
         template <class EC, xt::layout_type L, class SC, class Tag>
-        struct xtensor_check_buffer<xt::xarray_adaptor<EC, L, SC, Tag>>
+        struct pybind_array_getter<xt::xarray_adaptor<EC, L, SC, Tag>>
         {
-            static auto get(handle src)
+            static auto run(handle src)
             {
-                auto buf = xtensor_get_buffer<EC, L>::get(src);
+                auto buf = pybind_array_getter_impl<EC, L>::run(src);
                 return buf;
             }
         };
 
         template <class EC, std::size_t N, xt::layout_type L, class Tag>
-        struct xtensor_check_buffer<xt::xtensor_adaptor<EC, N, L, Tag>>
+        struct pybind_array_getter<xt::xtensor_adaptor<EC, N, L, Tag>>
         {
-            static auto get(handle /*src*/)
+            static auto run(handle /*src*/)
             {
                 return false;
             }
@@ -94,20 +94,20 @@ namespace pybind11
 
 
         template <class T>
-        struct xtensor_verify
+        struct pybind_array_dim_checker
         {
             template <class B>
-            static bool get(const B& buf)
+            static bool run(const B& buf)
             {
                 return true;
             }
         };
 
         template <class T, std::size_t N, xt::layout_type L>
-        struct xtensor_verify<xt::xtensor<T, N, L>>
+        struct pybind_array_dim_checker<xt::xtensor<T, N, L>>
         {
             template <class B>
-            static bool get(const B& buf)
+            static bool run(const B& buf)
             {
                 return buf.ndim() == N;
             }
@@ -199,16 +199,19 @@ namespace pybind11
             {
                 using T = typename Type::value_type;
 
-                if (!convert && !array_t<T>::check_(src)) {
+                if (!convert && !array_t<T>::check_(src))
+                {
                     return false;
                 }
 
-                auto buf = xtensor_check_buffer<Type>::get(src);
+                auto buf = pybind_array_getter<Type>::run(src);
 
-                if (!buf) {
+                if (!buf)
+                {
                     return false;
                 }
-                if (!xtensor_verify<Type>::get(buf)) {
+                if (!pybind_array_dim_checker<Type>::run(buf))
+                {
                     return false;
                 }
 
