@@ -2,10 +2,6 @@ jobs:
   - job: 'Linux_1'
     strategy:
       matrix:
-        gcc_4:
-          gcc_version: '4.9'
-        gcc_5:
-          gcc_version: '5'
         gcc_6:
           gcc_version: '6'
         gcc_7:
@@ -15,7 +11,7 @@ jobs:
         gcc_9:
           gcc_version: '9'
     pool:
-      vmImage: ubuntu-16.04
+      vmImage: ubuntu-18.04
     variables:
       CC: gcc-$(gcc_version)
       CXX: g++-$(gcc_version)
