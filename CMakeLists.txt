@@ -32,7 +32,7 @@ message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 # Dependencies
 # ============
 
-set(xtensor_REQUIRED_VERSION 0.21.2)
+set(xtensor_REQUIRED_VERSION 0.24.0)
 if(TARGET xtensor)
     set(xtensor_VERSION ${XTENSOR_VERSION_MAJOR}.${XTENSOR_VERSION_MINOR}.${XTENSOR_VERSION_PATCH})
     # Note: This is not SEMVER compatible comparison

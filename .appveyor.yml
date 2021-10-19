@@ -21,8 +21,8 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda info -a
-  - conda install cmake -c conda-forge
-  - conda install pytest numpy pybind11==2.4.3 xtensor==0.23.10 -c conda-forge
+  - conda install mamba -c conda-forge
+  - mamba install cmake pytest numpy pybind11 xtensor==0.24.0 -c conda-forge
   - "set PYTHONHOME=%MINICONDA%"
   - cmake -G "NMake Makefiles" -D CMAKE_INSTALL_PREFIX=%MINICONDA%\\Library -D BUILD_TESTS=ON -D PYTHON_EXECUTABLE=%MINICONDA%\\python.exe -DDOWNLOAD_GTEST=ON .
   - nmake test_xtensor_python
