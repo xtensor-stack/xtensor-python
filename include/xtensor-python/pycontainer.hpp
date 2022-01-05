@@ -320,9 +320,9 @@ namespace xt
     inline auto pycontainer<D>::get_buffer_size() const -> size_type
     {
         const size_type& (*min)(const size_type&, const size_type&) = std::min<size_type>;
-        size_type min_stride = this->strides().empty() ? size_type(1) : 
+        size_type min_stride = this->strides().empty() ? size_type(1) :
             std::max(size_type(1), std::accumulate(this->strides().cbegin(),
-                                                   this->strides().cend(), 
+                                                   this->strides().cend(),
                                                    std::numeric_limits<size_type>::max(),
                                                    min));
         return min_stride * static_cast<size_type>(PyArray_SIZE(this->python_array()));
@@ -499,6 +499,15 @@ namespace xt
             PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
         }
 #endif
+    }
+
+    /**
+     * Return ``true`` if NumPy was properly imported.
+     */
+    inline bool numpy_imported()
+    {
+        std::cout << "xt::numpy_imported = " << PyRun_SimpleString("__import__('sys').modules['numpy.core']") << std::endl;
+        return PyRun_SimpleString("__import__('sys').modules['numpy.core']") == 0;
     }
 
 #if defined(__GNUC__) && !defined(__clang__)

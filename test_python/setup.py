@@ -99,11 +99,13 @@ class BuildExt(build_ext):
         opts = self.c_opts.get(ct, [])
         if ct == 'unix':
             opts.append('-DVERSION_INFO="%s"' % self.distribution.get_version())
+            opts.append('-DXTENSOR_PYTHON_ENABLE_DEBUG')
             opts.append(cpp_flag(self.compiler))
             if has_flag(self.compiler, '-fvisibility=hidden'):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
+            opts.append('/DXTENSOR_PYTHON_ENABLE_DEBUG')
         for ext in self.extensions:
             ext.extra_compile_args = opts
         build_ext.build_extensions(self)
