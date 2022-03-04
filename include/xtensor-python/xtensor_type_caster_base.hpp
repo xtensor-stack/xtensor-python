@@ -151,14 +151,7 @@ namespace pybind11
             static bool run(const B& buf)
             {
                 auto shape = FSH();
-                for (std::size_t i = 0; i < shape.size(); ++i)
-                {
-                    if (shape[i] != buf.shape(i))
-                    {
-                        return false;
-                    }
-                }
-                return true;
+                return std::equal(shape.begin(), shape.end(), buf.shape());
             }
         };
 
