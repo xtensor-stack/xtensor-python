@@ -80,6 +80,12 @@ target_include_directories(xtensor-python INTERFACE
 target_link_libraries(xtensor-python INTERFACE xtensor)
 get_target_property(inc_dir xtensor-python INTERFACE_INCLUDE_DIRECTORIES)
 
+if(MSVC)
+    set_property(TARGET xtensor-python PROPERTY INTERFACE_COMPILE_OPTIONS /DHAVE_SNPRINTF)
+else()
+    set_property(TARGET xtensor-python PROPERTY INTERFACE_COMPILE_OPTIONS -DHAVE_SNPRINTF)
+endif()
+
 OPTION(BUILD_TESTS "xtensor test suite" OFF)
 OPTION(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
 
