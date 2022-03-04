@@ -2,8 +2,6 @@ jobs:
   - job: 'OSX'
     strategy:
       matrix:
-        macOS_10_14:
-          image_name: 'macOS-10.14'
         macOS_10_15:
           image_name: 'macOS-10.15'
     pool:
