@@ -28,6 +28,12 @@ namespace pybind11
         {
         };
 
+        // Type caster for casting xt::xtensor_fixed to ndarray
+        template <class T, class FSH, xt::layout_type L>
+        struct type_caster<xt::xtensor_fixed<T, FSH, L>> : xtensor_type_caster_base<xt::xtensor_fixed<T, FSH, L>>
+        {
+        };
+
         // Type caster for casting xt::xstrided_view to ndarray
         template <class CT, class S, xt::layout_type L, class FST>
         struct type_caster<xt::xstrided_view<CT, S, L, FST>> : xtensor_type_caster_base<xt::xstrided_view<CT, S, L, FST>>

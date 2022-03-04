@@ -11,6 +11,7 @@
 
 #include "xtensor/xmath.hpp"
 #include "xtensor/xarray.hpp"
+#include "xtensor/xfixed.hpp"
 #define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyarray.hpp"
 #include "xtensor-python/pytensor.hpp"
@@ -56,6 +57,22 @@ xt::xtensor<int, 2> example3_xtensor2(const xt::xtensor<int, 2>& m)
 
 xt::xtensor<int, 2, xt::layout_type::column_major> example3_xtensor2_colmajor(
     const xt::xtensor<int, 2, xt::layout_type::column_major>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
+xt::xtensor_fixed<int, xt::xshape<4, 3, 2>> example3_xfixed3(const xt::xtensor_fixed<int, xt::xshape<2, 3, 4>>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
+xt::xtensor_fixed<int, xt::xshape<3, 2>> example3_xfixed2(const xt::xtensor_fixed<int, xt::xshape<2, 3>>& m)
+{
+    return xt::transpose(m) + 2;
+}
+
+xt::xtensor_fixed<int, xt::xshape<3, 2>, xt::layout_type::column_major> example3_xfixed2_colmajor(
+    const xt::xtensor_fixed<int, xt::xshape<2, 3>, xt::layout_type::column_major>& m)
 {
     return xt::transpose(m) + 2;
 }
@@ -281,6 +298,9 @@ PYBIND11_MODULE(xtensor_python_test, m)
     m.def("example3_xtensor3", example3_xtensor3);
     m.def("example3_xtensor2", example3_xtensor2);
     m.def("example3_xtensor2_colmajor", example3_xtensor2_colmajor);
+    m.def("example3_xfixed3", example3_xfixed3);
+    m.def("example3_xfixed2", example3_xfixed2);
+    m.def("example3_xfixed2_colmajor", example3_xfixed2_colmajor);
 
     m.def("complex_overload", no_complex_overload);
     m.def("complex_overload", complex_overload);
