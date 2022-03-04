@@ -320,9 +320,9 @@ namespace xt
     inline auto pycontainer<D>::get_buffer_size() const -> size_type
     {
         const size_type& (*min)(const size_type&, const size_type&) = std::min<size_type>;
-        size_type min_stride = this->strides().empty() ? size_type(1) : 
+        size_type min_stride = this->strides().empty() ? size_type(1) :
             std::max(size_type(1), std::accumulate(this->strides().cbegin(),
-                                                   this->strides().cend(), 
+                                                   this->strides().cend(),
                                                    std::numeric_limits<size_type>::max(),
                                                    min));
         return min_stride * static_cast<size_type>(PyArray_SIZE(this->python_array()));

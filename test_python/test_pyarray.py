@@ -49,8 +49,19 @@ class XtensorTest(TestCase):
         np.testing.assert_array_equal(xt.example3_xtensor2(y[1:, 1:, 0]), v.T + 2)
         np.testing.assert_array_equal(xt.example3_xtensor2_colmajor(xc), xc.T + 2)
 
+        np.testing.assert_array_equal(xt.example3_xfixed3(y), y.T + 2)
+        np.testing.assert_array_equal(xt.example3_xfixed2(x), x.T + 2)
+        np.testing.assert_array_equal(xt.example3_xfixed2_colmajor(xc), xc.T + 2)
+
         with self.assertRaises(TypeError):
             xt.example3_xtensor3(x)
+
+        with self.assertRaises(TypeError):
+            xt.example3_xfixed3(x)
+
+        with self.assertRaises(TypeError):
+            x = np.arange(3*2).reshape(3, 2)
+            xt.example3_xfixed2(x)
 
     def test_vectorize(self):
         x1 = np.array([[0, 1], [2, 3]])
@@ -85,7 +96,7 @@ class XtensorTest(TestCase):
         x = np.arange(15).reshape(3, 5)
         y = [1, 2, 3, 4, 5]
         z = xt.readme_example2(x, y)
-        np.testing.assert_allclose(z, 
+        np.testing.assert_allclose(z,
             [[-0.540302,  1.257618,  1.89929 ,  0.794764, -1.040465],
              [-1.499227,  0.136731,  1.646979,  1.643002,  0.128456],
              [-1.084323, -0.583843,  0.45342 ,  1.073811,  0.706945]], 1e-5)

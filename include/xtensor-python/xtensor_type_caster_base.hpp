@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "xtensor/xtensor.hpp"
+#include "xtensor/xfixed.hpp"
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
@@ -57,6 +58,15 @@ namespace pybind11
 
         template <class T, std::size_t N, xt::layout_type L>
         struct pybind_array_getter<xt::xtensor<T, N, L>>
+        {
+            static auto run(handle src)
+            {
+                return pybind_array_getter_impl<T, L>::run(src);
+            }
+        };
+
+        template <class T, class FSH, xt::layout_type L>
+        struct pybind_array_getter<xt::xtensor_fixed<T, FSH, L>>
         {
             static auto run(handle src)
             {
@@ -113,6 +123,44 @@ namespace pybind11
             }
         };
 
+        template <class T, class FSH, xt::layout_type L>
+        struct pybind_array_dim_checker<xt::xtensor_fixed<T, FSH, L>>
+        {
+            template <class B>
+            static bool run(const B& buf)
+            {
+                return buf.ndim() == FSH::size();
+            }
+        };
+
+
+        template <class T>
+        struct pybind_array_shape_checker
+        {
+            template <class B>
+            static bool run(const B& buf)
+            {
+                return true;
+            }
+        };
+
+        template <class T, class FSH, xt::layout_type L>
+        struct pybind_array_shape_checker<xt::xtensor_fixed<T, FSH, L>>
+        {
+            template <class B>
+            static bool run(const B& buf)
+            {
+                auto shape = FSH();
+                for (std::size_t i = 0; i < shape.size(); ++i)
+                {
+                    if (shape[i] != buf.shape(i))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        };
 
         // Casts a strided expression type to numpy array.If given a base,
         // the numpy array references the src data, otherwise it'll make a copy.
@@ -211,6 +259,11 @@ namespace pybind11
                     return false;
                 }
                 if (!pybind_array_dim_checker<Type>::run(buf))
+                {
+                    return false;
+                }
+
+                if (!pybind_array_shape_checker<Type>::run(buf))
                 {
                     return false;
                 }
