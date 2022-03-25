@@ -38,7 +38,7 @@ jobs:
           ninja
 
     - name: Configure using CMake
-      run: cmake -Bbuild -G "Ninja" -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON
+      run: cmake -Bbuild -G "Ninja" -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DPython_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON
 
     - name: Install
       working-directory: build
