@@ -80,8 +80,6 @@ else()
 endif()
 
 find_package(Threads)
-find_package(pybind11 REQUIRED)
-find_package(Python REQUIRED COMPONENTS Interpreter Development NumPy)
 
 include_directories(${GTEST_INCLUDE_DIRS})
 
@@ -95,7 +93,7 @@ set(XTENSOR_PYTHON_TESTS
 )
 
 add_executable(test_xtensor_python ${XTENSOR_PYTHON_TESTS} ${XTENSOR_PYTHON_HEADERS})
-target_link_libraries(test_xtensor_python xtensor-python ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES} Python::Python Python::NumPy)
+target_link_libraries(test_xtensor_python xtensor-python ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${PYTHON_LIBRARIES})
 
 if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
     add_dependencies(test_xtensor_python gtest_main)
