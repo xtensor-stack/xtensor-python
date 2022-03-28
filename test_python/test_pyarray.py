@@ -27,6 +27,9 @@ class XtensorTest(TestCase):
     def test_rm(self):
         xt.test_rm(np.array([10], dtype=int))
 
+    def test_argmin(self):
+        self.assertEqual(1, xt.argmin([7, 5, 6]))
+
     def test_example1(self):
         self.assertEqual(4, xt.example1([4, 5, 6]))
 
