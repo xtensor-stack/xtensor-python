@@ -23,6 +23,7 @@
 #include "pystrides_adaptor.hpp"
 #include "pynative_casters.hpp"
 #include "xtensor_type_caster_base.hpp"
+#include "xtensor_python_config.hpp"
 
 namespace xt
 {
