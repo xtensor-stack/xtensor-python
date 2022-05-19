@@ -23,7 +23,7 @@ import xtensor_python_test as xt
 import numpy as np
 
 class XtensorTest(TestCase):
-
+    """
     def test_rm(self):
         xt.test_rm(np.array([10], dtype=int))
 
@@ -62,6 +62,50 @@ class XtensorTest(TestCase):
         with self.assertRaises(TypeError):
             x = np.arange(3*2).reshape(3, 2)
             xt.example3_xfixed2(x)
+    """
+    def test_broadcast_addition(self):
+        x = np.array([[2., 3., 4., 5.]])
+        y = np.array([[1., 2., 3., 4.],
+                      [1., 2., 3., 4.],
+                      [1., 2., 3., 4.]])
+        res = np.array([[3., 5., 7., 9.],
+                        [3., 5., 7., 9.],
+                        [3., 5., 7., 9.]])
+        z = xt.array_addition(x, y)
+        np.testing.assert_allclose(z, res, 1e-12)
+    """
+    def test_broadcast_subtraction(self):
+        x = np.array([[4., 5., 6., 7.]])
+        y = np.array([[4., 3., 2., 1.],
+                      [4., 3., 2., 1.],
+                      [4., 3., 2., 1.]])
+        res = np.array([[0., 2., 4., 6.],
+                        [0., 2., 4., 6.],
+                        [0., 2., 4., 6.]])
+        z = xt.array_subtraction(x, y)
+        np.testing.assert_allclose(z, res, 1e-12)
+
+    def test_broadcast_multiplication(self):
+        x = np.array([[1., 2., 3., 4.]])
+        y = np.array([[3., 2., 3., 2.],
+                      [3., 2., 3., 2.],
+                      [3., 2., 3., 2.]])
+        res = np.array([[3., 4., 9., 8.],
+                        [3., 4., 9., 8.],
+                        [3., 4., 9., 8.]])
+        z = xt.array_multiplication(x, y)
+        np.testing.assert_allclose(z, res, 1e-12)
+
+    def test_broadcast_division(self):
+        x = np.array([[8., 6., 4., 2.]])
+        y = np.array([[2., 2., 2., 2.],
+                      [2., 2., 2., 2.],
+                      [2., 2., 2., 2.]])
+        res = np.array([[4., 3., 2., 1.],
+                        [4., 3., 2., 1.],
+                        [4., 3., 2., 1.]])
+        z = xt.array_division(x, y)
+        np.testing.assert_allclose(z, res, 1e-12)
 
     def test_vectorize(self):
         x1 = np.array([[0, 1], [2, 3]])
@@ -263,7 +307,7 @@ class XtensorTest(TestCase):
         self.assertEqual(adapter.shape, (2, 2))
         adapter[1, 1] = -3
         self.assertEqual(arr[0, 5], -3)
-
+     """
 
 class AttributeTest(TestCase):
 

@@ -519,7 +519,8 @@ namespace xt
         m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
                                    static_cast<size_type>(PyArray_NDIM(this->python_array())));
         m_strides = inner_strides_type(reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
-                                       static_cast<size_type>(PyArray_NDIM(this->python_array())));
+                                       static_cast<size_type>(PyArray_NDIM(this->python_array())),
+                                       reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())));
 
         if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L, 1))
         {
