@@ -41,8 +41,10 @@ namespace xt
         using const_reverse_iterator = std::reverse_iterator<const_iterator>;
         using reverse_iterator = const_reverse_iterator;
 
+        using shape_type = size_t*;
+
         pystrides_adaptor() = default;
-        pystrides_adaptor(const_pointer data, size_type size);
+        pystrides_adaptor(const_pointer data, size_type size, shape_type shape);
 
         bool empty() const noexcept;
         size_type size() const noexcept;
@@ -66,6 +68,7 @@ namespace xt
 
         const_pointer p_data;
         size_type m_size;
+        shape_type p_shape;
     };
 
     /**********************************
@@ -84,21 +87,23 @@ namespace xt
         using reference = typename pystrides_adaptor<N>::const_reference;
         using difference_type = typename pystrides_adaptor<N>::difference_type;
         using iterator_category = std::random_access_iterator_tag;
+        using shape_pointer = typename pystrides_adaptor<N>::shape_type;
 
-        inline pystrides_iterator(pointer current)
+        inline pystrides_iterator(pointer current, shape_pointer shape)
             : p_current(current)
+            , p_shape(shape)
         {
         }
 
         inline reference operator*() const
         {
-            return *p_current / N;
+            return *p_shape == size_t(1) ? 0 : *p_current / N;
         }
 
         inline pointer operator->() const
         {
             // Returning the address of a temporary
-            value_type res = *p_current / N;
+            value_type res = this->operator*();
             return &res;
         }
 
@@ -110,12 +115,14 @@ namespace xt
         inline self_type& operator++()
         {
             ++p_current;
+            ++p_shape;
             return *this;
         }
 
         inline self_type& operator--()
         {
             --p_current;
+            --p_shape;
             return *this;
         }
 
@@ -123,6 +130,7 @@ namespace xt
         {
             self_type tmp(*this);
             ++p_current;
+            ++p_shape;
             return tmp;
         }
 
@@ -130,29 +138,32 @@ namespace xt
         {
             self_type tmp(*this);
             --p_current;
+            --p_shape;
             return tmp;
         }
 
         inline self_type& operator+=(difference_type n)
         {
             p_current += n;
+            p_shape += n;
             return *this;
         }
 
         inline self_type& operator-=(difference_type n)
         {
             p_current -= n;
+            p_shape -= n;
             return *this;
         }
 
         inline self_type operator+(difference_type n) const
         {
-            return self_type(p_current + n);
+            return self_type(p_current + n, p_shape + n);
         }
 
         inline self_type operator-(difference_type n) const
         {
-            return self_type(p_current - n);
+            return self_type(p_current - n, p_shape - n);
         }
 
         inline difference_type operator-(const self_type& rhs) const
@@ -166,6 +177,7 @@ namespace xt
     private:
 
         pointer p_current;
+        shape_pointer p_shape;
     };
 
     template <std::size_t N>
@@ -215,8 +227,8 @@ namespace xt
      ************************************/
 
     template <std::size_t N>
-    inline pystrides_adaptor<N>::pystrides_adaptor(const_pointer data, size_type size)
-        : p_data(data), m_size(size)
+    inline pystrides_adaptor<N>::pystrides_adaptor(const_pointer data, size_type size, shape_type shape)
+        : p_data(data), m_size(size), p_shape(shape)
     {
     }
 
@@ -235,19 +247,19 @@ namespace xt
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::operator[](size_type i) const -> const_reference
     {
-        return p_data[i] / N;
+        return p_shape[i] == size_t(1) ? 0 : p_data[i] / N;
     }
 
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::front() const -> const_reference
     {
-        return p_data[0] / N;
+        return this->operator[](0);
     }
 
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::back() const -> const_reference
     {
-        return p_data[m_size - 1] / N;
+        return this->operator[](m_size - 1);
     }
 
     template <std::size_t N>
@@ -265,13 +277,13 @@ namespace xt
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::cbegin() const -> const_iterator
     {
-        return const_iterator(p_data);
+        return const_iterator(p_data, p_shape);
     }
 
     template <std::size_t N>
     inline auto pystrides_adaptor<N>::cend() const -> const_iterator
     {
-        return const_iterator(p_data + m_size);
+        return const_iterator(p_data + m_size, p_shape + m_size);
     }
 
     template <std::size_t N>
