@@ -109,6 +109,7 @@ namespace pybind11
             template <class B>
             static bool run(const B& buf)
             {
+                (void)(buf);
                 return true;
             }
         };
@@ -140,6 +141,7 @@ namespace pybind11
             template <class B>
             static bool run(const B& buf)
             {
+                (void)(buf);
                 return true;
             }
         };
