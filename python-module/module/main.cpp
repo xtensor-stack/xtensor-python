@@ -46,6 +46,8 @@ PYBIND11_MODULE(_xt, m)
     m.doc() = "Python bindings of xtensor";
 
     m.def("mean", [](const xt::pyarray<double>& a) -> xt::pyarray<double> { return xt::mean(a); });
+    m.def("average", [](const xt::pyarray<double>& a, const xt::pyarray<double>& w) -> xt::pyarray<double> { return xt::average(a, w); });
+    m.def("average", [](const xt::pyarray<double>& a, const xt::pyarray<double>& w, const std::vector<ptrdiff_t>& axes) -> xt::pyarray<double> { return xt::average(a, w, axes); });
 
     m.def("flip", [](const xt::pyarray<double>& a, ptrdiff_t axis) -> xt::pyarray<double> { return xt::flip(a, axis); });
 

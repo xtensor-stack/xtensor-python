@@ -1,6 +1,4 @@
 import unittest
-import timeit
-import warnings
 
 import xt
 import numpy as np
@@ -19,11 +17,24 @@ class test_a(unittest.TestCase):
 
         self.assertTrue(np.allclose(n, x))
 
-        n = timeit.timeit(lambda: np.mean(a), number=10)
-        x = timeit.timeit(lambda: xt.mean(a), number=10)
+    def test_average(self):
 
-        if x / n > 1.1:
-            warnings.warn(f"efficiency xt.mean {x / n:.2e}")
+        a = np.random.random([103, 102, 101])
+        w = np.random.random([103, 102, 101])
+        n = np.average(a, weights=w)
+        x = xt.average(a, w)
+
+        self.assertTrue(np.allclose(n, x))
+
+    def test_average_axes(self):
+
+        a = np.random.random([103, 102, 101])
+        w = np.random.random([103, 102, 101])
+        axis = int(np.random.randint(0, high=3))
+        n = np.average(a, weights=w, axis=(axis,))
+        x = xt.average(a, w, [axis])
+
+        self.assertTrue(np.allclose(n, x))
 
     def test_flip(self):
 
@@ -34,12 +45,6 @@ class test_a(unittest.TestCase):
 
         self.assertTrue(np.allclose(n, x))
 
-        n = timeit.timeit(lambda: np.flip(a, axis), number=10)
-        x = timeit.timeit(lambda: xt.flip(a, axis), number=10)
-
-        if x / n > 1.1:
-            warnings.warn(f"efficiency xt.flip {x / n:.2e}")
-
     def test_cos(self):
 
         a = np.random.random([103, 102, 101])
@@ -47,13 +52,6 @@ class test_a(unittest.TestCase):
         x = xt.cos(a)
 
         self.assertTrue(np.allclose(n, x))
-
-        n = timeit.timeit(lambda: np.cos(a), number=10)
-        x = timeit.timeit(lambda: xt.cos(a), number=10)
-
-        if x / n > 1.1:
-            warnings.warn(f"efficiency xt.cos {x / n:.2e}")
-
 
 
 if __name__ == "__main__":
