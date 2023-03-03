@@ -5,9 +5,9 @@ dependencies:
   # Build dependencies
   - cmake
   # Host dependencies
-  - xtensor=0.24.0
+  - xtensor >=0.24.0
   - numpy
-  - pybind11=2.4.3
+  - pybind11 >=2.4.3
   # Test dependencies
   - pytest
 

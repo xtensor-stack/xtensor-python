@@ -57,8 +57,8 @@ class test_a(unittest.TestCase):
 
     def test_isin(self):
 
-        a = (np.random.random([103, 102]) * 1000).astype(int)
-        b = (np.random.random([103, 102]) * 1000).astype(int)
+        a = (np.random.random([103, 102]) * 1000).astype(np.intc)
+        b = (np.random.random([103, 102]) * 1000).astype(np.intc)
 
         n = timeit.timeit(lambda: np.isin(a, b), number=10)
         x = timeit.timeit(lambda: xt.isin(a, b), number=10)
@@ -66,8 +66,8 @@ class test_a(unittest.TestCase):
 
     def test_in1d(self):
 
-        a = (np.random.random([1003]) * 1000).astype(int)
-        b = (np.random.random([1003]) * 1000).astype(int)
+        a = (np.random.random([1003]) * 1000).astype(np.intc)
+        b = (np.random.random([1003]) * 1000).astype(np.intc)
 
         n = timeit.timeit(lambda: np.in1d(a, b), number=10)
         x = timeit.timeit(lambda: xt.in1d(a, b), number=10)
