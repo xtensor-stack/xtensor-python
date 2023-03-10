@@ -107,9 +107,8 @@ namespace pybind11
         struct pybind_array_dim_checker
         {
             template <class B>
-            static bool run(const B& buf)
+            static bool run(const B&)
             {
-                (void)(buf);
                 return true;
             }
         };
@@ -139,9 +138,8 @@ namespace pybind11
         struct pybind_array_shape_checker
         {
             template <class B>
-            static bool run(const B& buf)
+            static bool run(const B&)
             {
-                (void)(buf);
                 return true;
             }
         };
