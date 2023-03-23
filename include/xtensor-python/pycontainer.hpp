@@ -473,7 +473,11 @@ namespace xt
     template <class D>
     inline bool pycontainer<D>::is_contiguous() const noexcept
     {
-        if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_C_CONTIGUOUS))
+        if (this->strides().size() == 0)
+        {
+            return true;
+        }
+        else if (PyArray_CHKFLAGS(python_array(), NPY_ARRAY_C_CONTIGUOUS))
         {
             return 1 == this->strides().back();
         }
