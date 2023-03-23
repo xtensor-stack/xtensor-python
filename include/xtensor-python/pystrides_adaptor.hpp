@@ -1,11 +1,11 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #ifndef PYSTRIDES_ADAPTOR_HPP
 #define PYSTRIDES_ADAPTOR_HPP
@@ -172,7 +172,10 @@ namespace xt
             return p_current - rhs.p_current;
         }
 
-        pointer get_pointer() const { return p_current; }
+        pointer get_pointer() const
+        {
+            return p_current;
+        }
 
     private:
 
@@ -181,43 +184,37 @@ namespace xt
     };
 
     template <std::size_t N>
-    inline bool operator==(const pystrides_iterator<N>& lhs,
-                           const pystrides_iterator<N>& rhs)
+    inline bool operator==(const pystrides_iterator<N>& lhs, const pystrides_iterator<N>& rhs)
     {
         return lhs.get_pointer() == rhs.get_pointer();
     }
 
     template <std::size_t N>
-    inline bool operator!=(const pystrides_iterator<N>& lhs,
-                           const pystrides_iterator<N>& rhs)
+    inline bool operator!=(const pystrides_iterator<N>& lhs, const pystrides_iterator<N>& rhs)
     {
         return !(lhs == rhs);
     }
 
     template <std::size_t N>
-    inline bool operator<(const pystrides_iterator<N>& lhs,
-                          const pystrides_iterator<N>& rhs)
+    inline bool operator<(const pystrides_iterator<N>& lhs, const pystrides_iterator<N>& rhs)
     {
         return lhs.get_pointer() < rhs.get_pointer();
     }
 
     template <std::size_t N>
-    inline bool operator<=(const pystrides_iterator<N>& lhs,
-                           const pystrides_iterator<N>& rhs)
+    inline bool operator<=(const pystrides_iterator<N>& lhs, const pystrides_iterator<N>& rhs)
     {
         return (lhs < rhs) || (lhs == rhs);
     }
 
     template <std::size_t N>
-    inline bool operator>(const pystrides_iterator<N>& lhs,
-                          const pystrides_iterator<N>& rhs)
+    inline bool operator>(const pystrides_iterator<N>& lhs, const pystrides_iterator<N>& rhs)
     {
         return !(lhs <= rhs);
     }
 
     template <std::size_t N>
-    inline bool operator>=(const pystrides_iterator<N>& lhs,
-                           const pystrides_iterator<N>& rhs)
+    inline bool operator>=(const pystrides_iterator<N>& lhs, const pystrides_iterator<N>& rhs)
     {
         return !(lhs < rhs);
     }
@@ -228,7 +225,9 @@ namespace xt
 
     template <std::size_t N>
     inline pystrides_adaptor<N>::pystrides_adaptor(const_pointer data, size_type size, shape_type shape)
-        : p_data(data), m_size(size), p_shape(shape)
+        : p_data(data)
+        , m_size(size)
+        , p_shape(shape)
     {
     }
 

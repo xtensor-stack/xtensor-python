@@ -1,19 +1,20 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #ifndef PY_VECTORIZE_HPP
 #define PY_VECTORIZE_HPP
 
 #include <type_traits>
 
-#include "pyarray.hpp"
 #include "xtensor/xvectorize.hpp"
+
+#include "pyarray.hpp"
 
 namespace xt
 {
@@ -53,10 +54,12 @@ namespace xt
     }
 
     template <class F>
-    inline auto pyvectorize(F&& f) -> decltype(pyvectorize(std::forward<F>(f), (detail::get_function_type<F>*)nullptr))
+    inline auto pyvectorize(F&& f)
+        -> decltype(pyvectorize(std::forward<F>(f), (detail::get_function_type<F>*) nullptr))
     {
-        return pyvectorize(std::forward<F>(f), (detail::get_function_type<F>*)nullptr);
+        return pyvectorize(std::forward<F>(f), (detail::get_function_type<F>*) nullptr);
     }
+
     /// @endcond
 }
 

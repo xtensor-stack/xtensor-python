@@ -45,7 +45,7 @@ information:
 - ``python_package_name``: name of the Python package created by your extension,
 - ``cpp_namespace``: name for the cpp namespace holding the implementation of your extension,
 - ``project_short_description``: a short description for your project.
-  
+
 This will produce a directory containing all the required content for a minimal extension
 project making use of xtensor with all the required boilerplate for package management,
 together with a few basic examples.

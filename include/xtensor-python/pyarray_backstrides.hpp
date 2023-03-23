@@ -1,11 +1,11 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #ifndef PY_ARRAY_BACKSTRIDES_HPP
 #define PY_ARRAY_BACKSTRIDES_HPP
@@ -62,28 +62,22 @@ namespace xt
     };
 
     template <class B>
-    inline bool operator==(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs);
+    inline bool operator==(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs);
 
     template <class B>
-    inline bool operator!=(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs);
+    inline bool operator!=(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs);
 
     template <class B>
-    inline bool operator<(const pybackstrides_iterator<B>& lhs,
-                          const pybackstrides_iterator<B>& rhs);
+    inline bool operator<(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs);
 
     template <class B>
-    inline bool operator<=(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs);
+    inline bool operator<=(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs);
 
     template <class B>
-    inline bool operator>(const pybackstrides_iterator<B>& lhs,
-                          const pybackstrides_iterator<B>& rhs);
+    inline bool operator>(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs);
 
     template <class B>
-    inline bool operator>=(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs);
+    inline bool operator>=(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs);
 
     /***********************
      * pyarray_backstrides *
@@ -138,10 +132,11 @@ namespace xt
     /*****************************************
      * pybackstrides_iterator implementation *
      *****************************************/
-    
+
     template <class B>
     inline pybackstrides_iterator<B>::pybackstrides_iterator(const B* b, std::size_t offset)
-        : p_b(b), m_offset(offset)
+        : p_b(b)
+        , m_offset(offset)
     {
     }
 
@@ -176,11 +171,11 @@ namespace xt
     inline auto pybackstrides_iterator<B>::operator--() -> self_type&
     {
         --m_offset;
-            return *this;
+        return *this;
     }
 
     template <class B>
-    inline auto pybackstrides_iterator<B>::operator++(int )-> self_type
+    inline auto pybackstrides_iterator<B>::operator++(int) -> self_type
     {
         self_type tmp(*this);
         ++m_offset;
@@ -236,43 +231,37 @@ namespace xt
     }
 
     template <class B>
-    inline bool operator==(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs)
+    inline bool operator==(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs)
     {
         return lhs.offset() == rhs.offset();
     }
 
     template <class B>
-    inline bool operator!=(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs)
+    inline bool operator!=(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs)
     {
         return !(lhs == rhs);
     }
 
     template <class B>
-    inline bool operator<(const pybackstrides_iterator<B>& lhs,
-                          const pybackstrides_iterator<B>& rhs)
+    inline bool operator<(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs)
     {
         return lhs.offset() < rhs.offset();
     }
 
     template <class B>
-    inline bool operator<=(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs)
+    inline bool operator<=(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs)
     {
         return (lhs < rhs) || (lhs == rhs);
     }
 
     template <class B>
-    inline bool operator>(const pybackstrides_iterator<B>& lhs,
-                          const pybackstrides_iterator<B>& rhs)
+    inline bool operator>(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs)
     {
         return !(lhs <= rhs);
     }
 
     template <class B>
-    inline bool operator>=(const pybackstrides_iterator<B>& lhs,
-                           const pybackstrides_iterator<B>& rhs)
+    inline bool operator>=(const pybackstrides_iterator<B>& lhs, const pybackstrides_iterator<B>& rhs)
     {
         return !(lhs < rhs);
     }

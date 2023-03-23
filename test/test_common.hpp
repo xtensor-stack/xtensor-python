@@ -1,11 +1,11 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #ifndef TEST_COMMON_HPP
 #define TEST_COMMON_HPP
@@ -62,12 +62,35 @@ namespace xt
         layout_type m_layout;
         assigner_type m_assigner;
 
-        inline size_type size() const { return m_data.size(); }
-        inline const shape_type& shape() const { return m_shape; }
-        inline const strides_type& strides() const { return m_strides; }
-        inline const strides_type& backstrides() const { return m_backstrides; }
-        inline layout_type layout() const { return m_layout; }
-        inline const vector_type& data() const { return m_data; }
+        inline size_type size() const
+        {
+            return m_data.size();
+        }
+
+        inline const shape_type& shape() const
+        {
+            return m_shape;
+        }
+
+        inline const strides_type& strides() const
+        {
+            return m_strides;
+        }
+
+        inline const strides_type& backstrides() const
+        {
+            return m_backstrides;
+        }
+
+        inline layout_type layout() const
+        {
+            return m_layout;
+        }
+
+        inline const vector_type& data() const
+        {
+            return m_data;
+        }
     };
 
     template <class C = std::vector<std::size_t>>
@@ -77,9 +100,8 @@ namespace xt
         {
             this->m_strides = {8, 4, 1};
             this->m_backstrides = {16, 4, 3};
-            this->m_data = {-1, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-                            10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                            20, 21, 22, 23};
+            this->m_data = {
+                -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23};
             this->m_layout = layout_type::row_major;
         }
     };
@@ -91,10 +113,8 @@ namespace xt
         {
             this->m_strides = {1, 3, 6};
             this->m_backstrides = {2, 3, 18};
-            this->m_data = {-1, 8, 16, 4, 12, 20,
-                             1, 9, 17, 5, 13, 21,
-                             2, 10, 18, 6, 14, 22,
-                             3, 11, 19, 7, 15, 23};
+            this->m_data = {
+                -1, 8, 16, 4, 12, 20, 1, 9, 17, 5, 13, 21, 2, 10, 18, 6, 14, 22, 3, 11, 19, 7, 15, 23};
             this->m_layout = layout_type::column_major;
         }
     };
@@ -106,9 +126,8 @@ namespace xt
         {
             this->m_strides = {8, 1, 2};
             this->m_backstrides = {16, 1, 6};
-            this->m_data = {-1, 4, 1, 5, 2, 6, 3, 7,
-                            8, 12, 9, 13, 10, 14, 11, 15,
-                            16, 20, 17, 21, 18, 22, 19, 23};
+            this->m_data = {
+                -1, 4, 1, 5, 2, 6, 3, 7, 8, 12, 9, 13, 10, 14, 11, 15, 16, 20, 17, 21, 18, 22, 19, 23};
             this->m_layout = layout_type::dynamic;
         }
     };
@@ -147,12 +166,35 @@ namespace xt
         layout_type m_layout;
         assigner_type m_assigner;
 
-        inline size_type size() const { return m_data.size(); }
-        inline const shape_type& shape() const { return m_shape; }
-        inline const strides_type& strides() const { return m_strides; }
-        inline const strides_type& backstrides() const { return m_backstrides; }
-        inline layout_type layout() const { return m_layout; }
-        inline const vector_type& data() const { return m_data; }
+        inline size_type size() const
+        {
+            return m_data.size();
+        }
+
+        inline const shape_type& shape() const
+        {
+            return m_shape;
+        }
+
+        inline const strides_type& strides() const
+        {
+            return m_strides;
+        }
+
+        inline const strides_type& backstrides() const
+        {
+            return m_backstrides;
+        }
+
+        inline layout_type layout() const
+        {
+            return m_layout;
+        }
+
+        inline const vector_type& data() const
+        {
+            return m_data;
+        }
     };
 
     template <class V, class R>
@@ -160,7 +202,9 @@ namespace xt
     {
         EXPECT_TRUE(std::equal(vec.shape().cbegin(), vec.shape().cend(), result.shape().cbegin()));
         EXPECT_TRUE(std::equal(vec.strides().cbegin(), vec.strides().cend(), result.strides().cbegin()));
-        EXPECT_TRUE(std::equal(vec.backstrides().cbegin(), vec.backstrides().cend(), result.backstrides().cbegin()));
+        EXPECT_TRUE(
+            std::equal(vec.backstrides().cbegin(), vec.backstrides().cend(), result.backstrides().cbegin())
+        );
         EXPECT_EQ(vec.size(), result.size());
         if (compare_layout)
         {
@@ -245,14 +289,10 @@ namespace xt
             EXPECT_EQ(vt.shape(), shape_new);
             EXPECT_TRUE(std::equal(vt.storage().cbegin(), vt.storage().cend(), rm.m_data.cbegin()));
 
-            strides_type new_strides = {rm.m_strides[2],
-                                        rm.m_strides[1],
-                                        rm.m_strides[0]};
+            strides_type new_strides = {rm.m_strides[2], rm.m_strides[1], rm.m_strides[0]};
             EXPECT_EQ(vt.strides(), new_strides);
 
-            strides_type new_backstrides = {rm.m_backstrides[2],
-                                            rm.m_backstrides[1],
-                                            rm.m_backstrides[0]};
+            strides_type new_backstrides = {rm.m_backstrides[2], rm.m_backstrides[1], rm.m_backstrides[0]};
             EXPECT_EQ(vt.backstrides(), new_backstrides);
 
             EXPECT_EQ(vec_copy(0, 0, 0), vt(0, 0, 0));
@@ -278,9 +318,7 @@ namespace xt
             EXPECT_TRUE(std::equal(vt.shape().cbegin(), vt.shape().cend(), shape_new.begin()));
             EXPECT_TRUE(std::equal(vt.storage().cbegin(), vt.storage().cend(), rm.m_data.cbegin()));
 
-            strides_type new_strides = {rm.m_strides[1],
-                                        rm.m_strides[0],
-                                        rm.m_strides[2]};
+            strides_type new_strides = {rm.m_strides[1], rm.m_strides[0], rm.m_strides[2]};
             EXPECT_EQ(vt.strides(), new_strides);
 
             // strides_type new_backstrides = {rm.m_backstrides[1],
@@ -331,7 +369,7 @@ namespace xt
 #ifdef XTENSOR_ENABLE_ASSERT
         EXPECT_ANY_THROW(vec(10, 10, 10));
 #else
-        (void)vec;
+        (void) vec;
 #endif
     }
 
@@ -582,7 +620,7 @@ namespace xt
             vecrm.resize(rm.m_shape, layout_type::row_major);
             std::copy(rm.data().cbegin(), rm.data().cend(), vecrm.template begin<layout_type::row_major>());
             EXPECT_TRUE(std::equal(rm.data().cbegin(), rm.data().cend(), vecrm.storage().cbegin()));
-            //EXPECT_EQ(vecrm.template end<layout_type::row_major>(), vecrm.data().end());
+            // EXPECT_EQ(vecrm.template end<layout_type::row_major>(), vecrm.data().end());
         }
 
         {
@@ -591,7 +629,7 @@ namespace xt
             veccm.resize(cm.m_shape, layout_type::column_major);
             std::copy(cm.data().cbegin(), cm.data().cend(), veccm.template begin<layout_type::column_major>());
             EXPECT_TRUE(std::equal(cm.data().cbegin(), cm.data().cend(), veccm.storage().cbegin()));
-            //EXPECT_EQ(veccm.template end<layout_type::column_major>(), veccm.data().end());
+            // EXPECT_EQ(veccm.template end<layout_type::column_major>(), veccm.data().end());
         }
     }
 

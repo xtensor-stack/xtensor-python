@@ -95,4 +95,3 @@ add_custom_target(xbenchmark
         COMMAND "${PYTHON_EXECUTABLE}" "benchmark_pyvectorize.py"
         COMMAND "${PYTHON_EXECUTABLE}" "benchmark_pybind_vectorize.py"
         DEPENDS ${XTENSOR_PYTHON_BENCHMARK_TARGET})
-

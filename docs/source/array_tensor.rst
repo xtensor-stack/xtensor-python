@@ -24,4 +24,3 @@ pytensor
 Like ``xtensor``, ``pytensor`` has a static stack-allocated shape. This means that the shape of the numpy array is copied into
 the shape of the ``pytensor`` upon creation. As a consequence, reshapes are not reflected across languages. However, this drawback
 is offset by a more effective computation of shape and broadcast.
-
