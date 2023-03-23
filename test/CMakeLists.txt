@@ -100,4 +100,3 @@ if(DOWNLOAD_GTEST OR GTEST_SRC_DIR)
 endif()
 
 add_custom_target(xtest COMMAND ./test_xtensor_python DEPENDS test_xtensor_python)
-

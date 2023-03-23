@@ -1,5 +1,6 @@
-#include "mymodule.hpp"
 #include <xtensor/xio.hpp>
+
+#include "mymodule.hpp"
 
 int main()
 {

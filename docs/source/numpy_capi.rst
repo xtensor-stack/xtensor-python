@@ -90,6 +90,3 @@ you can override the behavior of ``xtensor-python`` by explicitly defining ``PY_
     // in every source file
     #define PY_ARRAY_UNIQUE_SYMBOL my_uniqe_array_api
     #include "xtensor-python/pyarray.hpp"
-
-
-

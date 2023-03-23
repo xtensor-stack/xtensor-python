@@ -1,68 +1,68 @@
 steps:
-  - script: |
-      conda config --set always_yes yes --set changeps1 no
-      conda update -q conda
-      conda env create --file environment-dev.yml
-      source activate xtensor-python
-    displayName: Install dependencies
+- script: |
+    conda config --set always_yes yes --set changeps1 no
+    conda update -q conda
+    conda env create --file environment-dev.yml
+    source activate xtensor-python
+  displayName: Install dependencies
 
-  - script: |
-      source activate xtensor-python
-      mkdir build
-      cd build
-      cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON $(Build.SourcesDirectory)
-      make install
-    displayName: Configure xtensor-python
-    workingDirectory: $(Build.BinariesDirectory)
+- script: |
+    source activate xtensor-python
+    mkdir build
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON $(Build.SourcesDirectory)
+    make install
+  displayName: Configure xtensor-python
+  workingDirectory: $(Build.BinariesDirectory)
 
-  - script: |
-      source activate xtensor-python
-      make -j2 test_xtensor_python
-    displayName: Build xtensor-python
-    workingDirectory: $(Build.BinariesDirectory)/build
+- script: |
+    source activate xtensor-python
+    make -j2 test_xtensor_python
+  displayName: Build xtensor-python
+  workingDirectory: $(Build.BinariesDirectory)/build
 
-  - script: |
-      source activate xtensor-python
-      cd test
-      ./test_xtensor_python
-    displayName: Test xtensor-python (C++)
-    workingDirectory: $(Build.BinariesDirectory)/build/test
+- script: |
+    source activate xtensor-python
+    cd test
+    ./test_xtensor_python
+  displayName: Test xtensor-python (C++)
+  workingDirectory: $(Build.BinariesDirectory)/build/test
 
-  - script: |
-      source activate xtensor-python
-      py.test -s
-    displayName: Test xtensor-python (Python)
-    workingDirectory: $(Build.SourcesDirectory)
+- script: |
+    source activate xtensor-python
+    py.test -s
+  displayName: Test xtensor-python (Python)
+  workingDirectory: $(Build.SourcesDirectory)
 
-  - script: |
-      source activate xtensor-python
-      cmake -Bbuild -DPython_EXECUTABLE=`which python`
-      cd build
-      cmake --build .
-      cp ../example.py .
-      python example.py
-      cd ..
-    displayName: Example - readme 1
-    workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/readme_example_1
+- script: |
+    source activate xtensor-python
+    cmake -Bbuild -DPython_EXECUTABLE=`which python`
+    cd build
+    cmake --build .
+    cp ../example.py .
+    python example.py
+    cd ..
+  displayName: Example - readme 1
+  workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/readme_example_1
 
-  - script: |
-      source activate xtensor-python
-      cmake -Bbuild -DPython_EXECUTABLE=`which python`
-      cd build
-      cmake --build .
-      cp ../example.py .
-      python example.py
-      cd ..
-    displayName: Example - Copy 'cast'
-    workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/copy_cast
+- script: |
+    source activate xtensor-python
+    cmake -Bbuild -DPython_EXECUTABLE=`which python`
+    cd build
+    cmake --build .
+    cp ../example.py .
+    python example.py
+    cd ..
+  displayName: Example - Copy 'cast'
+  workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/copy_cast
 
-  - script: |
-      source activate xtensor-python
-      cmake -Bbuild -DPython_EXECUTABLE=`which python`
-      cd build
-      cmake --build .
-      cp ../example.py .
-      python example.py
-      cd ..
-    displayName: Example - SFINAE
-    workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/sfinae
+- script: |
+    source activate xtensor-python
+    cmake -Bbuild -DPython_EXECUTABLE=`which python`
+    cd build
+    cmake --build .
+    cp ../example.py .
+    python example.py
+    cd ..
+  displayName: Example - SFINAE
+  workingDirectory: $(Build.SourcesDirectory)/docs/source/examples/sfinae

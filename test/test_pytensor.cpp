@@ -1,20 +1,18 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
-
-#include "gtest/gtest.h"
-
-#include "xtensor-python/pytensor.hpp"
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #include "xtensor/xtensor.hpp"
 #include "xtensor/xview.hpp"
 
+#include "gtest/gtest.h"
 #include "test_common.hpp"
+#include "xtensor-python/pytensor.hpp"
 
 namespace xt
 {
@@ -22,13 +20,7 @@ namespace xt
 
     TEST(pytensor, initializer_constructor)
     {
-        pytensor<int, 3> t 
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+        pytensor<int, 3> t{{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}};
         EXPECT_EQ(t.dimension(), 3);
         EXPECT_EQ(t(0, 0, 1), 1);
         EXPECT_EQ(t.shape()[0], 2);
@@ -170,8 +162,8 @@ namespace xt
 
     TEST(pytensor, extended_constructor)
     {
-        xt::xtensor<int, 2> a1 = { {1, 2}, {3, 4} };
-        xt::xtensor<int, 2> a2 = { {1, 2}, {3, 4} };
+        xt::xtensor<int, 2> a1 = {{1, 2}, {3, 4}};
+        xt::xtensor<int, 2> a2 = {{1, 2}, {3, 4}};
         pytensor<int, 2> c = a1 + a2;
         EXPECT_EQ(c(0, 0), a1(0, 0) + a2(0, 0));
         EXPECT_EQ(c(0, 1), a1(0, 1) + a2(0, 1));
@@ -184,7 +176,7 @@ namespace xt
         pytensor<int, 3> a;
         test_resize<pytensor<int, 3>, container_type>(a);
 
-        pytensor<int, 3> b = { { { 1, 2 },{ 3, 4 } } };
+        pytensor<int, 3> b = {{{1, 2}, {3, 4}}};
         a.resize(b.shape());
         EXPECT_EQ(a.shape(), b.shape());
     }
@@ -232,9 +224,9 @@ namespace xt
 
     TEST(pytensor, reshape)
     {
-        pytensor<int, 2> a = {{1,2,3}, {4,5,6}};
+        pytensor<int, 2> a = {{1, 2, 3}, {4, 5, 6}};
         auto ptr = a.data();
-        a.reshape(a.shape()); // compilation check
+        a.reshape(a.shape());  // compilation check
         a.reshape({1, 6});
         EXPECT_EQ(ptr, a.data());
         EXPECT_THROW(a.reshape(std::vector<std::size_t>{6}), std::runtime_error);
@@ -245,16 +237,16 @@ namespace xt
 
     TEST(pytensor, view)
     {
-        xt::pytensor<int, 1> arr = xt::zeros<int>({ 10 });
+        xt::pytensor<int, 1> arr = xt::zeros<int>({10});
         auto v = xt::view(arr, xt::all());
         EXPECT_EQ(v(0), 0.);
     }
 
     TEST(pytensor, unary)
     {
-        pytensor<int, 1> a = { 1, 2, 3 };
+        pytensor<int, 1> a = {1, 2, 3};
         pytensor<int, 1> res = -a;
-        pytensor<int, 1> ref = { -1, -2, -3 };
+        pytensor<int, 1> ref = {-1, -2, -3};
         EXPECT_EQ(ref(0), res(0));
         EXPECT_EQ(ref(1), res(1));
         EXPECT_EQ(ref(1), res(1));
@@ -264,9 +256,9 @@ namespace xt
     {
         // pybind11 overrrides a number of operators in pybind11::object.
         // This is testing that the right overload is picked up.
-        pytensor<double, 1> a = { 1.0, 2.0, 3.0 };
+        pytensor<double, 1> a = {1.0, 2.0, 3.0};
         a /= 2;
-        pytensor<double, 1> ref = { 0.5, 1.0, 1.5 };
+        pytensor<double, 1> ref = {0.5, 1.0, 1.5};
         EXPECT_EQ(ref(0), a(0));
         EXPECT_EQ(ref(1), a(1));
         EXPECT_EQ(ref(1), a(1));

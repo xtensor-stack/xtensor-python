@@ -1,24 +1,24 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #ifndef XTENSOR_TYPE_CASTER_HPP
 #define XTENSOR_TYPE_CASTER_HPP
 
-#include <cstddef>
 #include <algorithm>
+#include <cstddef>
 #include <vector>
-
-#include "xtensor/xtensor.hpp"
-#include "xtensor/xfixed.hpp"
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
+
+#include "xtensor/xfixed.hpp"
+#include "xtensor/xtensor.hpp"
 
 namespace pybind11
 {
@@ -102,7 +102,6 @@ namespace pybind11
             }
         };
 
-
         template <class T>
         struct pybind_array_dim_checker
         {
@@ -133,7 +132,6 @@ namespace pybind11
             }
         };
 
-
         template <class T>
         struct pybind_array_shape_checker
         {
@@ -163,10 +161,15 @@ namespace pybind11
         {
             // TODO: make use of xt::pyarray instead of array.
             std::vector<std::size_t> python_strides(src.strides().size());
-            std::transform(src.strides().begin(), src.strides().end(),
-                           python_strides.begin(), [](auto v) {
-                return sizeof(typename Type::value_type) * v;
-            });
+            std::transform(
+                src.strides().begin(),
+                src.strides().end(),
+                python_strides.begin(),
+                [](auto v)
+                {
+                    return sizeof(typename Type::value_type) * v;
+                }
+            );
 
             std::vector<std::size_t> python_shape(src.shape().size());
             std::copy(src.shape().begin(), src.shape().end(), python_shape.begin());
@@ -181,10 +184,10 @@ namespace pybind11
             return a.release();
         }
 
-        // Takes an lvalue ref to some strided expression type and a (python) base object, creating a numpy array that
-        // reference the expression object's data with `base` as the python-registered base class (if omitted,
-        // the base will be set to None, and lifetime management is up to the caller).  The numpy array is
-        // non-writeable if the given type is const.
+        // Takes an lvalue ref to some strided expression type and a (python) base object, creating a numpy
+        // array that reference the expression object's data with `base` as the python-registered base class
+        // (if omitted, the base will be set to None, and lifetime management is up to the caller).  The numpy
+        // array is non-writeable if the given type is const.
         template <typename Type, typename CType>
         handle xtensor_ref_array(CType& src, handle parent = none())
         {
@@ -198,7 +201,13 @@ namespace pybind11
         template <typename Type, typename CType>
         handle xtensor_encapsulate(CType* src)
         {
-            capsule base(src, [](void* o) { delete static_cast<CType*>(o); });
+            capsule base(
+                src,
+                [](void* o)
+                {
+                    delete static_cast<CType*>(o);
+                }
+            );
             return xtensor_ref_array<Type>(*src, base);
         }
 
@@ -206,7 +215,6 @@ namespace pybind11
         template <class Type>
         struct xtensor_type_caster_base
         {
-
         private:
 
             // Cast implementation
@@ -215,26 +223,29 @@ namespace pybind11
             {
                 switch (policy)
                 {
-                case return_value_policy::take_ownership:
-                case return_value_policy::automatic:
-                    return xtensor_encapsulate<Type>(src);
-                case return_value_policy::move:
-                    return xtensor_encapsulate<Type>(new CType(std::move(*src)));
-                case return_value_policy::copy:
-                    return xtensor_array_cast<Type>(*src);
-                case return_value_policy::reference:
-                case return_value_policy::automatic_reference:
-                    return xtensor_ref_array<Type>(*src);
-                case return_value_policy::reference_internal:
-                    return xtensor_ref_array<Type>(*src, parent);
-                default:
-                    throw cast_error("unhandled return_value_policy: should not happen!");
+                    case return_value_policy::take_ownership:
+                    case return_value_policy::automatic:
+                        return xtensor_encapsulate<Type>(src);
+                    case return_value_policy::move:
+                        return xtensor_encapsulate<Type>(new CType(std::move(*src)));
+                    case return_value_policy::copy:
+                        return xtensor_array_cast<Type>(*src);
+                    case return_value_policy::reference:
+                    case return_value_policy::automatic_reference:
+                        return xtensor_ref_array<Type>(*src);
+                    case return_value_policy::reference_internal:
+                        return xtensor_ref_array<Type>(*src, parent);
+                    default:
+                        throw cast_error("unhandled return_value_policy: should not happen!");
                 };
             }
 
         public:
 
-            PYBIND11_TYPE_CASTER(Type, _("numpy.ndarray[") + npy_format_descriptor<typename Type::value_type>::name + _("]"));
+            PYBIND11_TYPE_CASTER(
+                Type,
+                _("numpy.ndarray[") + npy_format_descriptor<typename Type::value_type>::name + _("]")
+            );
 
             bool load(handle src, bool convert)
             {
@@ -284,7 +295,8 @@ namespace pybind11
             // lvalue reference return; default (automatic) becomes copy
             static handle cast(Type& src, return_value_policy policy, handle parent)
             {
-                if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
+                if (policy == return_value_policy::automatic
+                    || policy == return_value_policy::automatic_reference)
                 {
                     policy = return_value_policy::copy;
                 }
@@ -295,7 +307,8 @@ namespace pybind11
             // const lvalue reference return; default (automatic) becomes copy
             static handle cast(const Type& src, return_value_policy policy, handle parent)
             {
-                if (policy == return_value_policy::automatic || policy == return_value_policy::automatic_reference)
+                if (policy == return_value_policy::automatic
+                    || policy == return_value_policy::automatic_reference)
                 {
                     policy = return_value_policy::copy;
                 }

@@ -1,26 +1,23 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #include "gtest/gtest.h"
-
 #include "xtensor-python/pyarray.hpp"
-
-
 
 namespace xt
 {
     namespace testing
     {
-        class pyarray_traits: public ::testing::Test
+        class pyarray_traits : public ::testing::Test
         {
         protected:
-        
+
             using dynamic_type = xt::pyarray<double>;
             using row_major_type = xt::pyarray<double, xt::layout_type::row_major>;
             using column_major_type = xt::pyarray<double, xt::layout_type::column_major>;
@@ -35,13 +32,13 @@ namespace xt
             column_major_type c2 = {{0., 2.}, {0., 20.}, {0., 200.}};
 
             template <class T>
-            bool test_has_strides(T const&)
+            bool test_has_strides(const T&)
             {
                 return xt::has_strides<T>::value;
             }
 
             template <class T>
-            xt::layout_type test_result_layout(T const& a1, T const& a2)
+            xt::layout_type test_result_layout(const T& a1, const T& a2)
             {
                 auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
                 auto tmp2 = cos(a1);
@@ -49,7 +46,7 @@ namespace xt
             }
 
             template <class T>
-            bool test_linear_assign(T const& a1, T const& a2)
+            bool test_linear_assign(const T& a1, const T& a2)
             {
                 auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
                 auto tmp2 = cos(a1);
@@ -58,7 +55,7 @@ namespace xt
             }
 
             template <class T>
-            bool test_static_simd_linear_assign(T const& a1, T const& a2)
+            bool test_static_simd_linear_assign(const T& a1, const T& a2)
             {
                 auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
                 auto tmp2 = cos(a1);
@@ -66,7 +63,7 @@ namespace xt
             }
 
             template <class T>
-            bool test_dynamic_simd_linear_assign(T const& a1, T const& a2)
+            bool test_dynamic_simd_linear_assign(const T& a1, const T& a2)
             {
                 auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
                 auto tmp2 = cos(a1);
@@ -74,7 +71,7 @@ namespace xt
             }
 
             template <class T>
-            bool test_linear_static_layout(T const& a1, T const& a2)
+            bool test_linear_static_layout(const T& a1, const T& a2)
             {
                 auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
                 auto tmp2 = cos(a1);
@@ -82,7 +79,7 @@ namespace xt
             }
 
             template <class T>
-            bool test_contiguous_layout(T const& a1, T const& a2)
+            bool test_contiguous_layout(const T& a1, const T& a2)
             {
                 auto tmp1 = pow(sin((a2 - a1) / 2.), 2.);
                 auto tmp2 = cos(a1);

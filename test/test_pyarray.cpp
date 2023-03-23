@@ -1,20 +1,18 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
-
-#include "gtest/gtest.h"
-
-#include "xtensor-python/pyarray.hpp"
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #include "xtensor/xarray.hpp"
 #include "xtensor/xview.hpp"
 
+#include "gtest/gtest.h"
 #include "test_common.hpp"
+#include "xtensor-python/pyarray.hpp"
 
 namespace xt
 {
@@ -23,53 +21,39 @@ namespace xt
     template <class T>
     using ndarray = pyarray<T, xt::layout_type::row_major>;
 
-    void test1 (ndarray<int>const& x)
+    void test1(const ndarray<int>& x)
     {
         ndarray<int> y = x;
         ndarray<int> z = xt::zeros<int>({10});
     }
 
-    double compute(ndarray<double> const& xs)
+    double compute(const ndarray<double>& xs)
     {
-        auto v = xt::view (xs, 0, xt::all());
+        auto v = xt::view(xs, 0, xt::all());
         return v(0);
     }
 
     TEST(pyarray, initializer_constructor)
     {
-        pyarray<int> r
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+        pyarray<int> r{{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}};
 
         EXPECT_EQ(r.layout(), xt::layout_type::row_major);
         EXPECT_EQ(r.dimension(), 3);
         EXPECT_EQ(r(0, 0, 1), 1);
         EXPECT_EQ(r.shape()[0], 2);
 
-        pyarray<int, xt::layout_type::column_major> c
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+        pyarray<int, xt::layout_type::column_major> c{
+            {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}},
+            {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}};
 
         EXPECT_EQ(c.layout(), xt::layout_type::column_major);
         EXPECT_EQ(c.dimension(), 3);
         EXPECT_EQ(c(0, 0, 1), 1);
         EXPECT_EQ(c.shape()[0], 2);
 
-        pyarray<int, xt::layout_type::dynamic> d
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+        pyarray<int, xt::layout_type::dynamic> d{
+            {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}},
+            {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}};
 
         EXPECT_EQ(d.layout(), xt::layout_type::row_major);
         EXPECT_EQ(d.dimension(), 3);
@@ -86,7 +70,7 @@ namespace xt
             compare_shape(ra, rm);
             EXPECT_EQ(layout_type::row_major, ra.layout());
         }
-        
+
         {
             SCOPED_TRACE("column_major constructor");
             column_major_result<> cm;
@@ -150,7 +134,7 @@ namespace xt
         central_major_result<> res;
         int value = 2;
         pyarray<int> a(res.m_shape, res.m_strides, value);
-        
+
         {
             SCOPED_TRACE("copy constructor");
             pyarray<int> b(a);
@@ -201,8 +185,8 @@ namespace xt
 
     TEST(pyarray, extended_constructor)
     {
-        xt::xarray<int> a1 = { { 1, 2 },{ 3, 4 } };
-        xt::xarray<int> a2 = { { 1, 2 },{ 3, 4 } };
+        xt::xarray<int> a1 = {{1, 2}, {3, 4}};
+        xt::xarray<int> a2 = {{1, 2}, {3, 4}};
         pyarray<int> c = a1 + a2;
         EXPECT_EQ(c(0, 0), a1(0, 0) + a2(0, 0));
         EXPECT_EQ(c(0, 1), a1(0, 1) + a2(0, 1));
@@ -227,7 +211,7 @@ namespace xt
         pyarray<int> a;
         test_resize(a);
 
-        pyarray<int> b = { {1, 2}, {3, 4} };
+        pyarray<int> b = {{1, 2}, {3, 4}};
         a.resize(b.shape());
         EXPECT_EQ(a.shape(), b.shape());
     }
@@ -277,7 +261,7 @@ namespace xt
         EXPECT_EQ(2, a1(1));
         EXPECT_EQ(4, a2(1, 1));
     }
- 
+
     TEST(pyarray, zerod)
     {
         pyarray<int> a;
@@ -286,7 +270,7 @@ namespace xt
 
     TEST(pyarray, reshape)
     {
-        pyarray<int> a = {{1,2,3}, {4,5,6}};
+        pyarray<int> a = {{1, 2, 3}, {4, 5, 6}};
         auto ptr = a.data();
         a.reshape({1, 6});
         std::vector<std::size_t> sc1({1, 6});
@@ -300,7 +284,7 @@ namespace xt
 
     TEST(pyarray, view)
     {
-        xt::pyarray<int> arr = xt::zeros<int>({ 10 });
+        xt::pyarray<int> arr = xt::zeros<int>({10});
         auto v = xt::view(arr, xt::all());
         EXPECT_EQ(v(0), 0.);
     }

@@ -1,19 +1,20 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #include <limits>
 
-#include "gtest/gtest.h"
-#include "xtensor-python/pytensor.hpp"
-#include "xtensor-python/pyarray.hpp"
 #include "xtensor/xarray.hpp"
 #include "xtensor/xtensor.hpp"
+
+#include "gtest/gtest.h"
+#include "xtensor-python/pyarray.hpp"
+#include "xtensor-python/pytensor.hpp"
 
 namespace xt
 {

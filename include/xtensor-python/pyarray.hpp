@@ -1,11 +1,11 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #ifndef PY_ARRAY_HPP
 #define PY_ARRAY_HPP
@@ -20,10 +20,10 @@
 
 #include "pyarray_backstrides.hpp"
 #include "pycontainer.hpp"
-#include "pystrides_adaptor.hpp"
 #include "pynative_casters.hpp"
-#include "xtensor_type_caster_base.hpp"
+#include "pystrides_adaptor.hpp"
 #include "xtensor_python_config.hpp"
+#include "xtensor_type_caster_base.hpp"
 
 namespace xt
 {
@@ -35,7 +35,7 @@ namespace pybind11
 {
     namespace detail
     {
-#ifdef PYBIND11_DESCR // The macro is removed from pybind11 since 2.3
+#ifdef PYBIND11_DESCR  // The macro is removed from pybind11 since 2.3
         template <class T, xt::layout_type L>
         struct handle_type_name<xt::pyarray<T, L>>
         {
@@ -69,7 +69,7 @@ namespace pybind11
                 return src.inc_ref();
             }
 
-#ifdef PYBIND11_DESCR // The macro is removed from pybind11 since 2.3
+#ifdef PYBIND11_DESCR  // The macro is removed from pybind11 since 2.3
             PYBIND11_TYPE_CASTER(type, handle_type_name<type>::name());
 #else
             PYBIND11_TYPE_CASTER(type, _("numpy.ndarray[") + npy_format_descriptor<T>::name + _("]"));
@@ -99,8 +99,7 @@ namespace pybind11
 namespace xt
 {
     template <class T, layout_type L>
-    struct xiterable_inner_types<pyarray<T, L>>
-        : xcontainer_iterable_types<pyarray<T, L>>
+    struct xiterable_inner_types<pyarray<T, L>> : xcontainer_iterable_types<pyarray<T, L>>
     {
     };
 
@@ -155,7 +154,7 @@ namespace xt
         using inner_shape_type = typename base_type::inner_shape_type;
         using inner_strides_type = typename base_type::inner_strides_type;
         using inner_backstrides_type = typename base_type::inner_backstrides_type;
-        constexpr static std::size_t rank = SIZE_MAX;
+        static constexpr std::size_t rank = SIZE_MAX;
 
         pyarray();
         pyarray(const value_type& t);
@@ -267,7 +266,8 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
-        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t)
+                                    : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
@@ -275,7 +275,8 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
-        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t)
+                                    : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
@@ -283,7 +284,8 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
-        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t)
+                                    : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
@@ -291,7 +293,8 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
-        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t)
+                                    : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
@@ -299,7 +302,8 @@ namespace xt
         : base_type()
     {
         base_type::resize(xt::shape<shape_type>(t), default_dynamic_layout());
-        L == layout_type::row_major ? nested_copy(m_storage.begin(), t) : nested_copy(this->template begin<layout_type::row_major>(), t);
+        L == layout_type::row_major ? nested_copy(m_storage.begin(), t)
+                                    : nested_copy(this->template begin<layout_type::row_major>(), t);
     }
 
     template <class T, layout_type L>
@@ -393,6 +397,7 @@ namespace xt
         auto shp = xtl::forward_sequence<shape_type, S>(shape);
         return self_type(shp);
     }
+
     //@}
 
     /**
@@ -404,10 +409,12 @@ namespace xt
      */
     template <class T, layout_type L>
     inline pyarray<T, L>::pyarray(const self_type& rhs)
-        : base_type(), semantic_base(rhs)
+        : base_type()
+        , semantic_base(rhs)
     {
         auto tmp = pybind11::reinterpret_steal<pybind11::object>(
-            PyArray_NewLikeArray(rhs.python_array(), NPY_KEEPORDER, nullptr, 1));
+            PyArray_NewLikeArray(rhs.python_array(), NPY_KEEPORDER, nullptr, 1)
+        );
 
         if (!tmp)
         {
@@ -445,7 +452,9 @@ namespace xt
         : base_type()
     {
         // TODO: prevent intermediary shape allocation
-        shape_type shape = xtl::forward_sequence<shape_type, decltype(e.derived_cast().shape())>(e.derived_cast().shape());
+        shape_type shape = xtl::forward_sequence<shape_type, decltype(e.derived_cast().shape())>(
+            e.derived_cast().shape()
+        );
         strides_type strides = xtl::make_sequence<strides_type>(shape.size(), size_type(0));
         layout_type layout = default_dynamic_layout();
 
@@ -463,6 +472,7 @@ namespace xt
     {
         return semantic_base::operator=(e);
     }
+
     //@}
 
     template <class T, layout_type L>
@@ -482,8 +492,15 @@ namespace xt
     {
         strides_type adapted_strides(strides);
 
-        std::transform(strides.begin(), strides.end(), adapted_strides.begin(),
-                       [](auto v) { return sizeof(T) * v; });
+        std::transform(
+            strides.begin(),
+            strides.end(),
+            adapted_strides.begin(),
+            [](auto v)
+            {
+                return sizeof(T) * v;
+            }
+        );
 
         int flags = NPY_ARRAY_ALIGNED;
         if (!std::is_const<T>::value)
@@ -496,9 +513,16 @@ namespace xt
         npy_intp* shape_data = reinterpret_cast<npy_intp*>(const_cast<size_type*>(shape.data()));
         npy_intp* strides_data = reinterpret_cast<npy_intp*>(adapted_strides.data());
 
-        auto tmp = pybind11::reinterpret_steal<pybind11::object>(
-            PyArray_NewFromDescr(&PyArray_Type, (PyArray_Descr*) dtype.release().ptr(), static_cast<int>(shape.size()), shape_data, strides_data,
-                        nullptr, flags, nullptr));
+        auto tmp = pybind11::reinterpret_steal<pybind11::object>(PyArray_NewFromDescr(
+            &PyArray_Type,
+            (PyArray_Descr*) dtype.release().ptr(),
+            static_cast<int>(shape.size()),
+            shape_data,
+            strides_data,
+            nullptr,
+            flags,
+            nullptr
+        ));
 
         if (!tmp)
         {
@@ -517,11 +541,15 @@ namespace xt
             return;
         }
 
-        m_shape = inner_shape_type(reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
-                                   static_cast<size_type>(PyArray_NDIM(this->python_array())));
-        m_strides = inner_strides_type(reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
-                                       static_cast<size_type>(PyArray_NDIM(this->python_array())),
-                                       reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())));
+        m_shape = inner_shape_type(
+            reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array())),
+            static_cast<size_type>(PyArray_NDIM(this->python_array()))
+        );
+        m_strides = inner_strides_type(
+            reinterpret_cast<difference_type*>(PyArray_STRIDES(this->python_array())),
+            static_cast<size_type>(PyArray_NDIM(this->python_array())),
+            reinterpret_cast<size_type*>(PyArray_SHAPE(this->python_array()))
+        );
 
         if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L, 1))
         {
@@ -529,8 +557,10 @@ namespace xt
         }
 
         m_backstrides = backstrides_type(*this);
-        m_storage = storage_type(reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
-                                 this->get_buffer_size());
+        m_storage = storage_type(
+            reinterpret_cast<pointer>(PyArray_DATA(this->python_array())),
+            this->get_buffer_size()
+        );
     }
 
     template <class T, layout_type L>
@@ -549,8 +579,9 @@ namespace xt
     inline auto pyarray<T, L>::backstrides_impl() const noexcept -> const inner_backstrides_type&
     {
         // m_backstrides wraps the numpy array backstrides, which is a raw pointer.
-        // The address of the raw pointer stored in the wrapper would be invalidated when the pyarray is copied.
-        // Hence, we build a new backstrides object (cheap wrapper around the underlying pointer) upon access.
+        // The address of the raw pointer stored in the wrapper would be invalidated when the pyarray is
+        // copied. Hence, we build a new backstrides object (cheap wrapper around the underlying pointer) upon
+        // access.
         m_backstrides = backstrides_type(*this);
         return m_backstrides;
     }

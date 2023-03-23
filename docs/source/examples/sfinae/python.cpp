@@ -1,5 +1,6 @@
-#include "mymodule.hpp"
 #include <pybind11/pybind11.h>
+
+#include "mymodule.hpp"
 #define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pyarray.hpp>
 

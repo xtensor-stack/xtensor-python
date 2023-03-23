@@ -1,11 +1,11 @@
 /***************************************************************************
-* Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
-* Copyright (c) QuantStack                                                 *
-*                                                                          *
-* Distributed under the terms of the BSD 3-Clause License.                 *
-*                                                                          *
-* The full license is in the file LICENSE, distributed with this software. *
-****************************************************************************/
+ * Copyright (c) Wolf Vollprecht, Johan Mabille and Sylvain Corlay          *
+ * Copyright (c) QuantStack                                                 *
+ *                                                                          *
+ * Distributed under the terms of the BSD 3-Clause License.                 *
+ *                                                                          *
+ * The full license is in the file LICENSE, distributed with this software. *
+ ****************************************************************************/
 
 #ifndef PY_CONTAINER_HPP
 #define PY_CONTAINER_HPP
@@ -16,8 +16,8 @@
 #include <sstream>
 
 #include "pybind11/complex.h"
-#include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
+#include "pybind11/pybind11.h"
 
 #ifndef FORCE_IMPORT_ARRAY
 #define NO_IMPORT_ARRAY
@@ -32,6 +32,7 @@
 #undef copysign
 
 #include <cmath>
+
 #include "xtensor/xcontainer.hpp"
 
 #include "xtl/xsequence.hpp"
@@ -151,7 +152,9 @@ namespace xt
         struct numpy_traits;
 
         template <class T>
-        struct numpy_traits<T, std::enable_if_t<pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value>>
+        struct numpy_traits<
+            T,
+            std::enable_if_t<pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value>>
         {
         private:
 
@@ -161,12 +164,22 @@ namespace xt
             // On Linux x64, NPY_INT64 != NPY_LONGLONG and NPY_UINT64 != NPY_ULONGLONG,
             // we use the values of NPY_INT64 and NPY_UINT64 which are consistent with the
             // values of NPY_LONG and NPY_ULONG.
-            constexpr static const int value_list[15] = {
+            static constexpr const int value_list[15] = {
                 NPY_BOOL,
-                NPY_BYTE, NPY_UBYTE, NPY_SHORT, NPY_USHORT,
-                NPY_INT32, NPY_UINT32, NPY_INT64, NPY_UINT64,
-                NPY_FLOAT, NPY_DOUBLE, NPY_LONGDOUBLE,
-                NPY_CFLOAT, NPY_CDOUBLE, NPY_CLONGDOUBLE};
+                NPY_BYTE,
+                NPY_UBYTE,
+                NPY_SHORT,
+                NPY_USHORT,
+                NPY_INT32,
+                NPY_UINT32,
+                NPY_INT64,
+                NPY_UINT64,
+                NPY_FLOAT,
+                NPY_DOUBLE,
+                NPY_LONGDOUBLE,
+                NPY_CFLOAT,
+                NPY_CDOUBLE,
+                NPY_CLONGDOUBLE};
 
         public:
 
@@ -181,7 +194,7 @@ namespace xt
         template <bool>
         struct numpy_enum_adjuster
         {
-            static inline int pyarray_type(PyArrayObject* obj)
+            inline static int pyarray_type(PyArrayObject* obj)
             {
                 return PyArray_TYPE(obj);
             }
@@ -190,10 +203,10 @@ namespace xt
         template <>
         struct numpy_enum_adjuster<true>
         {
-            static inline int pyarray_type(PyArrayObject* obj)
+            inline static int pyarray_type(PyArrayObject* obj)
             {
                 int res = PyArray_TYPE(obj);
-                if(res == NPY_LONGLONG || res == NPY_ULONGLONG)
+                if (res == NPY_LONGLONG || res == NPY_ULONGLONG)
                 {
                     res -= 2;
                 }
@@ -235,14 +248,18 @@ namespace xt
         template <class T>
         bool check_array_type(const pybind11::handle& src, std::false_type)
         {
-            return PyArray_EquivTypes((PyArray_Descr*) pybind11::detail::array_proxy(src.ptr())->descr,
-                                      (PyArray_Descr*) pybind11::dtype::of<T>().ptr());
+            return PyArray_EquivTypes(
+                (PyArray_Descr*) pybind11::detail::array_proxy(src.ptr())->descr,
+                (PyArray_Descr*) pybind11::dtype::of<T>().ptr()
+            );
         }
 
         template <class T>
         bool check_array(const pybind11::handle& src)
         {
-            using is_arithmetic_type = std::integral_constant<bool, bool(pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value)>;
+            using is_arithmetic_type = std::integral_constant<
+                bool,
+                bool(pybind11::detail::satisfies_any_of<T, std::is_arithmetic, xtl::is_complex>::value)>;
             return PyArray_Check(src.ptr()) && check_array_type<T>(src, is_arithmetic_type{});
         }
     }
@@ -305,8 +322,14 @@ namespace xt
         }
 
         auto dtype = pybind11::detail::npy_format_descriptor<value_type>::dtype();
-        auto res = PyArray_FromAny(ptr, (PyArray_Descr *) dtype.release().ptr(), 0, 0,
-                                   NPY_ARRAY_ENSUREARRAY | NPY_ARRAY_FORCECAST, nullptr);
+        auto res = PyArray_FromAny(
+            ptr,
+            (PyArray_Descr*) dtype.release().ptr(),
+            0,
+            0,
+            NPY_ARRAY_ENSUREARRAY | NPY_ARRAY_FORCECAST,
+            nullptr
+        );
         return res;
     }
 
@@ -320,11 +343,16 @@ namespace xt
     inline auto pycontainer<D>::get_buffer_size() const -> size_type
     {
         const size_type& (*min)(const size_type&, const size_type&) = std::min<size_type>;
-        size_type min_stride = this->strides().empty() ? size_type(1) :
-            std::max(size_type(1), std::accumulate(this->strides().cbegin(),
-                                                   this->strides().cend(),
-                                                   std::numeric_limits<size_type>::max(),
-                                                   min));
+        size_type min_stride = this->strides().empty() ? size_type(1)
+                                                       : std::max(
+                                                           size_type(1),
+                                                           std::accumulate(
+                                                               this->strides().cbegin(),
+                                                               this->strides().cend(),
+                                                               std::numeric_limits<size_type>::max(),
+                                                               min
+                                                           )
+                                                       );
         return min_stride * static_cast<size_type>(PyArray_SIZE(this->python_array()));
     }
 
@@ -356,11 +384,11 @@ namespace xt
         {
             static bool run(std::size_t new_dim)
             {
-                if(new_dim != N)
+                if (new_dim != N)
                 {
                     std::ostringstream err_msg;
-                    err_msg << "Invalid conversion to pycontainer, expecting a container of dimension "
-                            << N << ", got a container of dimension " << new_dim << ".";
+                    err_msg << "Invalid conversion to pycontainer, expecting a container of dimension " << N
+                            << ", got a container of dimension " << new_dim << ".";
                     throw std::runtime_error(err_msg.str());
                 }
                 return new_dim == N;
@@ -376,7 +404,8 @@ namespace xt
     template <class S>
     inline void pycontainer<D>::resize(const S& shape)
     {
-        if (shape.size() != this->dimension() || !std::equal(std::begin(shape), std::end(shape), std::begin(this->shape())))
+        if (shape.size() != this->dimension()
+            || !std::equal(std::begin(shape), std::end(shape), std::begin(this->shape())))
         {
             resize(shape, layout_type::row_major);
         }
@@ -416,7 +445,10 @@ namespace xt
     {
         if (compute_size(shape) != this->size())
         {
-            throw std::runtime_error("Cannot reshape with incorrect number of elements (" + std::to_string(this->size()) + " vs " + std::to_string(compute_size(shape)) + ")");
+            throw std::runtime_error(
+                "Cannot reshape with incorrect number of elements (" + std::to_string(this->size()) + " vs "
+                + std::to_string(compute_size(shape)) + ")"
+            );
         }
         detail::check_dims<shape_type>::run(shape.size());
         layout = default_assignable_layout(layout);
@@ -436,7 +468,9 @@ namespace xt
         }
 
         using shape_ptr = typename std::decay_t<S>::pointer;
-        PyArray_Dims dims = {reinterpret_cast<npy_intp*>(const_cast<shape_ptr>(shape.data())), static_cast<int>(shape.size())};
+        PyArray_Dims dims = {
+            reinterpret_cast<npy_intp*>(const_cast<shape_ptr>(shape.data())),
+            static_cast<int>(shape.size())};
         auto new_ptr = PyArray_Newshape((PyArrayObject*) this->ptr(), &dims, npy_layout);
         auto old_ptr = this->ptr();
         this->ptr() = new_ptr;
