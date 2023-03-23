@@ -38,12 +38,12 @@ namespace xt
     TEST(pyarray, initializer_constructor)
     {
         pyarray<int> r
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+          {{{ 0,  1,  2},
+            { 3,  4,  5},
+            { 6,  7,  8}},
+           {{ 9, 10, 11},
+            {12, 13, 14},
+            {15, 16, 17}}};
 
         EXPECT_EQ(r.layout(), xt::layout_type::row_major);
         EXPECT_EQ(r.dimension(), 3);
@@ -51,12 +51,12 @@ namespace xt
         EXPECT_EQ(r.shape()[0], 2);
 
         pyarray<int, xt::layout_type::column_major> c
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+          {{{ 0,  1,  2},
+            { 3,  4,  5},
+            { 6,  7,  8}},
+           {{ 9, 10, 11},
+            {12, 13, 14},
+            {15, 16, 17}}};
 
         EXPECT_EQ(c.layout(), xt::layout_type::column_major);
         EXPECT_EQ(c.dimension(), 3);
@@ -64,17 +64,40 @@ namespace xt
         EXPECT_EQ(c.shape()[0], 2);
 
         pyarray<int, xt::layout_type::dynamic> d
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+          {{{ 0,  1,  2},
+            { 3,  4,  5},
+            { 6,  7,  8}},
+           {{ 9, 10, 11},
+            {12, 13, 14},
+            {15, 16, 17}}};
 
         EXPECT_EQ(d.layout(), xt::layout_type::row_major);
         EXPECT_EQ(d.dimension(), 3);
         EXPECT_EQ(d(0, 0, 1), 1);
         EXPECT_EQ(d.shape()[0], 2);
+    }
+
+    TEST(pyarray, expression)
+    {
+        pyarray<int> a = xt::empty<int>({});
+
+        EXPECT_EQ(a.layout(), xt::layout_type::row_major);
+        EXPECT_EQ(a.dimension(), 0);
+        EXPECT_EQ(a.size(), 1);
+
+        pyarray<int> b = xt::empty<int>({5});
+
+        EXPECT_EQ(b.layout(), xt::layout_type::row_major);
+        EXPECT_EQ(b.dimension(), 1);
+        EXPECT_EQ(b.size(), 5);
+
+        pyarray<int> c = xt::empty<int>({5, 3});
+
+        EXPECT_EQ(c.layout(), xt::layout_type::row_major);
+        EXPECT_EQ(c.dimension(), 2);
+        EXPECT_EQ(c.size(), 15);
+        EXPECT_EQ(c.shape(0), 5);
+        EXPECT_EQ(c.shape(1), 3);
     }
 
     TEST(pyarray, shaped_constructor)
@@ -86,7 +109,7 @@ namespace xt
             compare_shape(ra, rm);
             EXPECT_EQ(layout_type::row_major, ra.layout());
         }
-        
+
         {
             SCOPED_TRACE("column_major constructor");
             column_major_result<> cm;
@@ -150,7 +173,7 @@ namespace xt
         central_major_result<> res;
         int value = 2;
         pyarray<int> a(res.m_shape, res.m_strides, value);
-        
+
         {
             SCOPED_TRACE("copy constructor");
             pyarray<int> b(a);
@@ -277,7 +300,7 @@ namespace xt
         EXPECT_EQ(2, a1(1));
         EXPECT_EQ(4, a2(1, 1));
     }
- 
+
     TEST(pyarray, zerod)
     {
         pyarray<int> a;
