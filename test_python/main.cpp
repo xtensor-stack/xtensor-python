@@ -24,6 +24,11 @@ using complex_t = std::complex<double>;
 
 // Examples
 
+auto argmin(xt::pyarray<int>& m)
+{
+    return xt::argmin(m);
+}
+
 double example1(xt::pyarray<double>& m)
 {
     return m(0);
@@ -313,6 +318,7 @@ PYBIND11_MODULE(xtensor_python_test, m)
 
     m.doc() = "Test module for xtensor python bindings";
 
+    m.def("argmin", argmin);
     m.def("example1", example1);
     m.def("example2", example2);
     m.def("example3_xarray", example3_xarray);
