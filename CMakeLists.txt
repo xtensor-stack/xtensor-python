@@ -7,7 +7,7 @@
 # The full license is in the file LICENSE, distributed with this software. #
 ############################################################################
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.14)
 project(xtensor-python)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
@@ -60,8 +60,8 @@ else()
     message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
 endif()
 
-find_package(NumPy REQUIRED)
-message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
+# Look for NumPy headers
+find_package(Python REQUIRED COMPONENTS NumPy)
 
 # Build
 # =====
@@ -80,7 +80,7 @@ set(XTENSOR_PYTHON_HEADERS
 
 add_library(xtensor-python INTERFACE)
 target_include_directories(xtensor-python INTERFACE
-    "$<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR};${pybind11_INCLUDE_DIRS};${NUMPY_INCLUDE_DIRS}>"
+    "$<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR};${pybind11_INCLUDE_DIRS};${Python_NumPy_INCLUDE_DIRS}>"
     $<INSTALL_INTERFACE:include>)
 target_link_libraries(xtensor-python INTERFACE xtensor)
 get_target_property(inc_dir xtensor-python INTERFACE_INCLUDE_DIRECTORIES)
