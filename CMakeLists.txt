@@ -55,7 +55,6 @@ else()
     message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
 endif()
 
-# if NUMPY_INCLUDE_DIRS is not set, then we try to find it
 if(NOT NUMPY_INCLUDE_DIRS)
     set(NUMPY_REQUIRED_VERSION 1.14.0)
     find_package(NumPy ${NUMPY_REQUIRED_VERSION} REQUIRED)
