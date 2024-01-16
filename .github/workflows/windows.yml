@@ -1,0 +1,48 @@
+name: Windows
+on:
+  #workflow_dispatch:
+  #pull_request:
+  #push:
+  #  branches: [master]
+concurrency:
+  group: ${{ github.workflow }}-${{ github.job }}-${{ github.ref }}
+  cancel-in-progress: true
+defaults:
+  run:
+    shell: bash -e -l {0}
+jobs:
+  build:
+    runs-on: [windows-latest]
+    name: Windows
+    
+    steps:
+    
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set conda environment
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: environment-dev.yml
+        cache-environment: true
+
+    - name: Configure using CMake
+      run: cmake -G Ninja -Bbuild -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX -DPYTHON_EXECUTABLE=`which python` -DDOWNLOAD_GTEST=ON $(Build.SourcesDirectory)
+
+    - name: Install
+      working-directory: build
+      run: cmake --install .
+
+    - name: Build
+      working-directory: build
+      run: cmake --build . --target test_xtensor_python --parallel 8
+
+    - name: Run tests (C++)
+      working-directory: build/test
+      run: ./test_xtensor_python
+
+    - name: Run tests (Python)
+      run: pytest -s
