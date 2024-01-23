@@ -25,7 +25,7 @@ foreach(ver ${xtensor_python_version_defines})
         set(XTENSOR_PYTHON_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
     endif()
 endforeach()
-set(${PROJECT_NAME}_VERSION 
+set(${PROJECT_NAME}_VERSION
     ${XTENSOR_PYTHON_VERSION_MAJOR}.${XTENSOR_PYTHON_VERSION_MINOR}.${XTENSOR_PYTHON_VERSION_PATCH})
 message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 
@@ -45,7 +45,7 @@ else()
     find_package(xtensor ${xtensor_REQUIRED_VERSION} REQUIRED)
     message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
 endif()
-    
+
 # Currently no required version for pybind11
 if(TARGET pybind11 OR TARGET pybind11::headers)
     # pybind11 has a variable that indicates its version already, so use that
@@ -79,6 +79,12 @@ target_include_directories(xtensor-python INTERFACE
     $<INSTALL_INTERFACE:include>)
 target_link_libraries(xtensor-python INTERFACE xtensor)
 get_target_property(inc_dir xtensor-python INTERFACE_INCLUDE_DIRECTORIES)
+
+if(MSVC)
+    set_property(TARGET xtensor-python PROPERTY INTERFACE_COMPILE_OPTIONS /DHAVE_SNPRINTF)
+else()
+    set_property(TARGET xtensor-python PROPERTY INTERFACE_COMPILE_OPTIONS -DHAVE_SNPRINTF)
+endif()
 
 OPTION(BUILD_TESTS "xtensor test suite" OFF)
 OPTION(DOWNLOAD_GTEST "build gtest from downloaded sources" OFF)
