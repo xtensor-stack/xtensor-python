@@ -45,13 +45,18 @@ else()
     find_package(xtensor ${xtensor_REQUIRED_VERSION} REQUIRED)
     message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
 endif()
-    
-# Currently no required version for pybind11
+
+# Running find_package(PythonInterp) to retrieve the Python version
+# which is not exported by Pybind11's cmake.
+# Cf. https://github.com/pybind/pybind11/issues/2268
+find_package(PythonInterp ${PythonLibsNew_FIND_VERSION} REQUIRED)
+
+set(pybind11_REQUIRED_VERSION 2.6.1)
 if(TARGET pybind11 OR TARGET pybind11::headers)
     # pybind11 has a variable that indicates its version already, so use that
     message(STATUS "Found pybind11 v${pybind11_VERSION}")
 else()
-    find_package(pybind11 REQUIRED)
+    find_package(pybind11 ${pybind11_REQUIRED_VERSION} REQUIRED)
     message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
 endif()
 
