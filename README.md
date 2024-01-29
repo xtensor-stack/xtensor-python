@@ -1,7 +1,8 @@
 # ![xtensor-python](docs/source/xtensor-python.svg)
 
-[![Azure Pipelines](https://dev.azure.com/xtensor-stack/xtensor-stack/_apis/build/status/xtensor-stack.xtensor-python?branchName=master)](https://dev.azure.com/xtensor-stack/xtensor-stack/_build/latest?definitionId=7&branchName=master)
-[![Appveyor](https://ci.appveyor.com/api/projects/status/4j2yd6k8o5xbimqf?svg=true)](https://ci.appveyor.com/project/xtensor-stack/xtensor-python)
+[![GHA Linux](https://github.com/xtensor-stack/xtensor/actions/workflows/linux.yml/badge.svg)](https://github.com/xtensor-stack/xtensor/actions/workflows/linux.yml)
+[![GHA OSX](https://github.com/xtensor-stack/xtensor/actions/workflows/osx.yml/badge.svg)](https://github.com/xtensor-stack/xtensor/actions/workflows/osx.yml)
+[![GHA Windows](https://github.com/xtensor-stack/xtensor/actions/workflows/windows.yml/badge.svg)](https://github.com/xtensor-stack/xtensor/actions/workflows/windows.yml)
 [![Documentation](http://readthedocs.org/projects/xtensor-python/badge/?version=latest)](https://xtensor-python.readthedocs.io/en/latest/?badge=latest)
 [![Join the Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/QuantStack/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
