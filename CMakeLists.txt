@@ -60,8 +60,12 @@ else()
     message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
 endif()
 
-# Look for NumPy headers
-find_package(Python REQUIRED COMPONENTS NumPy)
+# Look for NumPy headers, except if NUMPY_INCLUDE_DIRS is passed,
+# which is required under some circumstances (such as wasm, where
+# there is no real python executable)
+if(NOT NUMPY_INCLUDE_DIRS)
+    find_package(Python REQUIRED COMPONENTS NumPy)
+endif()
 
 # Build
 # =====
