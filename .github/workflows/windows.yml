@@ -1,9 +1,9 @@
 name: Windows
 on:
-  #workflow_dispatch:
-  #pull_request:
-  #push:
-  #  branches: [master]
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [master]
 concurrency:
   group: ${{ github.workflow }}-${{ github.job }}-${{ github.ref }}
   cancel-in-progress: true
