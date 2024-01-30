@@ -64,8 +64,9 @@ endif()
 # which is required under some circumstances (such as wasm, where
 # there is no real python executable)
 if(NOT NUMPY_INCLUDE_DIRS)
-    find_package(Python REQUIRED COMPONENTS NumPy)
+    find_package(NumPy REQUIRED)
 endif()
+message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
 
 # Build
 # =====
@@ -84,7 +85,7 @@ set(XTENSOR_PYTHON_HEADERS
 
 add_library(xtensor-python INTERFACE)
 target_include_directories(xtensor-python INTERFACE
-    "$<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR};${pybind11_INCLUDE_DIRS};${Python_NumPy_INCLUDE_DIRS}>"
+    "$<BUILD_INTERFACE:${XTENSOR_PYTHON_INCLUDE_DIR};${pybind11_INCLUDE_DIRS};${NUMPY_INCLUDE_DIRS}>"
     $<INSTALL_INTERFACE:include>)
 target_link_libraries(xtensor-python INTERFACE xtensor)
 get_target_property(inc_dir xtensor-python INTERFACE_INCLUDE_DIRECTORIES)
