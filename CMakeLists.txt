@@ -123,7 +123,7 @@ export(EXPORT ${PROJECT_NAME}-targets
 install(FILES ${XTENSOR_PYTHON_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xtensor-python)
 
-set(XTENSOR_PYTHON_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}" CACHE
+set(XTENSOR_PYTHON_CMAKECONFIG_INSTALL_DIR "${CMAKE_INSTALL_DATADIR}/cmake/${PROJECT_NAME}" CACHE
     STRING "install path for xtensor-pythonConfig.cmake")
 
 configure_package_config_file(${PROJECT_NAME}Config.cmake.in
