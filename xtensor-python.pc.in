@@ -1,0 +1,7 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/include
+
+Name: xtensor-python
+Description: An extension to the xtensor library, offering Python bindings with enhanced NumPy support.
+Version: @xtensor-python_VERSION@
+Cflags: -I${includedir}
