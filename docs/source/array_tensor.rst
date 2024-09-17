@@ -4,8 +4,8 @@
 
    The full license is in the file LICENSE, distributed with this software.
 
-Arrays and tensors
-==================
+Arrays, Tensors and NumPy Views
+===============================
 
 ``xtensor-python`` provides two container types wrapping numpy arrays: ``pyarray`` and ``pytensor``. They are the counterparts
 to ``xarray`` and ``xtensor`` containers.
@@ -24,4 +24,22 @@ pytensor
 Like ``xtensor``, ``pytensor`` has a static stack-allocated shape. This means that the shape of the numpy array is copied into
 the shape of the ``pytensor`` upon creation. As a consequence, reshapes are not reflected across languages. However, this drawback
 is offset by a more effective computation of shape and broadcast.
+
+NumPy views
+-----------
+
+If you are trying to call a xtensor function with a NumPy view, you might read the following:
+"passing container with wrong strides for static layout". This means, that the *static layout*
+of the pytensor does not match the layout of the NumPy array (or view) that you are using to
+call the function.
+
+One fix for this is to choose the ``dynamic`` layout for your pyarray or pytensor:
+
+.. code::
+
+    void my_function(xt::pyarray<double, xt::layout_type::dynamic> input)
+
+When choosing the dynamic layout, you can pass any NumPy container (with Fortran order, or
+an arbitrary view).
+Note that iterators on a pyarray with dynamic layout are generally slower!
 
