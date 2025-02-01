@@ -49,7 +49,9 @@ endif()
 # Running find_package(PythonInterp) to retrieve the Python version
 # which is not exported by Pybind11's cmake.
 # Cf. https://github.com/pybind/pybind11/issues/2268
-find_package(PythonInterp ${PythonLibsNew_FIND_VERSION} REQUIRED)
+#find_package(PythonInterp ${PythonLibsNew_FIND_VERSION} REQUIRED)
+# the above line uses a deprecated cmake method, use the following instead
+find_package(Python COMPONENTS Interpreter REQUIRED)
 
 set(pybind11_REQUIRED_VERSION 2.6.1)
 if(TARGET pybind11 OR TARGET pybind11::headers)
