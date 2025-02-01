@@ -65,10 +65,10 @@ endif()
 # Look for NumPy headers, except if NUMPY_INCLUDE_DIRS is passed,
 # which is required under some circumstances (such as wasm, where
 # there is no real python executable)
-if(NOT NUMPY_INCLUDE_DIRS)
+if(NOT Python_NumPy_INCLUDE_DIR)
     find_package(NumPy REQUIRED)
 endif()
-message(STATUS "Found numpy: ${NUMPY_INCLUDE_DIRS}")
+message(STATUS "Found numpy: ${Python_NumPy_INCLUDE_DIR}")
 
 # Build
 # =====
