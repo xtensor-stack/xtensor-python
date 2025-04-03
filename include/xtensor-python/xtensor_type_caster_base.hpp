@@ -14,8 +14,8 @@
 #include <algorithm>
 #include <vector>
 
-#include "xtensor/xtensor.hpp"
-#include "xtensor/xfixed.hpp"
+#include "xtensor/containers/xtensor.hpp"
+#include "xtensor/containers/xfixed.hpp"
 
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>

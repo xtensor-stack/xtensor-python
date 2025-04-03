@@ -13,7 +13,7 @@
 #include <type_traits>
 
 #include "pyarray.hpp"
-#include "xtensor/xvectorize.hpp"
+#include "xtensor/core/xvectorize.hpp"
 
 namespace xt
 {

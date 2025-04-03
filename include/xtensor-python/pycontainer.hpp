@@ -32,7 +32,7 @@
 #undef copysign
 
 #include <cmath>
-#include "xtensor/xcontainer.hpp"
+#include "xtensor/containers/xcontainer.hpp"
 
 #include "xtl/xsequence.hpp"
 
