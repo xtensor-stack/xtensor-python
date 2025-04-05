@@ -25,14 +25,14 @@ foreach(ver ${xtensor_python_version_defines})
         set(XTENSOR_PYTHON_VERSION_${CMAKE_MATCH_1} "${CMAKE_MATCH_2}" CACHE INTERNAL "")
     endif()
 endforeach()
-set(${PROJECT_NAME}_VERSION 
+set(${PROJECT_NAME}_VERSION
     ${XTENSOR_PYTHON_VERSION_MAJOR}.${XTENSOR_PYTHON_VERSION_MINOR}.${XTENSOR_PYTHON_VERSION_PATCH})
 message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 
 # Dependencies
 # ============
 
-set(xtensor_REQUIRED_VERSION 0.25.0)
+set(xtensor_REQUIRED_VERSION 0.26.0)
 if(TARGET xtensor)
     set(xtensor_VERSION ${XTENSOR_VERSION_MAJOR}.${XTENSOR_VERSION_MINOR}.${XTENSOR_VERSION_PATCH})
     # Note: This is not SEMVER compatible comparison
