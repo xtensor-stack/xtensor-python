@@ -14,10 +14,10 @@
 #include <array>
 #include <cstddef>
 
-#include "xtensor/xbuffer_adaptor.hpp"
-#include "xtensor/xiterator.hpp"
-#include "xtensor/xsemantic.hpp"
-#include "xtensor/xutils.hpp"
+#include "xtensor/containers/xbuffer_adaptor.hpp"
+#include "xtensor/core/xiterator.hpp"
+#include "xtensor/core/xsemantic.hpp"
+#include "xtensor/utils/xutils.hpp"
 
 #include "pycontainer.hpp"
 #include "pystrides_adaptor.hpp"

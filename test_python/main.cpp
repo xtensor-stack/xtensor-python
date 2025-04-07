@@ -16,8 +16,8 @@
 #include "xtensor-python/pyarray.hpp"
 #include "xtensor-python/pytensor.hpp"
 #include "xtensor-python/pyvectorize.hpp"
-#include "xtensor/xadapt.hpp"
-#include "xtensor/xstrided_view.hpp"
+#include "xtensor/containers/xadapt.hpp"
+#include "xtensor/views/xstrided_view.hpp"
 
 namespace py = pybind11;
 using complex_t = std::complex<double>;
