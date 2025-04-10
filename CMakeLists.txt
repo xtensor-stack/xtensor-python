@@ -46,19 +46,19 @@ else()
     message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
 endif()
 
-# Running find_package(PythonInterp) to retrieve the Python version
-# which is not exported by Pybind11's cmake.
-# Cf. https://github.com/pybind/pybind11/issues/2268
-find_package(PythonInterp ${PythonLibsNew_FIND_VERSION} REQUIRED)
+find_package(Python COMPONENTS Interpreter REQUIRED)
 
 set(pybind11_REQUIRED_VERSION 2.6.1)
-if(TARGET pybind11 OR TARGET pybind11::headers)
-    # pybind11 has a variable that indicates its version already, so use that
-    message(STATUS "Found pybind11 v${pybind11_VERSION}")
-else()
+if (NOT TARGET pybind11::headers)
+    # Defaults to ON for cmake >= 3.18
+    # https://github.com/pybind/pybind11/blob/35ff42b56e9d34d9a944266eb25f2c899dbdfed7/CMakeLists.txt#L96
+    set(PYBIND11_FINDPYTHON OFF)
     find_package(pybind11 ${pybind11_REQUIRED_VERSION} REQUIRED)
     message(STATUS "Found pybind11: ${pybind11_INCLUDE_DIRS}/pybind11")
-endif()
+else ()
+    # pybind11 has a variable that indicates its version already, so use that
+    message(STATUS "Found pybind11 v${pybind11_VERSION}")
+endif ()
 
 # Look for NumPy headers, except if NUMPY_INCLUDE_DIRS is passed,
 # which is required under some circumstances (such as wasm, where
