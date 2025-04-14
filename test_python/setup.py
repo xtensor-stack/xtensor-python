@@ -78,10 +78,10 @@ def cpp_flag(compiler):
     """Return the -std=c++14 compiler flag  and errors when the flag is
     no available.
     """
-    if has_flag(compiler, '-std=c++14'):
-        return '-std=c++14'
+    if has_flag(compiler, '-std=c++17'):
+        return '-std=c++17'
     else:
-        raise RuntimeError('C++14 support is required by xtensor!')
+        raise RuntimeError('C++17 support is required by xtensor!')
 
 
 class BuildExt(build_ext):
