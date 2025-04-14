@@ -11,8 +11,8 @@
 
 #include "xtensor-python/pyarray.hpp"
 
-#include "xtensor/xarray.hpp"
-#include "xtensor/xview.hpp"
+#include "xtensor/containers/xarray.hpp"
+#include "xtensor/views/xview.hpp"
 
 #include "test_common.hpp"
 

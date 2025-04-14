@@ -10,8 +10,8 @@
 #ifndef TEST_COMMON_HPP
 #define TEST_COMMON_HPP
 
-#include "xtensor/xlayout.hpp"
-#include "xtensor/xmanipulation.hpp"
+#include "xtensor/core/xlayout.hpp"
+#include "xtensor/misc/xmanipulation.hpp"
 
 #include "xtl/xsequence.hpp"
 

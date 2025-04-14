@@ -16,7 +16,7 @@ Example 1: Use an algorithm of the C++ library on a numpy array inplace
 
     #include <numeric>                        // Standard library import for std::accumulate
     #include "pybind11/pybind11.h"            // Pybind11 import to define Python bindings
-    #include "xtensor/xmath.hpp"              // xtensor import for the C++ universal functions
+    #include "xtensor/core/xmath.hpp"              // xtensor import for the C++ universal functions
     #define FORCE_IMPORT_ARRAY                // numpy C api loading
     #include "xtensor-python/pyarray.hpp"     // Numpy bindings
 

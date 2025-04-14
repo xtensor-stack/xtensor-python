@@ -11,8 +11,8 @@
 
 #include "xtensor-python/pytensor.hpp"
 
-#include "xtensor/xtensor.hpp"
-#include "xtensor/xview.hpp"
+#include "xtensor/containers/xtensor.hpp"
+#include "xtensor/views/xview.hpp"
 
 #include "test_common.hpp"
 
@@ -22,13 +22,13 @@ namespace xt
 
     TEST(pytensor, initializer_constructor)
     {
-        pytensor<int, 3> t 
-          {{{ 0,  1,  2}, 
-            { 3,  4,  5}, 
-            { 6,  7,  8}}, 
-           {{ 9, 10, 11}, 
-            {12, 13, 14}, 
-            {15, 16, 17}}}; 
+        pytensor<int, 3> t
+          {{{ 0,  1,  2},
+            { 3,  4,  5},
+            { 6,  7,  8}},
+           {{ 9, 10, 11},
+            {12, 13, 14},
+            {15, 16, 17}}};
         EXPECT_EQ(t.dimension(), 3);
         EXPECT_EQ(t(0, 0, 1), 1);
         EXPECT_EQ(t.shape()[0], 2);
