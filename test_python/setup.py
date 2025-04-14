@@ -75,7 +75,7 @@ def has_flag(compiler, flagname):
 
 
 def cpp_flag(compiler):
-    """Return the -std=c++14 compiler flag  and errors when the flag is
+    """Return the -std=c++17 compiler flag  and errors when the flag is
     no available.
     """
     if has_flag(compiler, '-std=c++17'):
@@ -104,6 +104,7 @@ class BuildExt(build_ext):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
+            opts.append('/std:c++17')
         for ext in self.extensions:
             ext.extra_compile_args = opts
         build_ext.build_extensions(self)
