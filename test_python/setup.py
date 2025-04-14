@@ -92,7 +92,7 @@ class BuildExt(build_ext):
     }
 
     if sys.platform == 'darwin':
-        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
+        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.13']
 
     def build_extensions(self):
         ct = self.compiler.compiler_type
