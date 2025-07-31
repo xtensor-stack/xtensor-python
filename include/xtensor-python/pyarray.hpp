@@ -195,7 +195,7 @@ namespace xt
         static self_type ensure(pybind11::handle h);
         static bool check_(pybind11::handle h);
 
-#if PYBIND11_VERSION_MAJOR == 2 && PYBIND11_VERSION_MINOR >= 3
+#if (PYBIND11_VERSION_MAJOR == 2 && PYBIND11_VERSION_MINOR >= 3) || PYBIND11_VERSION_MAJOR >= 3
         // Prevent ambiguous overload resolution for operators defined for
         // both xt::xcontainer_semantic and pybind11::object.
         using semantic_base::operator+=;
