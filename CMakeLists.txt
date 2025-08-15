@@ -32,7 +32,7 @@ message(STATUS "xtensor-python v${${PROJECT_NAME}_VERSION}")
 # Dependencies
 # ============
 
-set(xtensor_REQUIRED_VERSION 0.26.0)
+set(xtensor_REQUIRED_VERSION 0.27.0)
 if(TARGET xtensor)
     set(xtensor_VERSION ${XTENSOR_VERSION_MAJOR}.${XTENSOR_VERSION_MINOR}.${XTENSOR_VERSION_PATCH})
     # Note: This is not SEMVER compatible comparison
@@ -48,7 +48,7 @@ endif()
 
 find_package(Python COMPONENTS Interpreter REQUIRED)
 
-set(pybind11_REQUIRED_VERSION 2.6.1)
+set(pybind11_REQUIRED_VERSION 3.0.0)
 if (NOT TARGET pybind11::headers)
     # Defaults to ON for cmake >= 3.18
     # https://github.com/pybind/pybind11/blob/35ff42b56e9d34d9a944266eb25f2c899dbdfed7/CMakeLists.txt#L96
