@@ -75,13 +75,13 @@ def has_flag(compiler, flagname):
 
 
 def cpp_flag(compiler):
-    """Return the -std=c++14 compiler flag  and errors when the flag is
+    """Return the -std=c++17 compiler flag  and errors when the flag is
     no available.
     """
-    if has_flag(compiler, '-std=c++14'):
-        return '-std=c++14'
+    if has_flag(compiler, '-std=c++20'):
+        return '-std=c++20'
     else:
-        raise RuntimeError('C++14 support is required by xtensor!')
+        raise RuntimeError('C++17 support is required by xtensor!')
 
 
 class BuildExt(build_ext):
@@ -92,7 +92,7 @@ class BuildExt(build_ext):
     }
 
     if sys.platform == 'darwin':
-        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.7']
+        c_opts['unix'] += ['-stdlib=libc++', '-mmacosx-version-min=10.13']
 
     def build_extensions(self):
         ct = self.compiler.compiler_type
@@ -104,6 +104,7 @@ class BuildExt(build_ext):
                 opts.append('-fvisibility=hidden')
         elif ct == 'msvc':
             opts.append('/DVERSION_INFO=\\"%s\\"' % self.distribution.get_version())
+            opts.append('/std:c++20')
         for ext in self.extensions:
             ext.extra_compile_args = opts
         build_ext.build_extensions(self)

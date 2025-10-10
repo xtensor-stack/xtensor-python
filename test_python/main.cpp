@@ -9,15 +9,15 @@
 
 #include <numeric>
 
-#include "xtensor/xmath.hpp"
-#include "xtensor/xarray.hpp"
-#include "xtensor/xfixed.hpp"
+#include "xtensor/core/xmath.hpp"
+#include "xtensor/containers/xarray.hpp"
+#include "xtensor/containers/xfixed.hpp"
 #define FORCE_IMPORT_ARRAY
 #include "xtensor-python/pyarray.hpp"
 #include "xtensor-python/pytensor.hpp"
 #include "xtensor-python/pyvectorize.hpp"
-#include "xtensor/xadapt.hpp"
-#include "xtensor/xstrided_view.hpp"
+#include "xtensor/containers/xadapt.hpp"
+#include "xtensor/views/xstrided_view.hpp"
 
 namespace py = pybind11;
 using complex_t = std::complex<double>;
@@ -336,7 +336,7 @@ PYBIND11_MODULE(xtensor_python_test, m)
     m.def("array_subtraction", array_subtraction);
     m.def("array_multiplication", array_multiplication);
     m.def("array_division", array_division);
-    
+
     m.def("vectorize_example1", xt::pyvectorize(add));
 
     m.def("rect_to_polar", xt::pyvectorize([](complex_t x) { return std::abs(x); }));

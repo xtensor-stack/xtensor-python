@@ -12,50 +12,42 @@ defaults:
     shell: bash -e -l {0}
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     name: ${{ matrix.sys.compiler }} ${{ matrix.sys.version }}
     strategy:
       fail-fast: false
       matrix:
         sys:
-        - {compiler: gcc, version: '8'}
-        - {compiler: gcc, version: '9'}
-        - {compiler: gcc, version: '10'}
         - {compiler: gcc, version: '11'}
-        - {compiler: clang, version: '15'}
-        - {compiler: clang, version: '16'}
+        - {compiler: gcc, version: '12'}
+        - {compiler: gcc, version: '13'}
+        - {compiler: gcc, version: '14'}
+        - {compiler: clang, version: '17'}
+        - {compiler: clang, version: '18'}
+        - {compiler: clang, version: '19'}
+        - {compiler: clang, version: '20'}
 
     steps:
+    - name: Install GCC
+      if: matrix.sys.compiler == 'gcc'
+      uses: egor-tensin/setup-gcc@v1
+      with:
+        version: ${{matrix.sys.version}}
+        platform: x64
 
-    - name: Setup GCC
-      if: ${{ matrix.sys.compiler == 'gcc' }}
+    - name: Install LLVM and Clang
+      if: matrix.sys.compiler == 'clang'
       run: |
-        GCC_VERSION=${{ matrix.sys.version }}
-        sudo apt-get update
-        sudo apt-get --no-install-suggests --no-install-recommends install g++-$GCC_VERSION
-        CC=gcc-$GCC_VERSION
-        echo "CC=$CC" >> $GITHUB_ENV
-        CXX=g++-$GCC_VERSION
-        echo "CXX=$CXX" >> $GITHUB_ENV
-
-    - name: Setup clang
-      if: ${{ matrix.sys.compiler == 'clang' }}
-      run: |
-        LLVM_VERSION=${{ matrix.sys.version }}
-        wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - || exit 1
-        if [[ $LLVM_VERSION -ge 13 ]]; then
-          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-$LLVM_VERSION main" || exit 1
-        else
-          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" || exit 1
-        fi || exit 1
-        sudo apt-get update || exit 1
-        sudo apt-get --no-install-suggests --no-install-recommends install clang-$LLVM_VERSION || exit 1
-        sudo apt-get --no-install-suggests --no-install-recommends install g++-9 g++-9-multilib || exit 1
-        sudo ln -s /usr/include/asm-generic /usr/include/asm
-        CC=clang-$LLVM_VERSION
-        echo "CC=$CC" >> $GITHUB_ENV
-        CXX=clang++-$LLVM_VERSION
-        echo "CXX=$CXX" >> $GITHUB_ENV
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh ${{matrix.sys.version}}
+        sudo apt-get install -y clang-tools-${{matrix.sys.version}}
+        sudo update-alternatives --install /usr/bin/clang++                 clang++                     /usr/bin/clang++-${{matrix.sys.version}} 200
+        sudo update-alternatives --install /usr/bin/clang                       clang                         /usr/bin/clang-${{matrix.sys.version}} 200
+        sudo update-alternatives --install /usr/bin/clang-scan-deps   clang-scan-deps     /usr/bin/clang-scan-deps-${{matrix.sys.version}} 200
+        sudo update-alternatives --set clang /usr/bin/clang-${{matrix.sys.version}}
+        sudo update-alternatives --set clang++ /usr/bin/clang++-${{matrix.sys.version}}
+        sudo update-alternatives --set clang-scan-deps /usr/bin/clang-scan-deps-${{matrix.sys.version}}
 
     - name: Checkout code
       uses: actions/checkout@v3

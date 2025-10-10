@@ -7,7 +7,7 @@
 # The full license is in the file LICENSE, distributed with this software. #
 ############################################################################
 
-cmake_minimum_required(VERSION 2.8.2)
+cmake_minimum_required(VERSION 3.29)
 
 project(googletest-download NONE)
 

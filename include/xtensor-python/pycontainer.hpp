@@ -32,7 +32,7 @@
 #undef copysign
 
 #include <cmath>
-#include "xtensor/xcontainer.hpp"
+#include "xtensor/containers/xcontainer.hpp"
 
 #include "xtl/xsequence.hpp"
 
@@ -129,7 +129,7 @@ namespace xt
 
     private:
 
-#if PYBIND11_VERSION_MAJOR == 2 && PYBIND11_VERSION_MINOR >= 3
+#if (PYBIND11_VERSION_MAJOR == 2 && PYBIND11_VERSION_MINOR >= 3) || PYBIND11_VERSION_MAJOR >= 3
         // Prevent ambiguous overload resolution for operators defined for
         // both xt::xcontainer and pybind11::object.
         using pybind11::object::operator~;

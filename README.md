@@ -51,7 +51,7 @@ Both containers enable the numpy-style APIs of xtensor (see [the numpy to xtenso
 ```cpp
 #include <numeric>                        // Standard library import for std::accumulate
 #include <pybind11/pybind11.h>            // Pybind11 import to define Python bindings
-#include <xtensor/xmath.hpp>              // xtensor import for the C++ universal functions
+#include <xtensor/core/xmath.hpp>              // xtensor import for the C++ universal functions
 #define FORCE_IMPORT_ARRAY
 #include <xtensor-python/pyarray.hpp>     // Numpy bindings
 
@@ -204,7 +204,8 @@ from the `docs` subdirectory.
 
 | `xtensor-python` | `xtensor` |  `pybind11`      |
 |------------------|-----------|------------------|
-| master           |  ^0.25.0  | >=2.6.1,<3       |
+| master           |  ^0.26.0  | >=2.6.1,<4       |
+| 0.28.0           |  ^0.26.0  | >=2.6.1,<3       |
 | 0.27.0           |  ^0.25.0  | >=2.6.1,<3       |
 | 0.26.1           |  ^0.24.0  | ~2.4.3           |
 | 0.26.0           |  ^0.24.0  | ~2.4.3           |

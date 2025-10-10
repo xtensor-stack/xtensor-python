@@ -12,8 +12,8 @@
 #include "gtest/gtest.h"
 #include "xtensor-python/pytensor.hpp"
 #include "xtensor-python/pyarray.hpp"
-#include "xtensor/xarray.hpp"
-#include "xtensor/xtensor.hpp"
+#include "xtensor/containers/xarray.hpp"
+#include "xtensor/containers/xtensor.hpp"
 
 namespace xt
 {
