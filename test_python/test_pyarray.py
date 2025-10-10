@@ -23,7 +23,6 @@ import xtensor_python_test as xt
 import numpy as np
 
 class XtensorTest(TestCase):
-    """
     def test_rm(self):
         xt.test_rm(np.array([10], dtype=int))
 
@@ -62,7 +61,6 @@ class XtensorTest(TestCase):
         with self.assertRaises(TypeError):
             x = np.arange(3*2).reshape(3, 2)
             xt.example3_xfixed2(x)
-    """
     def test_broadcast_addition(self):
         x = np.array([[2., 3., 4., 5.]])
         y = np.array([[1., 2., 3., 4.],
@@ -73,7 +71,6 @@ class XtensorTest(TestCase):
                         [3., 5., 7., 9.]])
         z = xt.array_addition(x, y)
         np.testing.assert_allclose(z, res, 1e-12)
-    """
     def test_broadcast_subtraction(self):
         x = np.array([[4., 5., 6., 7.]])
         y = np.array([[4., 3., 2., 1.],
@@ -307,7 +304,6 @@ class XtensorTest(TestCase):
         self.assertEqual(adapter.shape, (2, 2))
         adapter[1, 1] = -3
         self.assertEqual(arr[0, 5], -3)
-     """
 
 class AttributeTest(TestCase):
 
