@@ -27,7 +27,7 @@
 
 namespace xt
 {
-    template <class T, layout_type L = layout_type::dynamic>
+    template <class T, layout_type L = layout_type::row_major>
     class pyarray;
 }
 
@@ -411,7 +411,7 @@ namespace xt
 
         if (!tmp)
         {
-            throw std::runtime_error("NumPy: unable to create ndarray");
+            throw std::runtime_error("pyarray: unable to create ndarray");
         }
 
         this->m_ptr = tmp.release().ptr();
@@ -502,7 +502,7 @@ namespace xt
 
         if (!tmp)
         {
-            throw std::runtime_error("NumPy: unable to create ndarray");
+            throw std::runtime_error("pyarray: unable to create ndarray");
         }
 
         this->m_ptr = tmp.release().ptr();
@@ -525,7 +525,7 @@ namespace xt
 
         if (L != layout_type::dynamic && !do_strides_match(m_shape, m_strides, L, 1))
         {
-            throw std::runtime_error("NumPy: passing container with bad strides for layout (is it a view?).");
+            throw std::runtime_error("pyarray: passing container with wrong strides for static layout. If you are trying to pass a view, set the pytensor layout template parameter to `layout_type::dynamic`, or `layout_type::column_major` for col major.");
         }
 
         m_backstrides = backstrides_type(*this);
