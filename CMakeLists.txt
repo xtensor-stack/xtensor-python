@@ -45,7 +45,7 @@ else()
     message(STATUS "Found xtensor: ${xtensor_INCLUDE_DIRS}/xtensor")
 endif()
 
-find_package(Python3 COMPONENTS Interpreter Development.Module NumPy REQUIRED)
+find_package(Python3 COMPONENTS Development.Embed NumPy REQUIRED)
 
 set(pybind11_REQUIRED_VERSION 3.0.0)
 if (NOT TARGET pybind11::headers)
